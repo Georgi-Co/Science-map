@@ -1,0 +1,139 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    display: grid;
+    grid-template-columns:  repeat(3, 1fr);
+     grid-template-rows: repeat(3, 1fr);  
+    min-height: 100vh; /* Занимает минимум весь экран */
+    margin: 0;
+    gap: 20px; /* Отступ между header, main и footer */
+    grid-template-areas:'header header header' 'main main main' 'footer footer footer';
+}
+
+/* Стили секции header*/
+#header {
+    grid-area: header;
+    grid-row-start: 1;
+    display: flex;
+    justify-content: space-between;
+    position: sticky;
+    background: #0e1060;
+    height: 100px;
+    color: #FFF
+}
+
+.logo {
+    background-size: cover;
+    margin-left: 10%;
+    top: 15px;
+    left: 0;
+    width: 89px;
+    height: 67px;
+    position: absolute;
+}
+
+/* Стили секции main*/
+#main {
+    grid-area: main;
+    display: flex;
+    justify-content: center;
+    background: #FFF;
+    flex: 1 0 auto; /* Растягивается на всё свободное место */
+}
+
+.banners {
+    display: flex;
+    padding: 20px 20px;
+    margin-top: 0; /* Распологаем в самый низ блока main */
+    margin-bottom: 80px; /* Отступ от footer */
+}
+
+.banner-list {
+    list-style: none;
+    margin-bottom: 80px;
+    max-height: 160px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 колонки */
+    align-self: flex-end;
+    align-items: start;
+    gap: 60px; /* Отступы между баннерами */
+}
+
+.banner-list li {
+    min-height: 0;
+    overflow: hidden; /* Обрезаем лишнее, если изображение больше */
+}
+
+.banner-list img {
+    height: auto;
+    width: auto;
+    object-fit: contain; /* Сохраняем пропорции, не растягиваем */
+    display: block;
+}
+
+/* Стили секции footer*/
+#footer {
+    grid-area: footer;
+    box-sizing: border-box;
+    height: 100px;
+    margin: 0;
+    background: #0e1060;
+    display: flex;
+    align-self: flex-end; /* прижимает блок вниз */
+}
+
+
+
+/* Медиазапросы*/
+
+        /* На экранах < 1200px — 3 колонки */
+@media (max-width: 1200px) {
+  .banner-list {
+    grid-template-columns: repeat(3, 1fr);
+    margin-bottom: 30px;
+  }
+}
+
+        /* На экранах < 900px — 2 колонки */
+@media (max-width: 900px) {
+  .banner-list {
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 20px;
+  }
+}
+
+        /* На экранах < 600px — 1 колонка (вертикально) */
+@media (max-width: 600px) {
+  .banner-list {
+    grid-template-columns: repeat(2, 1fr);
+    margin-bottom: 0px;
+  }
+}
+
+/* Мобильные */
+@media (max-width: 600px) {
+  .banner-list img {
+    width: 75%;
+    height: auto;
+  }
+}
+
+/* Планшеты */
+@media (min-width: 601px) and (max-width: 900px) {
+  .banner-list img {
+    width: 85%;
+    height: auto;
+  }
+}
+
+/* Десктопы */
+@media (min-width: 901px) {
+  .banner-list img {
+    width: 100%;
+    height: auto;
+  }
+}

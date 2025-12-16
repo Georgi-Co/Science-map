@@ -1,0 +1,39 @@
+/* Обычный (400) */
+@font-face {
+  font-family: "LatoWeb";
+  src: url("fonts/LatoWeb-Regular.woff2") format("woff2"),
+       url("fonts/LatoWeb-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Жирный (700) */
+@font-face {
+  font-family: "LatoWeb";
+  src: url("fonts/LatoWeb-Bold.woff2") format("woff2"),
+       url("fonts/LatoWeb-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Курсивный (400 italic) */
+@font-face {
+  font-family: "LatoWeb";
+  src: url("fonts/LatoWeb-Italic.woff2") format("woff2"),
+       url("fonts/LatoWeb-Italic.woff") format("woff");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Жирный курсивный (700 italic) */
+@font-face {
+  font-family: "LatoWeb";
+  src: url("fonts/LatoWeb-BoldItalic.woff2") format("woff2"),
+       url("fonts/LatoWeb-BoldItalic.woff") format("woff");
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
