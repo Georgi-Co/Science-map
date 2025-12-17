@@ -57,7 +57,7 @@ body {
   margin-right: 5%;
   font-family:"LatoWeb";
   font-size: 36px;
-  font-weight: 400;
+  font-weight: 700;
   color: #FFF;
   letter-spacing: .01em;
   line-height: 1.25;
@@ -168,9 +168,12 @@ body {
     height: auto;
   }
   .logo {
+    justify-self: flex-end;
+    margin-left: 0;
     max-width: 50px;
   }
   #title {
+    margin-left: 5%;
     font-size: 20px;
   }
 }
