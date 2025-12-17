@@ -1,139 +1,184 @@
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    display: grid;
-    grid-template-columns:  repeat(3, 1fr);
-     grid-template-rows: repeat(3, 1fr);  
-    min-height: 100vh; /* Занимает минимум весь экран */
-    margin: 0;
-    gap: 20px; /* Отступ между header, main и footer */
-    grid-template-areas:'header header header' 'main main main' 'footer footer footer';
+  display: grid;
+  grid-template-columns:  repeat(3, 1fr);
+  grid-template-rows: 10% 70% 10% 10%;
+  background-color: #f6f7f9;
+  color: #222;
+  font-family: "LatoWeb";
+  width: 100%;
+  max-width: 100vw;  /* Содержимое в пределах экрана */
+  min-height: 100vh; /* Занимает минимум весь экран */
+  margin: 0;
+  row-gap: 20px;
+  grid-template-areas:
+    'header header header' 
+    'main main main' 
+    'banners banners banners' 
+    'footer footer footer';
 }
 
 /* Стили секции header*/
 #header {
-    grid-area: header;
-    grid-row-start: 1;
-    display: flex;
-    justify-content: space-between;
-    position: sticky;
-    background: #0e1060;
-    height: 100px;
-    color: #FFF
+  grid-area: header;
+  display: grid;
+  grid-template-columns: 1fr 4fr; /* logo + title */
+  gap: 10px;
+  background: #0e1060;
+  height: 100px;
+  color: #FFF;
+  top: 0;
+  position: sticky;
+  z-index: 1;
 }
 
 .logo {
-    background-size: cover;
-    margin-left: 10%;
-    top: 15px;
-    left: 0;
-    width: 89px;
-    height: 67px;
-    position: absolute;
+  justify-self: center;
+  align-self: center;
+  margin-left: 20%;
+  top: 15px;
+  width: 100%;         /* занимает всю ширину родителя */
+  max-width: 89px;  /* максимальный размер (ваш исходный размер) */
+  height: auto;      /* высота подстраивается под пропорции */
+  display: block;    /* убирает лишние отступы */
+  z-index: 10;
+}
+
+#title {
+  display: flex;
+  justify-self: center;
+  align-self: center;
+  max-height: 100px;
+  margin-right: 5%;
+  font-family:"LatoWeb";
+  font-size: 36px;
+  font-weight: 400;
+  color: #FFF;
+  letter-spacing: .01em;
+  line-height: 1.25;
+  z-index: 15;
 }
 
 /* Стили секции main*/
 #main {
-    grid-area: main;
-    display: flex;
-    justify-content: center;
-    background: #FFF;
-    flex: 1 0 auto; /* Растягивается на всё свободное место */
+  grid-area: main;
+  display: flex;
+  justify-content: center;
+  flex: 1 0 auto; /* Растягивается на всё свободное место */
 }
 
 .banners {
-    display: flex;
-    padding: 20px 20px;
-    margin-top: 0; /* Распологаем в самый низ блока main */
-    margin-bottom: 80px; /* Отступ от footer */
+  grid-row: 3;
+  grid-column: 2;
+  grid-area: banners;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-self: flex-end;
+  overflow: auto;
+  margin: 20px 20px 20px 20px;
 }
 
 .banner-list {
-    list-style: none;
-    margin-bottom: 80px;
-    max-height: 160px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 колонки */
-    align-self: flex-end;
-    align-items: start;
-    gap: 60px; /* Отступы между баннерами */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 колонки */
+  align-self: flex-end;
+  align-items: center;
+  gap: 40px; /* Отступы между баннерами */
 }
 
 .banner-list li {
-    min-height: 0;
-    overflow: hidden; /* Обрезаем лишнее, если изображение больше */
+  min-height: 0;
+  overflow: hidden; /* Обрезаем лишнее, если изображение больше */
+}
+
+.banner-list a {
+  margin: 0;
+  padding: 0;
 }
 
 .banner-list img {
-    height: auto;
-    width: auto;
-    object-fit: contain; /* Сохраняем пропорции, не растягиваем */
-    display: block;
+  height: auto;
+  width: auto;
+  object-fit: contain; /* Сохраняем пропорции, не растягиваем */
+  display: block;
 }
 
 /* Стили секции footer*/
 #footer {
-    grid-area: footer;
-    box-sizing: border-box;
-    height: 100px;
-    margin: 0;
-    background: #0e1060;
-    display: flex;
-    align-self: flex-end; /* прижимает блок вниз */
+  grid-area: footer;
+  box-sizing: border-box;
+  height: 100px;
+  margin: 10px 0 0 0;
+  background: #0e1060;
+  display: flex;
+  align-self: flex-end; /* прижимает блок вниз */
 }
 
 
 
 /* Медиазапросы*/
 
-        /* На экранах < 1200px — 3 колонки */
-@media (max-width: 1200px) {
+        /* Десктоп */
+@media (min-width: 1025px) and (max-width: 2560px) {
   .banner-list {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     margin-bottom: 30px;
+  }
+  .banner-list img {
+    width: 100%;
+    height: auto;
+  }
+  #title {
+    margin-right: 25%;
   }
 }
 
-        /* На экранах < 900px — 2 колонки */
-@media (max-width: 900px) {
+        /* Планшеты*/
+@media (min-width: 601px) and (max-width: 1024px) {
   .banner-list {
     grid-template-columns: repeat(2, 1fr);
     margin-bottom: 20px;
   }
+  .banner-list img {
+    width: 85%;
+    height: auto;
+  }
+  .logo {
+    max-width: 60px;
+  }
+  #title {
+    font-size: 30px;
+  }
 }
 
-        /* На экранах < 600px — 1 колонка (вертикально) */
+        /* Мобильные */
 @media (max-width: 600px) {
   .banner-list {
     grid-template-columns: repeat(2, 1fr);
     margin-bottom: 0px;
   }
-}
-
-/* Мобильные */
-@media (max-width: 600px) {
   .banner-list img {
     width: 75%;
     height: auto;
   }
+  .logo {
+    max-width: 50px;
+  }
+  #title {
+    font-size: 20px;
+  }
 }
+
+/* Мобильные */
+
 
 /* Планшеты */
-@media (min-width: 601px) and (max-width: 900px) {
-  .banner-list img {
-    width: 85%;
-    height: auto;
-  }
-}
+
 
 /* Десктопы */
-@media (min-width: 901px) {
-  .banner-list img {
-    width: 100%;
-    height: auto;
-  }
-}
