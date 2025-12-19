@@ -1,12 +1,18 @@
+/* Переменные*/
+:root {
+  --shadow-light: 0 0 4px -2px rgba(0, 0, 0, 0.15);
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-size: 1rem;
 }
 
 body {
   display: grid;
-  grid-template-columns:  repeat(3, 1fr);
+  grid-template-columns:  1fr 3fr 1fr;
   grid-template-rows: 10% 70% 10% 10%;
   background-color: #f6f7f9;
   color: #222;
@@ -32,6 +38,7 @@ body {
   background: #0e1060;
   height: 100px;
   color: #FFF;
+  box-shadow: 0 6px 10px -2px rgba(0, 0, 0, 0.4);
   top: 0;
   position: sticky;
   z-index: 1;
@@ -62,7 +69,7 @@ body {
   max-height: 100px;
   margin-right: 5%;
   font-family:"LatoWeb";
-  font-size: 36px;
+  font-size: 2.2rem;
   font-weight: 700;
   color: #FFF;
   letter-spacing: .01em;
@@ -73,9 +80,29 @@ body {
 /* Стили секции main*/
 #main {
   grid-area: main;
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  grid-template-rows: 2fr 3fr;
+}
+
+#search-container {
+  grid-row: 1;
+  grid-column: 2;
   display: flex;
-  justify-content: center;
-  flex: 1 0 auto; /* Растягивается на всё свободное место */
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+}
+
+#h1 {
+  grid-row: 1;
+  grid-column: 2;
+  display: flex;
+  align-self: flex-start;
+  justify-self: flex-start;
+  margin: 2% 2% 2% 10%;
+  font-size: 2rem;
+  z-index: 2;
 }
 
 .banners {
@@ -87,7 +114,7 @@ body {
   align-items: center;
   align-self: flex-end;
   overflow: auto;
-  margin: 20px 20px 20px 20px;
+  margin: 5px 5px 5px 5px;
 }
 
 .banner-list {
@@ -120,8 +147,9 @@ body {
   grid-area: footer;
   box-sizing: border-box;
   height: 100px;
-  margin: 10px 0 0 0;
+  margin: 2% 0 0 0;
   background: #0e1060;
+  box-shadow: 0 -6px 10px -2px rgba(0, 0, 0, 0.4);
   display: flex;
   align-self: flex-end; /* прижимает блок вниз */
 }
@@ -159,15 +187,29 @@ body {
     max-width: 60px;
   }
   #title {
-    font-size: 30px;
+    font-size: 1.8rem;
+    justify-self: flex-start;
+  }
+  #h1 {
+    font-size: 1.3rem;
+    margin: 5% 0 0 5%;
   }
 }
 
         /* Мобильные */
 @media (max-width: 600px) {
+  #header {
+  }
+  #main {
+    grid-area: main;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 2fr 3fr;
+  }
   .banner-list {
     grid-template-columns: repeat(2, 1fr);
-    margin-bottom: 0px;
+    margin-bottom: 2%;
+    margin-left: 7%;
   }
   .banner-list img {
     width: 75%;
@@ -182,7 +224,19 @@ body {
   }
   #title {
     margin-left: 5%;
-    font-size: 20px;
+    font-size: 1.3rem;
+  }
+  #search-container {
+    grid-row: 1;
+    grid-column: 1;
+    margin: 5% 5% 5% 5%;
+  }
+  #h1 {
+    font-size: 1.8rem;
+    margin: 5% 0 0 5%;
+  }
+  #footer {
+    max-height: 90%;
   }
 }
 
