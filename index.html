@@ -16,12 +16,38 @@
 
     <!-- Основной контент страницы -->
     <main id="main" aria-label="Основной контент сайта">
-        <div id="search-container" alt="Контейнер поисковика">
-            <h1 id="h1" alt="Заголовок поисковика проектов">Все научные проекты</h1>
+        <h1 id="h1" alt="Заголовок поисковика проектов">Все научные проекты</h1>
+        <!-- Фильр поиска НИР-->
+        <div id="search-container" alt="Контейнер списков">
+            <!-- Выпадающие списки-->
+            <div id="container_sl" alt="Фильтры научно-исследовательских работ">
+                <form class="search-list">
+                    <label class="search-label" for="science-area-list">Научная область:</label>
+                    <select class="selector" name="science-area-list">
+                        <option value="All">Все</option>
+                        <option value="?">?</option>
+                        <option value="?">?</option>
+                    </select>
+                </form>
+                <form class="search-list">
+                    <label class="search-label" for="science-direction-list">Научное направление:</label>
+                    <select class="selector" name="science-direction-list">
+                        <option value="All">Все</option>
+                        <option value="?">?</option>
+                        <option value="?">?</option>
+                    </select>
+                </form>
+            </div>
+            <!-- Поисковая строка 🔍 + кнопка поиска-->
+            <div class="search-wrapper"> <!-- Общий контейнер (Поле, кнопка)-->
+                <input type="text" class="search-input" id="search-field" placeholder="Поиск по ключевым словам...">
+                <!-- Кнопка подтверждения ввода-->
+                <button type="submit" class="search-button">Поиск</button>
+            </div>
         </div>
         
     </main>
-    <!-- Баннеры -->
+        <!-- Баннеры -->
         <div class="banners" alt="Баннеры">
             <ul class="banner-list" aria-label="Список баннеров">
                 <li><a href="https://minobrnauki.gov.ru/" target="_blank"><img src="/banners/МНиВО.banners_220x75-4.jpg" alt="Баннер 1"></a></li>
