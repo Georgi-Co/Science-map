@@ -11,7 +11,7 @@
 <body>
     
     <!-- Шапка сайта (Хэддер) --> 
-    <header id="header" alt="Головная часть сайта">    
+    <header alt="Головная часть сайта">    
         <a id="a-logo" href="https://rsue.ru/" target="_blank"><img class="logo" src="logo.svg" alt="Логотип университета"></a>
         <h1 id="title">Карта научно-исследовательских работ РГЭУ (РИНХ)</h1>
     </header>
@@ -52,13 +52,15 @@
     </div>
 
     <!-- Основной контент страницы -->
-    <main id="main" aria-label="Основной контент сайта">
+    <main aria-label="Основной контент сайта">
+
         <!-- Секция списка научных статей ✍🧾✅-->
-        <section id="articles-container" aria-label="Список научных статей">
-            <div class="articles-grid" id="articles-grid">
-            <!-- Карточки будут подгружаться динамически через JS -->
-            </div>
-        </section>   
+            <section id="articles-container" aria-label="Список научных статей">
+                <div class="articles-grid" id="articles-grid">
+                <!-- Карточки будут подгружаться динамически через JS -->
+                </div>
+            </section>
+            
     </main>
 
         <!-- Баннеры -->
@@ -76,7 +78,39 @@
         </div>
         
     <!-- Контакты, копирайт, ссылки -->
-    <footer id="footer" aria-label="Нижняя часть сайта">
+    <footer aria-label="Нижняя часть сайта">
+
+            <div class="foot-container" id="foot-con-1"> <!-- 1-ая Колонка -->
+                <div class="zagfot">Приемная ректора</div>
+                <div class="contacts"><span>Телефон:</span> <span>+7 (863) 263-30-80</span></div>            
+                <div class="contacts"><span>E-mail:</span> <span><a href="mailto:main@rsue.ru">main@rsue.ru</a></span></div><!--br-->
+                <div class="contact-link"><span><span><a href="/doc/telefon-spravochnik-RSUE.pdf" target="_blank">Телефонный справочник</a></span></span></div>
+            </div>
+
+            <div class="foot-container" id="foot-con-2"> <!-- 2-ая Колонка -->
+                <div class="zagfot">Приемная комиссия</div>
+                <div class="contacts"><span>Телефон:</span> <span>+7 (863) 237-02-60</span></div>			
+                <div class="contacts"><span>E-mail:</span> <span><a href="mailto:pk@rsue.ru">pk@rsue.ru</a></span></div>
+                <div class="contact-link"><span><span><a href="/abitur">Абитуриенту</a></span></span></div>
+            </div>
+
+            <div class="foot-container" id="foot-con-3"> <!-- 3-ая Колонка -->
+                <div class="zagfot">Медиацентр</div>
+                <div class="contacts"><span>Телефон:</span> <span>+7 (863) 261-38-39</span></div>
+                <div class="contacts"><span>E-mail:</span> <span><a href="mailto:media.rsue@mail.ru">media.rsue@mail.ru</a></span></div>
+            </div>
+
+            <div class="foot-container" id="foot-con-4"> <!-- 4-ая Колонка -->
+                <div id="questions"><a href="/FAQ/">Часто задаваемые вопросы</a></div> <!-- Для вопросов отдельный id -->
+                    <div id="icon-list">
+                        <a href="https://vk.com/rsue.rinh" target="_blank"><img src="/img/vk.png" id="foticon"></a><a href="https://t.me/rsue_rinh" target="_blank"><img src="/img/telegram.png" id="foticon"></a>
+                        <a href="https://ok.ru/group/60991174279312" target="_blank"><img src="/img/ok.png" id="foticon"></a>
+                        <a href="https://rutube.ru/channel/25905156/" target="_blank"><img src="/img/rutube.png" id="foticon"></a>
+                        <a href="https://max.ru/rsue_rinh" target="_blank"><img src="/img/max-messenger.png" id="foticon"></a>
+                    </div>
+                <div class="zagfot3"><a href="https://pos.gosuslugi.ru" target="_blank">Обращения граждан</a></div>
+                <div class="zagfot3"><a href="/sitemap.php">Карта сайта</a></div>
+            </div>
 
     </footer>
 </body>

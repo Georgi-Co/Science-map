@@ -14,8 +14,9 @@
   --q-dark: #2a2e32;
   --q-dark-page: #212529;
   --q-text-color: #222222;
+  --q-text-color-opacity: #9ba5b6;
   --q-text-label-color: #444444e0;
-  --q-focus-color: #007bff;
+  --q-focus-color: #2ca1ff;
   --white: #fff;
   /* Размеры*/
   --q-size-xs: 0;
@@ -52,7 +53,7 @@ body { /* Главный контейнер (тело сайта) */
       minmax(60px, auto);   /* footer */
   background-color: var(--q-secondary);
   color: var(--q-text-color);
-  font-family: "LatoWeb";
+  font-family: 'LatoWeb', Helvetica, sans-serif;
   width: 100%;
   height: auto;
   min-height: 100vh;
@@ -68,7 +69,7 @@ body { /* Главный контейнер (тело сайта) */
 }
 
 /* Стили секции header*/
-#header {
+header {
   grid-area: header;
   display: grid;
   grid-template-columns: 1fr 5fr 1fr;
@@ -118,7 +119,7 @@ body { /* Главный контейнер (тело сайта) */
 }
 
 /* Стили секции main*/
-#main {
+main {
   grid-area: main;
   display: grid;
   flex: 1;
@@ -315,11 +316,29 @@ label { /* Стиль для надписей-лейблов */
 #articles-container {
   grid-area: main;
   grid-column: 2;
-  display: flex;
+  display: grid;
+  grid-template-rows: auto 1fr auto; /* Строки: пагинация сверху, сетка, пагинация снизу */
+  gap: 20px; /* Отступ между элементами */
   justify-self: center;
   align-self: center;
   margin: 1% 1% 1% 1%;
 }
+
+
+/* Явно задаём расположение для пагинации и сетки */
+#articles-container .pagination:first-child {
+  grid-row: 1; /* Сверху */
+}
+
+#articles-container .articles-grid {
+  grid-row: 2; /* По центру */
+}
+
+#articles-container .pagination:last-child {
+  grid-row: 3; /* Снизу */
+}
+/* Явно задаём расположение для пагинации и сетки */
+
 
 .articles-grid {
   display: grid;
@@ -361,6 +380,7 @@ label { /* Стиль для надписей-лейблов */
   padding: 16px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* Растягивает содержимое, прижимая кнопку вниз */
   gap: 10px;
   flex: 1; /* Растягивается на всю высоту */
 }
@@ -437,7 +457,9 @@ label { /* Стиль для надписей-лейблов */
   align-items: center;
   align-self: flex-end;
   overflow: auto;
-  margin: 5px 5px 5px 5px;
+  padding-top: 20px;
+  padding-bottom: 1px;
+  margin: 1px 1px 1px 1px;
 }
 
 .banner-list { /* Общая сетка баннеров*/
@@ -474,16 +496,76 @@ label { /* Стиль для надписей-лейблов */
 
 
 /* Стили секции footer*/
-#footer {
+footer {
   grid-area: footer;
   box-sizing: border-box;
-  height: 100px;
+  height: auto;
   margin: 2% 0 0 0;
+  gap: 3%;
+  font-size: 1.1em;
+  color: var(--white);
+  text-wrap: nowrap;
   background: var(--q-primary);
-  box-shadow: 0 -6px 10px -2px rgba(0, 0, 0, 0.4);
-  display: flex;
+  box-shadow: 0 -6px 10px -2px rgba(0, 0, 0, 0.2);
+  display: grid;
+  grid-template-columns: repeat(1fr, auto);
+  grid-template-rows: 1fr;
+  justify-content: center;
   align-self: flex-end; /* прижимает блок вниз */
 }
+
+.foot-container {
+  display: flex;
+  flex-direction: column;
+  align-self: flex-start;
+  justify-self: center;
+  padding: 15%;
+}
+
+#foot-con-1 {
+  grid-column: 1;
+}
+
+#foot-con-2 {
+  grid-column: 2;
+}
+
+#foot-con-3 {
+  grid-column: 3;
+}
+
+#foot-con-4 {
+  grid-column: 4;
+  text-decoration: none;
+}
+
+.zagfot { /* Заголовки колонок футтера*/
+  font-weight: 700;
+  line-height: 17px;
+  font-size: 1.15em;
+  margin-bottom: 20px;
+}
+
+.contacts { /* Email, телефон*/
+  color: var(--q-text-color-opacity);
+}
+
+#questions { /* Ссылка - "Часто задаваемые вопросы" */
+  margin-bottom: 20px;
+}
+
+#icon-list {
+  display: flex;
+  align-self: flex-start;
+  gap: 15px;
+}
+
+
+
+
+
+
+
 
 
 
@@ -495,7 +577,6 @@ label { /* Стиль для надписей-лейблов */
 
 /* Пагинация — контейнер с кнопками */
 .pagination {
-  grid-column: 2; /* Размещаем по центру (в колонке основного контента) */
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -503,7 +584,7 @@ label { /* Стиль для надписей-лейблов */
   gap: 12px; /* Отступы между кнопками */
   margin: 2% 0 3% 0; /* Вертикальные отступы: сверху 2%, снизу 3% */
   padding: 16px 0;
-  width: 100%;
+  width: 100%; /* Занимает всю ширину родителя */
 }
 
 /* Общая стилизация кнопок пагинации */
@@ -515,7 +596,7 @@ label { /* Стиль для надписей-лейблов */
   height: 40px;
   padding: 0 12px;
   
-  font-family: "LatoWeb", sans-serif;
+  font-family: 'LatoWeb';
   font-size: 0.95rem;
   font-weight: 700;
   line-height: 1;

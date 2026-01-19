@@ -22,7 +22,7 @@
 
         /* Десктоп меньший экран*/
 @media (min-width: 1025px) and (max-width: 1440px) {
-  #header {
+  header {
     display: grid;
     grid-template-columns: 1fr 4fr;
   }
@@ -50,7 +50,7 @@
 
         /* Планшеты*/
 @media (min-width: 601px) and (max-width: 1024px) {
-  #header {
+  header {
     display: grid;
     grid-template-columns: 1fr 4fr;
     gap: 20px;
@@ -107,7 +107,7 @@
 
         /* Мобильные */
 @media (max-width: 600px) {
-  #header {
+  header {
     display: grid;
     grid-template-columns: 1fr 3fr;
     padding: 10px;
@@ -124,7 +124,7 @@
       minmax(60px, auto);   /* footer */
     row-gap: 10px;
   }
-  #main {
+  main {
     grid-area: main;
     display: grid;
     grid-template-columns: 1fr;
@@ -196,7 +196,7 @@
     display: flex;
     margin: 3% 5% 3% 5%;
 }
-  #footer {
+  footer {
     max-height: 90%;
   }
   .pagination {
