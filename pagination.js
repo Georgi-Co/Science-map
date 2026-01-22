@@ -144,7 +144,7 @@ function updatePagination(currentPage) {
   const bottomPagination = createPagination();
   articlesContainer.appendChild(bottomPagination);
 
-  console.log('✅ Пагинация обновлена (верх и низ)');
+  console.log('✅ Пагинация обновлена(сверху и снизу))');
 }
 
 

@@ -1,9 +1,4 @@
-// Подключение к базе данных MongoDB
-const connectDB = require('./db');
-connectDB();
-
-    
-    // Функция загрузки статей из JSON
+ // Функция загрузки статей из JSON
   async function loadArticles() {
     try {
       const response = await fetch('articles.json');
