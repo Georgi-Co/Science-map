@@ -34,10 +34,14 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  word-break: break-word;
   font-size: 1rem;
+  font-family: 'LatoWeb';
+  font-style: normal;
 }
 
 html {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   height: 100%;
 }
 
@@ -53,7 +57,6 @@ body { /* Главный контейнер (тело сайта) */
       minmax(60px, auto);   /* footer */
   background-color: var(--q-secondary);
   color: var(--q-text-color);
-  font-family: 'LatoWeb', Helvetica, sans-serif;
   width: 100%;
   height: auto;
   min-height: 100vh;
@@ -270,7 +273,8 @@ label { /* Стиль для надписей-лейблов */
   grid-column: 1;
   position: relative;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  word-break: normal;
   justify-self: flex-end;
   align-self: center;
   width: fit-content;
@@ -349,103 +353,142 @@ label { /* Стиль для надписей-лейблов */
   padding: 1%;
 }
 
-/* Карточка статьи */
+
+/* Карточка статьи — улучшенная версия */
 .article-card {
   background-color: var(--white);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
   overflow: hidden;
-  transition: transform 0.3s, box-shadow 0.3s;
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   display: flex;
   flex-direction: column;
-  padding: 2%;
+  padding: 20px;
+  height: 100%;
+  border: 1px solid #f0f0f0;
 }
 
 .article-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  border-color: #e0e0e0;
 }
 
-/* Изображение (если есть) */
-.article-card img {
+/* Изображение статьи — с мягким градиентом внизу */
+.article-card img.article-image {
   width: 100%;
-  height: 180px;
+  height: 160px;
   object-fit: cover;
-  border-bottom: 1px solid #eee;
+  border-radius: 12px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s;
 }
 
-/* Тело карточки */
-/* Тело карточки — внутренний flex-контейнер */
+.article-card:hover img.article-image {
+  transform: scale(1.03);
+}
+
+/* Тело карточки — теперь с flex-grow */
 .article-card-body {
-  padding: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Растягивает содержимое, прижимая кнопку вниз */
-  gap: 10px;
-  flex: 1; /* Растягивается на всю высоту */
+  justify-content: space-between;
+  gap: 12px;
+  flex: 1;
+  padding: 0;
 }
 
-/* Заголовок статьи */
+/* Заголовок — больше дыхания, красивая высота строки */
 .article-title {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: var(--q-text-color);
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.35;
+  transition: color 0.3s;
 }
 
-/* Метаданные (автор, дата, область) */
+.article-card:hover .article-title {
+  color: var(--q-focus-color);
+}
+
+/* Метаданные — автор, дата */
 .article-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  font-size: 0.9rem;
-  color: #666;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: #777;
+  margin-top: 4px;
 }
 
 .article-meta span {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .article-meta .icon {
-  font-size: 0.8rem;
+  color: var(--q-alternative);
+  font-size: 0.9em;
 }
 
-/* Аннотация */
-.article-abstract {
+/* Аватар автора — круглый, компактный */
+.author-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #eee;
+  background-color: #f8f8f8;
+}
+
+/* Аннотация / контент — читаемость */
+.article-abstract,
+.article-content {
   font-size: 0.95rem;
   color: var(--q-text-color);
-  line-height: 1.4;
+  line-height: 1.55;
   margin: 0;
+  flex: 1;
 }
 
-/* Кнопка "Читать далее" */
+.article-content p {
+  margin: 0 0 8px 0;
+  text-align: justify;
+}
+
+/* Кнопка "Читать далее" — с иконкой-стрелочкой (опционально) */
 .read-more {
-  margin-top: 12px;
-  padding: 8px 16px;
+  align-self: flex-start;
+  padding: 8px 14px;
   background-color: var(--q-alternative);
   color: var(--white);
   border: none;
-  border-radius: 6px;
-  cursor: pointer;
+  border-radius: 8px;
   font-size: 0.9rem;
-  transition: background-color 0.3s;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 .read-more:hover {
   background-color: var(--q-focus-color);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-/* Загрузчик (пока данные не пришли) */
+/* Загрузчик */
 .loader {
   grid-column: 1 / -1;
   text-align: center;
   padding: 40px;
   font-size: 1.1rem;
   color: #666;
-} /* Тут заканчиваются стили секции статей */
+}
+/* Тут заканчиваются стили секции статей */
 
 
 .banners { /* Контейнер баннеров*/
@@ -541,8 +584,10 @@ footer {
 
 .zagfot { /* Заголовки колонок футтера*/
   font-weight: 700;
+  unicode-bidi: isolate;
+  font-style: normal;
   line-height: 17px;
-  font-size: 1.15em;
+  font-size: 16px;
   margin-bottom: 20px;
 }
 

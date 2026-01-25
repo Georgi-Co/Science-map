@@ -1,0 +1,73 @@
+{
+  "kind": "collectionType",
+  "collectionName": "authors",
+  "info": {
+    "singularName": "author",
+    "pluralName": "authors",
+    "displayName": "Author"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "Info": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "Avatar": {
+      "type": "media",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "multiple": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "Email": {
+      "type": "email",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "Slug": {
+      "type": "uid",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "targetField": "Name"
+    },
+    "articles": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::article.article",
+      "mappedBy": "authors"
+    }
+  }
+}

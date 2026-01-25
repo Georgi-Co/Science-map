@@ -9,6 +9,28 @@
   font-display: swap;
 }
 
+/* Экстра-Жирный-Черный (900) */
+@font-face {
+  font-family: 'LatoWeb';
+  src: url('fonts/Lato-Black.woff2') format('woff2'),
+       url('fonts/Lato-Black.woff') format('woff'),
+       url('fonts/Lato-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Экстра-Жирный (800) */
+@font-face {
+  font-family: 'LatoWeb';
+  src: url('fonts/Lato-ExtraBold.woff2') format('woff2'),
+       url('fonts/Lato-ExtraBold.woff') format('woff'),
+       url('fonts/Lato-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Жирный (700) */
 @font-face {
   font-family: 'LatoWeb';
