@@ -31,8 +31,6 @@
 }
 
 * {
-  margin: 0;
-  padding: 0;
   box-sizing: border-box;
   word-break: break-word;
   font-size: 1rem;
@@ -53,8 +51,8 @@ body { /* Главный контейнер (тело сайта) */
       minmax(60px, auto)    /* h1 */
       minmax(80px, auto)    /* search */
       auto                  /* main — растёт под контент */
-      minmax(80px, auto)    /* banners */
-      minmax(60px, auto);   /* footer */
+      minmax(100px, auto)    /* banners */
+      minmax(80px, auto);   /* footer */
   background-color: var(--q-secondary);
   color: var(--q-text-color);
   width: 100%;
@@ -317,15 +315,12 @@ label { /* Стиль для надписей-лейблов */
 
 /* Стили статей */
 /* Контейнер сетки статей */
-#articles-container {
+#articles-container { /* Главный контейнер статей*/
   grid-area: main;
-  grid-column: 2;
+  grid-column: 2; /* Его позиционирование в main */
   display: grid;
   grid-template-rows: auto 1fr auto; /* Строки: пагинация сверху, сетка, пагинация снизу */
   gap: 20px; /* Отступ между элементами */
-  justify-self: center;
-  align-self: center;
-  margin: 1% 1% 1% 1%;
 }
 
 
@@ -344,14 +339,16 @@ label { /* Стиль для надписей-лейблов */
 /* Явно задаём расположение для пагинации и сетки */
 
 
-.articles-grid {
+/* Сетка САМИХ СТАТЕЙ */
+.articles-grid {  
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 колонки фиксированной ширины */
   grid-template-rows: repeat(2, 1fr);
   flex-wrap: wrap;
   gap: 40px;
-  padding: 1%;
 }
+
+
 
 
 /* Карточка статьи — улучшенная версия */
@@ -394,9 +391,9 @@ label { /* Стиль для надписей-лейблов */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
+  gap: 20px;
   flex: 1;
-  padding: 0;
+  padding: 30px 20px 40px 20px;
 }
 
 /* Заголовок — больше дыхания, красивая высота строки */
@@ -510,8 +507,9 @@ label { /* Стиль для надписей-лейблов */
   grid-template-columns: repeat(4, 1fr); /* 4 колонки */
   align-self: flex-end;
   align-items: center;
-  margin-top: 5%;
-  gap: 40px; /* Отступы между баннерами */
+  margin: 20px 0 40px 0 ;
+  column-gap: 45px;
+  row-gap: 25px;
 }
 
 .banner-list li { /* Элемент списка баннеров*/
@@ -543,8 +541,8 @@ footer {
   grid-area: footer;
   box-sizing: border-box;
   height: auto;
-  margin: 2% 0 0 0;
-  gap: 3%;
+  margin: 1px 0 0 0;
+  padding: 37px 0 20px 0;
   font-size: 1.1em;
   color: var(--white);
   text-wrap: nowrap;
@@ -562,37 +560,43 @@ footer {
   flex-direction: column;
   align-self: flex-start;
   justify-self: center;
-  padding: 15%;
 }
 
 #foot-con-1 {
   grid-column: 1;
+  padding: 0 45px 0 15px;
 }
 
 #foot-con-2 {
   grid-column: 2;
+  padding: 0 45px 0 15px;
 }
 
 #foot-con-3 {
   grid-column: 3;
+  padding: 0 45px 0 15px;
 }
 
 #foot-con-4 {
   grid-column: 4;
+  padding: 0 45px 0 15px;
   text-decoration: none;
 }
 
 .zagfot { /* Заголовки колонок футтера*/
-  font-weight: 700;
+  font-weight: 900;
   unicode-bidi: isolate;
   font-style: normal;
   line-height: 17px;
   font-size: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
+  filter: blur(0.45px);
+  color: var(--white);
 }
 
 .contacts { /* Email, телефон*/
   color: var(--q-text-color-opacity);
+  font-size: 16px;
 }
 
 #questions { /* Ссылка - "Часто задаваемые вопросы" */

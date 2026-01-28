@@ -9,7 +9,7 @@
   font-display: swap;
 }
 
-/* Экстра-Жирный-Черный (900) */
+/* Черный (900) */
 @font-face {
   font-family: 'LatoWeb';
   src: url('fonts/Lato-Black.woff2') format('woff2'),

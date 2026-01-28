@@ -4,7 +4,6 @@
 @media (min-width: 1441px) and (max-width: 2560px) {
   .banner-list {
     grid-template-columns: repeat(4, 1fr);
-    margin-bottom: 30px;
   }
   .banner-list img {
     width: 100%;
@@ -26,14 +25,6 @@
     display: grid;
     grid-template-columns: 1fr 4fr;
   }
-  .banner-list {
-    grid-template-columns: repeat(4, 1fr);
-    margin-bottom: 30px;
-  }
-  .banner-list img {
-    width: 100%;
-    height: auto;
-  }
   #title {
     justify-self: flex-start;
     margin: 0;
@@ -44,6 +35,25 @@
   }
   .search-input {
     min-width: 300px;
+  }
+  .banner-list {
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 20px;
+    row-gap: 10px;
+  }
+  .banner-list img {
+    width: 165px;
+    height: auto;
+  }
+  footer {
+  }
+  .foot-container {
+  }
+  .zagfot {
+    font-size: 15px;
+  }
+  .contacts span, a {
+    font-size: 14px;
   }
 }
 
@@ -73,7 +83,7 @@
 }
   .articles-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* В 1 колонку */
+  grid-template-columns: 1fr; /* В 1 колонку */
   grid-template-rows: repeat(3, 1fr);
   flex-wrap: wrap;
   gap: 40px;
@@ -81,7 +91,8 @@
 }
   .banner-list {
     grid-template-columns: repeat(2, 1fr);
-    margin-bottom: 20px;
+    column-gap: 20px;
+    row-gap: 10px;
   }
   .banner-list img {
     width: 85%;
@@ -126,6 +137,14 @@
     grid-row: 2;
     margin: 1% 10% 2% 1%;
     align-self: center;
+  }
+  .zagfot {
+    font-size: 12px;
+  }
+  .contacts span, a {
+    font-size: 11px;
+  }
+  #icon-list a {
   }
 }
 
@@ -176,8 +195,8 @@
 }
   .banner-list {
     grid-template-columns: repeat(2, 1fr);
-    margin-bottom: 2%;
-    margin-left: 7%;
+    column-gap: 20px;
+    row-gap: 10px;
   }
   .banner-list img {
     width: 75%;

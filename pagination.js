@@ -1,7 +1,12 @@
 
-// pagination.js
-// Автономный модуль пагинации — вставляет пагинацию сверху и снизу .articles-grid
+// pagination.js — клиентская пагинация с перепривязкой обработчиков
 
+/**
+ * Создаёт пагинацию сверху и снизу .articles-grid
+ * @param {number} currentPage — текущая страница
+ * @param {number} totalPages — общее количество страниц
+ * @param {string} containerSelector — селектор контейнера
+ */
 function createPagination(currentPage = 1, totalPages = 1, containerSelector = '#articles-container') {
   const container = document.querySelector(containerSelector);
   if (!container) {
@@ -15,10 +20,10 @@ function createPagination(currentPage = 1, totalPages = 1, containerSelector = '
     return;
   }
 
-  // Удаляем старые блоки пагинации, если есть
+  // Удаляем старые блоки пагинации
   container.querySelectorAll('.pagination').forEach(el => el.remove());
 
-  // Генерация HTML пагинации
+  // Генерация HTML
   const generatePaginationHTML = () => {
     const prevButton = `
       <button class="pagination-prev" ${currentPage <= 1 ? 'disabled' : ''} aria-label="Предыдущая страница">
@@ -51,23 +56,59 @@ function createPagination(currentPage = 1, totalPages = 1, containerSelector = '
 
   const paginationHTML = generatePaginationHTML();
 
-  // Создаём верхнюю пагинацию
+  // Вставляем сверху
   const topPagination = document.createElement('div');
   topPagination.className = 'pagination';
   topPagination.innerHTML = paginationHTML;
 
-  // Создаём нижнюю пагинацию
+  // Вставляем снизу
   const bottomPagination = document.createElement('div');
   bottomPagination.className = 'pagination';
   bottomPagination.innerHTML = paginationHTML;
 
-  // Вставляем: до и после .articles-grid
   container.insertBefore(topPagination, articlesGrid);
   container.insertBefore(bottomPagination, articlesGrid.nextSibling);
+
+  // === ПЕРЕПРИВЯЗКА ОБРАБОТЧИКОВ ===
+  // Вызываем после вставки новых кнопок
+  bindPaginationEvents(currentPage, totalPages);
 }
 
-// Экспортируем только функцию (для браузера — глобально)
-// Можно вызывать из script.js: createPagination(1, 5);
+/**
+ * Привязывает события к новым кнопкам пагинации
+ * Вызывается каждый раз после создания пагинации
+ */
+function bindPaginationEvents(currentPage, totalPages) {
+  // Обработчик "Назад"
+  document.querySelectorAll('.pagination-prev').forEach(btn => {
+    btn.onclick = () => {
+      if (currentPage > 1) {
+        renderPage(currentPage - 1); // ← использует глобальную renderPage
+      }
+    };
+  });
+
+  // Обработчик "Вперёд"
+  document.querySelectorAll('.pagination-next').forEach(btn => {
+    btn.onclick = () => {
+      if (currentPage < totalPages) {
+        renderPage(currentPage + 1);
+      }
+    };
+  });
+
+  // Обработчик номеров страниц
+  document.querySelectorAll('.pagination-page').forEach(btn => {
+    btn.onclick = () => {
+      const page = parseInt(btn.dataset.page);
+      if (page >= 1 && page <= totalPages) {
+        renderPage(page);
+      }
+    };
+  });
+}
+
+
 
 
 
