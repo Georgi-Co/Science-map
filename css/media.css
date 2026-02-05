@@ -23,18 +23,16 @@
 @media (min-width: 1025px) and (max-width: 1440px) {
   header {
     display: grid;
-    grid-template-columns: 1fr 4fr;
+    grid-template-columns: 1fr 3fr 1fr;
   }
   #title {
     justify-self: flex-start;
-    margin: 0;
-    font-size: 1.8rem;
   }
   .selector {
     min-width: 150px;
   }
   .search-input {
-    min-width: 300px;
+    min-width: 200px;
   }
   .banner-list {
     grid-template-columns: repeat(4, 1fr);
@@ -62,13 +60,10 @@
 @media (min-width: 601px) and (max-width: 1024px) {
   header {
     display: grid;
-    grid-template-columns: 1fr 4fr;
+    grid-template-columns: 1fr 5fr;
     gap: 20px;
   }
   main {
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 3fr 1fr;
-    padding: 20px;
   }
   #articles-container {
   grid-area: main;
@@ -103,27 +98,29 @@
   }
   #title {
     display: flex;
-    justify-self: flex-start;
-    font-size: 1.65rem;
+    justify-self: center;
   }
   #h2 {
     font-size: 2rem;
-    margin: 5% 2% 2% 5%;
   }
   #container-sl { /* Контейнер выпадающих списков и лейблов над ними*/
     max-width: 800px;
   }
   .selector {
-    padding: 4% 4% 4% 4%;
     width: clamp(120px, 90%, 500px);
-    height: auto;
-    max-height: 55%;
   }
   #search-container {
     grid-template-columns: 1fr;
-    grid-template-rows: 0.6fr 0.3fr;
-    padding: 3% 3% 3% 3%;
-    margin: 1% 1% 1% 1%;
+    grid-template-rows: 3fr 1fr;
+    padding: 40px;
+    row-gap: 20px;
+  }
+  #container_sl {
+    display: flex;
+    flex-direction: column;
+  }
+  .search-controls {
+    grid-row: 2;
   }
   .search-label {
     font-size: 1rem;
@@ -134,9 +131,13 @@
     font-size: 0.7rem;
   }
   .search-button {
+    grid-column: 1;
     grid-row: 2;
-    margin: 1% 10% 2% 1%;
     align-self: center;
+    font-size: 14px;
+  }
+  .clear-button {
+    grid-row: 2;
   }
   .zagfot {
     font-size: 12px;
@@ -152,12 +153,15 @@
 @media (max-width: 600px) {
   header {
     display: grid;
-    grid-template-columns: 1fr 3fr;
+    grid-template-columns: 1fr 3fr 2fr;
     padding: 10px;
     gap: 5px;
   }
+  #title {
+    margin: 0 2px 0 2px;
+  }
   body {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 3fr 1fr;
     grid-template-rows: 
       minmax(60px, auto)    /* header */
       minmax(60px, auto)    /* h1 */
@@ -170,9 +174,9 @@
   main {
     grid-area: main;
     display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 3fr 1fr;
-    margin: 1% 0 1% 0; /* Отступ только сверху и снизу*/
+    grid-template-columns: 1fr 5fr 1fr;
+    grid-template-rows: 1fr;
+    margin: 20px;
   }
   #articles-container {
   grid-area: main;
@@ -184,7 +188,7 @@
   justify-self: center;
   align-self: center;
   margin: 1% 1% 1% 1%;
-}
+  }
   .articles-grid {
   display: grid;
   grid-template-columns: 1fr; /* В 1 колонку */
@@ -192,7 +196,7 @@
   flex-wrap: wrap;
   gap: 40px;
   padding: 1%;
-}
+  }
   .banner-list {
     grid-template-columns: repeat(2, 1fr);
     column-gap: 20px;
@@ -211,21 +215,23 @@
     margin-left: 0;
     padding: 0;
   }
-  #title {
-    margin: 0 10px 0 2px;
-    font-size: 1rem;
-  }
-  #search-container {
-    grid-column: 1;
-    grid-template-columns: 1fr;
-    grid-template-rows: 0.6fr 0.3fr 0.3fr;
-    padding: 1%;
-    margin: 3% 5% 3% 5%;
-  }
   #h2 {
-    grid-column: 1;
+    grid-column: 2;
     font-size: 1.8rem;
     margin: 2% 0 0 8%;
+  }
+  #search-container {
+    grid-template-columns: 1fr;
+    grid-template-rows: 3fr 1fr;
+    padding: 40px;
+    row-gap: 20px;
+  }
+  #container_sl {
+    display: flex;
+    flex-direction: column;
+  }
+  .search-controls {
+    grid-row: 2;
   }
   #container-sl { /* Контейнер выпадающих списков и лейблов над ними*/
     max-width: 400px;
@@ -257,10 +263,42 @@
     grid-column: 1;
     display: flex;
     margin: 3% 5% 3% 5%;
-}
+  }
   footer {
-    max-height: 90%;
-    font-size: 0.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    padding: 10px;
+    gap: 10px;
+  }
+  .foot-container { /* Класс ячеек футтера */
+  }
+  #foot-con-1 {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 0 45px 0 15px;
+  }
+  #foot-con-2 {
+  grid-column: 2;
+  grid-row: 1;
+  padding: 0 45px 0 15px;
+  }
+  #foot-con-3 {
+  grid-column: 1;
+  grid-row: 2;
+  padding: 0 45px 0 15px;
+  }
+  #foot-con-4 {
+  grid-column: 2;
+  grid-row: 2;
+  padding: 0 45px 0 15px;
+  text-decoration: none;
+  }
+ .zagfot {
+  font-size: 10px;
+  }
+ .contacts, .contacts span, a {
+  font-size: 10px;
   }
   .pagination {
     grid-column: 1;

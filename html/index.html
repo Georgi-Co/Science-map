@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/media.css">
+  <link rel="icon" href="../img/favicon.ico" type="../image/x-icon">
+  <link rel="stylesheet" href="../css/accessibility.css" disabled id="accessibility">
+</head>
+<body>
+    
+    <!-- Шапка сайта (Хэддер) --> 
+    <header alt="Головная часть сайта">    
+        <a id="a-logo" href="https://rsue.ru/" target="_blank"><img class="logo" src="../img/logo.svg" alt="Логотип университета"></a>
+        <h1 id="title">Карта научно-исследовательских работ РГЭУ (РИНХ)</h1>
+
+        <!-- Доступность | Локализация -->
+        <div id="acc-local-container">
+        <!-- Доступность | Версия для слабовидящих --> 
+            <a id="toggle-accessible" role="button" tabindex="0" aria-label="Версия для слабовидящих">
+                <img id="acc-icon" src="../img/shape.svg">
+                <span id="acc-span">Версия для слабовидящих</span>
+            </a>
+        
+        <!-- Локализация | Russian - English -->   
+            <div id="ruen">
+				<a itemprop="Copy">RU</a> <!-- НУЖНО НАСТРОИТЬ СМЕНУ ЦВЕТА ПРИ АКТИВНОСТИ -->   
+                <a itemprop="Copy">EN</a> <!-- НУЖНО НАСТРОИТЬ СМЕНУ ЦВЕТА ПРИ АКТИВНОСТИ -->
+			</div>
+        </div>
+
+    </header>
+
+    <!-- Заголовок поисковика проектов-->
+    <h2 id="h2" aria-label="Заголовок поисковика проектов">Все научные проекты</h2>
+
+    <!-- Фильтр поиска НИР-->
+    <div id="search-container" aria-label="Контейнер списков"> <!-- Контейнер всего поля поиска-->
+        <!-- Выпадающие списки-->
+        <div id="container_sl" aria-label="Фильтры научно-исследовательских работ">
+            <form id="sl1" class="search-list" aria-label="Факультет"> <!-- 1ый список / Факультет -->
+                <label class="search-label" for="faculty-area-list">Факультет:</label>
+                <select class="selector" name="faculty-area-list">
+                    <!-- Всего 7 наименований факультетов | Расположение аналогично официальному сайту -->
+                    <!-- https://rsue.ru/fakultety/ -->
+                    <option value="All">Все</option>
+                    <option value="management-faculty">Факультет Менеджмента и предпринимательства</option>
+                    <option value="trade-faculty">Факультет Торгового дела</option>
+                    <option value="cyber-faculty">Факультет Компьютерных технологий и информационной безопасности</option>
+                    <option value="accounting-economics-faculty">Учетно-экономический факультет</option>
+                    <option value="economics-finance-faculty">Факультет Экономики и финансов</option>
+                    <option value="law-faculty">Юридический факультет</option>
+                    <option value="linguistics-journalism-faculty">Факультет Лингвистики и журналистики</option>
+                </select>
+            </form>
+            <form id="sl2" class="search-list" aria-label="Научная область"> <!-- 2ой список / Научная область -->
+                <label class="search-label" for="science-area-list">Научная область:</label>
+                <select class="selector" name="science-area-list">
+                    <option value="All">Все</option>
+                    <option value="?">?</option>
+                    <option value="?">?</option>
+                </select>
+            </form>
+            <form id="sl3" class="search-list" aria-label="Научное направление"> <!-- 3ий список / Научное направление -->
+                <label class="search-label" for="science-direction-list">Научное направление:</label>
+                <select class="selector" name="science-direction-list">
+                    <option value="All">Все</option>
+                    <option value="?">?</option>
+                    <option value="?">?</option>
+                </select>
+            </form>
+        </div>
+
+        <!-- Поисковая строка 🔍 + кнопка поиска-->
+        <div class="search-controls"> <!-- Общий контейнер (Поле, кнопка, очистка)-->
+            <input type="text" id="search-field" class="search-input" aria-label="Поиск по ключевым словам" placeholder="Поиск по ключевым словам...">
+            <!-- Кнопка подтверждения ввода-->
+            <button type="submit" class="search-button" aria-label="Поиск">Поиск</button> <!-- Кнопка ввода-->
+        </div>
+
+        <button id="clear-search" class="clear-button" aria-label="Очистить фильтр">Очистить фильтр</button> <!-- Кнопка очистки поля-->
+
+
+        <!-- Иконка книги 💡-->
+        <!-- <img src="img/book2.svg" alt="Иконка книги" id="icon-book"> -->
+
+    </div>
+
+    <!-- Основной контент страницы (Статьи)-->
+    <main aria-label="Основной контент сайта">
+
+        <!-- Секция списка научных статей ✍🧾✅-->
+            <section id="articles-container" aria-label="Список научных статей">
+                <div class="articles-grid" id="articles-grid">
+                <!-- Карточки будут подгружаться динамически через JS -->
+                </div>
+            </section>
+            
+    </main>
+
+        <!-- Баннеры -->
+        <div class="banners" alt="Баннеры">
+            <ul class="banner-list" aria-label="Список баннеров">
+                <li><a href="https://minobrnauki.gov.ru/" target="_blank"><img src="/banners/МНиВО.banners_220x75-4.jpg" alt="Баннер 1"></a></li>
+                <li><a href="http://www.edu.ru/" target="_blank"><img src="/banners/РО.banners_220x75-6.jpg" alt="Баннер 2"></a></li>
+                <li><a href="/doc/setevoy-institut-POD-FT.pdf" target="_blank"><img src="/banners/МИВСПЛДППП.b-set-inst.png" alt="Баннер 3"></a></li>
+                <li><a href="/logist/index.htm" target="_blank"><img src="/banners/ЮРАЛ.banners_220x75-8.jpg" alt="Баннер 4"></a></li>
+                <li><a href="https://trudvsem.ru/" target="_blank"><img src="/banners/РВРБВ.banners_220x75-5.jpg" alt="Баннер 5"></a></li>
+                <li><a href="http://rsue.ru/universitet/novosti/novosti.php?ELEMENT_ID=1152" target="_blank"><img src="/banners/banner-antinarkotik.jpg" alt="Баннер 6"></a></li>
+                <li><a href="https://map.ncpti.ru" target="_blank"><img src="/banners/НЦПТИ.map_ncpti_banner.jpg" alt="Баннер 7"></a></li>
+                <li><a href="https://rsue.ru/nauka/veo/" target="_blank"><img src="/banners/РРОВЭОР.veo.jpg" alt="Баннер 8"></a></li>
+            </ul>
+        </div>
+        
+    <!-- Контакты, копирайт, ссылки -->
+    <footer aria-label="Нижняя часть сайта">
+
+            <div class="foot-container" id="foot-con-1"> <!-- 1-ая Колонка -->
+                <div class="zagfot" aria-label="Приемная ректора">Приемная ректора</div>
+                <div class="contacts"><span>Телефон:</span> <span>+7 (863) 263-30-80</span></div>            
+                <div class="contacts"><span>E-mail:</span> <span><a href="mailto:main@rsue.ru">main@rsue.ru</a></span></div><!--br-->
+                <div class="contact-link"><span><span><a href="/doc/telefon-spravochnik-RSUE.pdf" target="_blank">Телефонный справочник</a></span></span></div>
+            </div>
+
+            <div class="foot-container" id="foot-con-2"> <!-- 2-ая Колонка -->
+                <div class="zagfot" aria-label="Приемная комиссия">Приемная комиссия</div>
+                <div class="contacts"><span>Телефон:</span> <span>+7 (863) 237-02-60</span></div>			
+                <div class="contacts"><span>E-mail:</span> <span><a href="mailto:pk@rsue.ru">pk@rsue.ru</a></span></div>
+                <div class="contact-link"><span><span><a href="/abitur">Абитуриенту</a></span></span></div>
+            </div>
+
+            <div class="foot-container" id="foot-con-3"> <!-- 3-ая Колонка -->
+                <div class="zagfot" aria-label="Медиацентр">Медиацентр</div>
+                <div class="contacts"><span>Телефон:</span> <span>+7 (863) 261-38-39</span></div>
+                <div class="contacts"><span>E-mail:</span> <span><a href="mailto:media.rsue@mail.ru">media.rsue@mail.ru</a></span></div>
+            </div>
+
+            <div class="foot-container" id="foot-con-4"> <!-- 4-ая Колонка -->
+                <div id="questions" aria-label="Часто задаваемые вопросы"><a href="/FAQ/">Часто задаваемые вопросы</a></div> <!-- Для вопросов отдельный id -->
+                    <div id="icon-list">
+                        <a href="https://vk.com/rsue.rinh" target="_blank"><img src="../img/vk.png" id="foticon"></a><a href="https://t.me/rsue_rinh" target="_blank"><img src="../img/telegram.png" id="foticon"></a>
+                        <a href="https://ok.ru/group/60991174279312" target="_blank"><img src="../img/ok.png" id="foticon"></a>
+                        <a href="https://rutube.ru/channel/25905156/" target="_blank"><img src="../img/rutube.png" id="foticon"></a>
+                        <a href="https://max.ru/rsue_rinh" target="_blank"><img src="../img/max-messenger.png" id="foticon"></a>
+                    </div>
+                <div class="zagfot3"><a href="https://pos.gosuslugi.ru" target="_blank">Обращения граждан</a></div>
+                <div class="zagfot3"><a href="/sitemap.php">Карта сайта</a></div>
+            </div>
+
+    </footer>
+</body>
+
+<!-- Скрипты -->
+<script src="../js/pagination.js"></script> <!-- Пагинация -->
+<script src="../js/script.js"></script> <!-- Основной -->
+
+<script src="../js/search.js"></script> <!-- Логика поиска -->
+<script src="../js/accessibility.js"></script> <!-- Доступность-переключатель -->
+<script src="../js/article.js"></script>
+
+</html>
+

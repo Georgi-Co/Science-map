@@ -5,7 +5,7 @@
   --shadow-light-bottom: 0 6px 10px -2px rgba(0, 0, 0, 0.4);
   --q-primary: #0e1060; /* Основной цвет для header и footer сайта */
   --q-secondary: #f6f7f9;
-  --q-alternative: #284775; /* Альтернативный для кнопок и бэкграунда */
+  --q-alternative: #284775; /* Альтернативный цвет для кнопок и бэкграунда */
   --q-accent: #9C27B0;
   --q-positive: #21ba45;
   --q-negative: #c10015;
@@ -32,7 +32,6 @@
 
 * {
   box-sizing: border-box;
-  word-break: break-word;
   font-size: 1rem;
   font-family: 'LatoWeb';
   font-style: normal;
@@ -49,7 +48,7 @@ body { /* Главный контейнер (тело сайта) */
   grid-template-rows: 
       minmax(60px, auto)    /* header */
       minmax(60px, auto)    /* h1 */
-      minmax(80px, auto)    /* search */
+      minmax(240px, auto)    /* search */
       auto                  /* main — растёт под контент */
       minmax(100px, auto)    /* banners */
       minmax(80px, auto);   /* footer */
@@ -73,7 +72,7 @@ body { /* Главный контейнер (тело сайта) */
 header {
   grid-area: header;
   display: grid;
-  grid-template-columns: 1fr 5fr 1fr;
+  grid-template-columns: 1fr 3fr 1fr;
   grid-template-rows: 1;
   align-items: center;
   background: var(--q-primary);
@@ -82,8 +81,12 @@ header {
   box-shadow: var(--shadow-light-bottom);
   padding: 0 10px; /* Отступы по бокам */
   top: 0;
-  position: sticky;
+  /* position: sticky; Убрал */
   z-index: 3;
+}
+
+h1 {
+  margin: 0;
 }
 
 #a-logo { /* Лого-контейнер*/
@@ -97,8 +100,7 @@ header {
   margin-left: 20%;
   top: 15px;
   width: 100%;         /* занимает всю ширину родителя */
-  max-width: 89px;  /* максимальный размер (ваш исходный размер) */
-  min-width: 35px;
+  width: clamp(35px, 8vw, 89px);
   height: auto;      /* высота подстраивается под пропорции */
   display: block;    /* убирает лишние отступы */
   z-index: 10;
@@ -109,14 +111,93 @@ header {
   justify-self: center;
   align-self: center;
   max-height: 100px;
+  padding: 10px;
+  flex: 1;
   font-family:"LatoWeb";
-  font-size: 2.1rem;
-  font-weight: 700;
+  font-size: clamp(1rem, 2.5vw, 2.1rem);
+  font-weight: 900;
   color: var(--white);
   letter-spacing: .01em;
   line-height: 1.25;
-  margin: 0 30px 0 0;
+  filter: blur(0.45px);
   z-index: 15;
+}
+
+#acc-local-container {
+  grid-column: 3;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  justify-self: flex-start;
+  align-self: center;
+  gap: 10px;
+  padding: 10px;      
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Стили доступности*/
+
+#toggle-accessible { /* Контейнер доступности*/
+  grid-row: 1;
+  display: flex;
+  flex: 0 1 max-content; 
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  align-items: center;
+  cursor: pointer;
+  gap: 10px;
+}
+
+#acc-icon { 
+  display: flex;
+  flex-shrink: 1;
+  width: clamp(16px, 3vw, 20px);
+  margin-top: -4px; /* Для лучшего центрирования */
+  color: white;
+}
+
+#acc-span { /* Надпись "Версия для слабовидящих" */
+  font-size: clamp(10px, 1vw, 16px);
+  font-style: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 14px;
+  font-weight: 600;
+  filter: blur(0.45px);
+  transition: all 500ms ease 0s;
+}
+
+#acc-span:hover,
+#acc-span:focus {
+  color: var(--q-focus-color);
+  text-decoration: none;
+}
+#acc-span:focus {
+  outline: none;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+
+/* Стили локализации */
+
+#ruen { /* RU | EN */
+  grid-row: 2;
+  display: flex;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 900;
+  filter: blur(0.45px);
+  line-height: 14px;
+  color: var(--white);
+  gap: 10px;
+}
+
+#ruen a {
+  min-width: 16px;
+  min-height: 16px;
 }
 
 /* Стили секции main*/
@@ -125,71 +206,78 @@ main {
   display: grid;
   flex: 1;
   grid-template-columns: 1fr 3fr 1fr;
-  margin: 1% 1% 1% 1%;
+  margin: 10px;
 }
 
-  /* Контейнер поля фильтра*/
-#search-container { /* Основной для элементов поиска*/
-  grid-area: search;
-  grid-column: 2;
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  grid-template-rows: 1fr 1fr;
-  flex-direction: column;
-  padding: 1%;
-  background-color: var(--white);
-  border-radius: 8px;
-  box-shadow: var(--shadow-light);
-}
 
+/* Заголовок:"Все научные проекты" */
 #h2 {
   grid-area: h2;
   grid-column: 2;
   display: flex;
   align-self: center;
   justify-self: flex-start;
-  margin: 2% 0 1% 2%;
+  margin: 40px 0 0 40px;
   font-size: 2.1rem;
+  font-weight: 500;
+  font-style: normal;
   z-index: 1;
 }
 
+/* Контейнер поля фильтра*/
+#search-container { /* Основной для элементов поиска*/
+  grid-area: search;
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+  padding: 40px;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow-light);
+  row-gap: 30px;
+}
+
 #container_sl { /* Контейнер фильтров НИР*/
-  grid-row: 1;
   grid-column: 1;
   display: flex;
+  justify-content: space-between;
+  align-content: center;
   height: auto;
-  margin: 2% 2% 2% 2%;
+  column-gap: 30px;
+  row-gap: 20px;
 }
 
-.search-list {
+/* 1 ячейка контейнера #container_sl */
+.search-list { /* Лейбл + Селектор (1 фильтр с заголовком) */
   display: flex;
-  flex-grow: 1; /* Занимает всё свободное пространство */
+  /* 💡 Важно: При flex-basis: 0 и flex-grow: 1 — все элементы станут одинаковой ширины, 
+  независимо от содержимого. */
+  flex: 1 0 0;
   flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  gap: 1%;
-  margin: 1% 1% 1% 1%;
+  /* Свойства для размеров ячеек (Сделать их симметричными) */
   max-height: 80px;
-  min-width: 100px;
+  min-width: 180px;
+  max-width: 800px;
 }
 
-label { /* Стиль для надписей-лейблов */
+.search-label { /* Стиль для надписей-лейблов в контейнере search*/
   font-size: 1.2rem;
   white-space: nowrap;
   color: var(--q-text-label-color);
-  margin: 5% 5% 5% 1%;
+  margin: 0 0 10px 2px;
 }
 
 .selector { /* Выборка списка (кнопка)*/
-  width: 100%;
-  display: flex;
-  flex-shrink: 1;
-  flex-grow: 1; /* Занимает всё свободное пространство */
-  margin: 1% 1% 1% 1%;
+
+  /* Свойства для размеров ячеек (Сделать их симметричными) */
   max-width: auto;
-  min-width: auto;
-  padding: 12px 40px 12px 16px; /* Больше места справа — под стрелку */
-  font-size: 0.8rem;
+  min-width: 150px;
+  max-height: 40px;
+  min-height: 40px;
+
+  padding: 8px 40px 8px 16px; /* Больше места справа — под стрелку */
+  font-size: 0.85rem;
   color: #444444e0;
   background-color: var(--white);
   border: 1px solid #ddd;
@@ -223,27 +311,25 @@ label { /* Стиль для надписей-лейблов */
   border-left: 3px solid #dc3545;
 }
 
-.search-wrapper { /*Поисковая строка, контейнер (Поле ввода, иконка, кнопка)*/
+.search-controls { /*Поисковая строка, контейнер (Поле ввода, иконка, кнопка)*/
   grid-row: 2;
   grid-column: 1;
   position: relative;
   display: flex;
-  flex-grow: 1;
-  justify-self: flex-start;
-  align-self: flex-start;
-  width: 100%;
-  gap: 5%; /* Отступ между полем ввода и кнопкой поиска*/
-  margin: 2% 2% 2% 3%;
-  max-width: 400px;
+  flex-direction: row;
+  align-items: center;
+  margin-left: 5px;
+  gap: 20px; /* Отступ между полем ввода и кнопкой поиска*/
 }
 
 .search-input { /* Поле ввода поиска*/
   display: flex;
   flex-grow: 1;
   width: 100%;
-  max-width: auto;
+  max-width: 400px;
   min-width: auto;
-  margin: 1% 1% 1% 1%;
+  max-height: 40px;
+  margin: 5px;
   font-size: 16px;
   background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18"><path fill="rgba(0, 0, 0, 0.7)" d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>');
   background-position: right 5% top 57.5%; /* Иконка справа с отступом и чуть сверху*/
@@ -261,29 +347,23 @@ label { /* Стиль для надписей-лейблов */
   box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
-.search-label { /* Лейбл выпадающих списков*/
-  margin: 1% 2% 2% 2%;
-  font-size: 1.25rem;
-}
-
 .search-button { /* Кнопка подтверждения ввода*/
   grid-row: 2;
   grid-column: 1;
-  position: relative;
   display: flex;
-  flex-wrap: nowrap;
   word-break: normal;
   justify-self: flex-end;
   align-self: center;
   width: fit-content;
-  margin: 1% 1% 1% 1%;
-  padding: 1% 1% 1% 1%;
+  margin: 5px;
+  padding: 6px;
   background-color: var(--q-alternative);
   color: white; /* Белый текст */
   border: none;
   cursor: pointer;
   font-size: 16px;
-  font-weight: 500;
+  font-style: normal;
+  font-weight: 400;
   max-width: 100px;
   max-height: 100px;
   transition: background-color 0.3s;
@@ -299,6 +379,34 @@ label { /* Стиль для надписей-лейблов */
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
 
+.clear-button { /* Кнопка очистки поля ввода*/
+  grid-row: 2;
+  grid-column: 1;
+  background: none;
+  border: none;
+  color: #666;
+  display: flex;
+  align-self: center;
+  justify-self: flex-end; /* Находится в grid search-container */
+  white-space: nowrap;
+  padding: 1px;
+  font-size: 14px;
+  cursor: pointer;
+   /* margin: 0 0 0 auto; Оттолкнуть вправо от #search-controls */
+  transition: all 0.2s ease;
+    /* Подчёркивание — пунктирное, близко к тексту */
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: #666;
+  text-underline-offset: 8px; /* Расстояние от текста до пунктира */
+  text-decoration-thickness: 1.5px; /* Толщина пунктира */
+}
+
+.clear-button:hover {
+  text-decoration-color: var(--q-negative);
+  color: var(--q-negative);
+}
+
 #icon-book { /* Иконка книги*/
   grid-row: 1 / 3;
   grid-column: 2;
@@ -310,7 +418,8 @@ label { /* Стиль для надписей-лейблов */
   transform: translateY(-10%);
   width: auto;
   max-width: 40%;
-  margin: 3% 1% 1% 1%;
+  min-width: 30%;
+  margin: 10px;
 }
 
 /* Стили статей */
@@ -397,16 +506,28 @@ label { /* Стиль для надписей-лейблов */
 }
 
 /* Заголовок — больше дыхания, красивая высота строки */
-.article-title {
-  font-size: 1.2rem;
+.article-title-link {
+  font-size: 1.5rem;
   font-weight: 700;
   color: var(--q-text-color);
   margin: 0;
   line-height: 1.35;
   transition: color 0.3s;
+  text-decoration: none;
 }
 
-.article-card:hover .article-title {
+.article-title-link a {
+  text-decoration: none;           /* Убираем подчёркивание */
+  color: inherit;                  /* Наследуем цвет текста */
+  display: block;                  /* Чтобы вся область была кликабельной */
+  cursor: pointer;                 /* Курсор-рука при наведении */
+}
+
+.article-title-link a:hover {
+  text-decoration: overline;
+}
+
+.article-card:hover .article-title-link {
   color: var(--q-focus-color);
 }
 
@@ -456,38 +577,6 @@ label { /* Стиль для надписей-лейблов */
   text-align: justify;
 }
 
-/* Кнопка "Читать далее" — с иконкой-стрелочкой (опционально) */
-.read-more {
-  align-self: flex-start;
-  padding: 8px 14px;
-  background-color: var(--q-alternative);
-  color: var(--white);
-  border: none;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.read-more:hover {
-  background-color: var(--q-focus-color);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-}
-
-/* Загрузчик */
-.loader {
-  grid-column: 1 / -1;
-  text-align: center;
-  padding: 40px;
-  font-size: 1.1rem;
-  color: #666;
-}
-/* Тут заканчиваются стили секции статей */
-
-
 .banners { /* Контейнер баннеров*/
   grid-row: 3;
   grid-column: 2;
@@ -497,8 +586,7 @@ label { /* Стиль для надписей-лейблов */
   align-items: center;
   align-self: flex-end;
   overflow: auto;
-  padding-top: 20px;
-  padding-bottom: 1px;
+  padding: 10px;
   margin: 1px 1px 1px 1px;
 }
 
@@ -539,6 +627,11 @@ label { /* Стиль для надписей-лейблов */
 /* Стили секции footer*/
 footer {
   grid-area: footer;
+  display: grid;
+  grid-template-columns: repeat(1fr, auto);
+  grid-template-rows: 1fr;
+  justify-content: center;
+  align-self: flex-end; /* прижимает блок вниз */
   box-sizing: border-box;
   height: auto;
   margin: 1px 0 0 0;
@@ -548,18 +641,14 @@ footer {
   text-wrap: nowrap;
   background: var(--q-primary);
   box-shadow: 0 -6px 10px -2px rgba(0, 0, 0, 0.2);
-  display: grid;
-  grid-template-columns: repeat(1fr, auto);
-  grid-template-rows: 1fr;
-  justify-content: center;
-  align-self: flex-end; /* прижимает блок вниз */
 }
 
-.foot-container {
+.foot-container { /* Класс ячеек футтера */
   display: flex;
   flex-direction: column;
   align-self: flex-start;
   justify-self: center;
+  flex: 0 auto auto;
 }
 
 #foot-con-1 {
@@ -695,4 +784,84 @@ footer {
   outline: 2px solid var(--q-focus-color);
   outline-offset: 2px;
   z-index: 1;
+}
+
+
+
+/* article.html */
+/* Стили для развернутой статьи */
+
+.article-page {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.8;
+  color: #333;
+}
+
+#full-article h1 {
+  font-size: 32px;
+  color: #1a3c6e;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.article-meta {
+  color: #555;
+  font-size: 16px;
+  margin-bottom: 24px;
+}
+
+.article-meta time {
+  margin-right: 20px;
+}
+
+.article-meta .author-link {
+  color: #1a3c6e;
+  text-decoration: none;
+}
+
+.article-meta .author-link:hover {
+  text-decoration: underline;
+}
+
+.article-full-image {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 24px 0;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.article-body p {
+  margin-bottom: 18px;
+  font-size: 18px;
+  text-align: justify;
+}
+
+.article-body h2 {
+  font-size: 26px;
+  color: #1a3c6e;
+  margin: 30px 0 16px;
+}
+
+.back-link {
+  display: inline-block;
+  margin: 30px 0;
+  color: #1a3c6e;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+#loading {
+  text-align: center;
+  font-size: 18px;
+  color: #666;
+  margin: 40px 0;
 }
