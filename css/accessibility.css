@@ -1,6 +1,8 @@
 
+
 /* accessibility.css */
 
+/* Базовая стилизация панели доступности */
 .accessibility-toolbar {
   display: flex;
   justify-content: center;
@@ -18,12 +20,13 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Группы */
+/* Группы кнопок */
 .btn-group {
   display: flex;
   gap: 5px;
 }
 
+/* Общие стили кнопок */
 .btn {
   padding: 6px 10px;
   border: 1px solid #ccc;
@@ -50,6 +53,7 @@
   font-weight: bold;
 }
 
+/* Подписи к группам */
 .btn-title {
   font-size: 12px;
   color: #555;
@@ -57,12 +61,19 @@
   white-space: nowrap;
 }
 
-/* Иконки (если используешь Bootstrap или просто font) */
+/* Иконки */
 .glyphicon {
   font-size: 12px;
 }
 
-/* Контент */
+.icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+/* Стили для контента и выхода */
 .p-content .btn {
   background: #f0f0f0;
   color: #333;
@@ -73,7 +84,6 @@
   background: #e0e0e0;
 }
 
-/* Выход */
 .p-setting .btn-exit {
   background: #d9534f;
   color: #fff;
@@ -84,7 +94,7 @@
   background: #c9302c;
 }
 
-/* === Шрифт Брайля (визуальное приближение) === */
+/* Шрифт Брайля */
 .braille-mode * {
   font-family: 'Braille', 'Arial Unicode MS', sans-serif !important;
   font-size: 2em !important;
@@ -92,7 +102,6 @@
   line-height: 1.6 !important;
 }
 
-/* Символы → точки */
 .braille-mode h1::before,
 .braille-mode h2::before,
 .braille-mode h3::before,
@@ -102,7 +111,7 @@
   margin-right: 0.3em !important;
 }
 
-/* === Скрыть изображения === */
+/* Скрытие изображений */
 .no-images img,
 .no-images video,
 .no-images picture,
@@ -110,7 +119,7 @@
   display: none !important;
 }
 
-/* === Стиль для кнопок шрифта === */
+/* Кнопки изменения размера шрифта */
 .font-preview {
   display: inline-block;
   line-height: 1;
@@ -121,28 +130,14 @@
 .btn-font-size-150 .font-preview { font-size: 1.2em; }
 .btn-font-size-200 .font-preview { font-size: 1.6em; }
 
-/* Иконки */
-.icon {
-  width: 16px;
-  height: 16px;
-  vertical-align: middle;
-  margin-right: 4px;
-}
 
-
-/* Активные классы на <html> */
+/* Активные классы для изменения размера шрифта на <html> */
+.font-size-100 { font-size: 100% !important; }
 .font-size-150 { font-size: 150% !important; }
 .font-size-200 { font-size: 200% !important; }
 
-.color-2 { background: #000 !important; color: #fff !important; }
-.color-3 { background: #ff0 !important; color: #000 !important; }
-.color-4 { background: #00f !important; color: #ff0 !important; }
-.color-5 { background: #0f0 !important; color: #00f !important; }
 
-/* Для ссылок и текста */
-
-
-/* === Цветовая схема 1: Чёрно-белый режим, иконки — принудительно тёмные === */
+/* Цветовая схема 1: Чёрно‑белый режим */
 .color-1 {
   background: #fff !important;
   color: #000 !important;
@@ -150,42 +145,6 @@
   -webkit-filter: grayscale(100%) !important;
 }
 
-/* Убираем grayscale с иконок, но делаем их ТЁМНЫМИ */
-.color-1 svg,
-.color-1 svg *,
-.color-1 img.icon,
-.color-1 .icon img,
-.color-1 [class*="icon-"] img,
-.color-1 .btn img,
-.color-1 .navbar img,
-.color-1 #acc-icon {
-  filter: none !important;
-  -webkit-filter: none !important;
-  /* Принудительно делаем иконки ТЁМНЫМИ */
-  filter: brightness(80%) contrast(150%) !important;
-  -webkit-filter: brightness(80%) contrast(150%) !important;
-  /* Принудительный цвет заливки (для SVG) */
-  fill: #000 !important;
-  stroke: #000 !important;
-  opacity: 1 !important;
-}
-
-/* Для PNG: если иконка была белой — делаем её чёрной */
-.color-1 img.icon,
-.color-1 #acc-icon {
-  background: transparent !important;
-  /* Усиляем тёмный эффект */
-  filter: brightness(30%) contrast(180%) !important;
-  -webkit-filter: brightness(30%) contrast(180%) !important;
-}
-
-/* Если иконка — в кнопке, меню и т.п. */
-.color-1 .p-font .btn,
-.color-1 .p-color .btn {
-  filter: none !important;
-}
-
-/* Гарантируем чёрный текст везде */
 .color-1 *,
 .color-1 *::before,
 .color-1 *::after {
@@ -197,7 +156,6 @@
   color: #000 !important;
 }
 
-/* Ссылки — синие, чтобы отличались */
 .color-1 a,
 .color-1 a:visited {
   color: #00f !important;
@@ -210,7 +168,6 @@
   border-bottom-color: #00c !important;
 }
 
-/* Основные изображения (не иконки) — чёрно-белые */
 .color-1 img:not(.icon):not(#acc-icon),
 .color-1 .content img,
 .color-1 .main img,
@@ -220,7 +177,6 @@
   -webkit-filter: grayscale(100%) brightness(95%) !important;
 }
 
-/* Кнопки — серые, с чёрным текстом */
 .color-1 button,
 .color-1 input[type="button"],
 .color-1 input[type="submit"] {
@@ -236,38 +192,43 @@
   background-color: #ccc !important;
 }
 
-
-
-
-
-
-/* === Цветовая схема 2: Белый текст на чёрном фоне (высокий контраст) === */
-.color-2 {
-  background: #000 !important;
-  color: #fff !important;
+/* Убираем grayscale с иконок в схеме 1, делаем их тёмными */
+.color-1 svg,
+.color-1 svg *,
+.color-1 img.icon,
+.color-1 .icon img,
+.color-1 [class*="icon-"] img,
+.color-1 .btn img,
+.color-1 .navbar img,
+.color-1 #acc-icon {
   filter: none !important;
   -webkit-filter: none !important;
+  filter: brightness(80%) contrast(150%) !important;
+  -webkit-filter: brightness(80%) contrast(150%) !important;
+  fill: #000 !important;
+  stroke: #000 !important;
+  opacity: 1 !important;
 }
 
-/* Гарантируем белый текст везде */
-.color-2 *,
-.color-2 *::before,
-.color-2 *::after {
-  background-color: transparent !important;
-  background-image: none !important;
-  border-color: #fff !important;
-  box-shadow: none !important;
-  outline: none !important;
-  color: #fff !important;
+.color-1 img.icon,
+.color-1 #acc-icon {
+  background: transparent !important;
+  filter: brightness(30%) contrast(180%) !important;
+  -webkit-filter: brightness(30%) contrast(180%) !important;
 }
 
-/* Ссылки — светло-голубые, чтобы были видны */
-.color-2 a,
-.color-2 a:visited {
-  color: #6fc !important;
-  border-bottom: 1px solid #6fc !important;
+.color-1 .p-font .btn,
+.color-1 .p-color .btn {
+  filter: none !important;
 }
 
+
+
+
+
+
+
+/* Цветовая схема 2: Белый текст на чёрном фоне (продолжение) */
 .color-2 a:hover,
 .color-2 a:active {
   color: #fff !important;
@@ -275,7 +236,6 @@
   background: #333 !important;
 }
 
-/* SVG-иконки — делаем светлыми */
 .color-2 svg,
 .color-2 svg * {
   fill: #fff !important;
@@ -284,7 +244,6 @@
   -webkit-filter: none !important;
 }
 
-/* PNG-иконки (с классом icon или id) — делаем светлыми */
 .color-2 img.icon,
 .color-2 #acc-icon,
 .color-2 #foticon,
@@ -294,7 +253,6 @@
   opacity: 1 !important;
 }
 
-/* Основные изображения — оставляем, но делаем контрастнее */
 .color-2 img:not(.icon):not(#acc-icon):not(#foticon),
 .color-2 .content img,
 .color-2 .main img,
@@ -304,7 +262,6 @@
   background: #000 !important;
 }
 
-/* Кнопки — белые на чёрном */
 .color-2 button,
 .color-2 input[type="button"],
 .color-2 input[type="submit"] {
@@ -320,7 +277,6 @@
   background-color: #555 !important;
 }
 
-/* Формы */
 .color-2 input,
 .color-2 textarea,
 .color-2 select {
@@ -329,7 +285,6 @@
   border: 1px solid #fff !important;
 }
 
-/* Таблицы */
 .color-2 table {
   border: 1px solid #fff !important;
 }
@@ -340,6 +295,307 @@
   color: #fff !important;
 }
 
+/* Цветовая схема 3: Жёлтый текст на чёрном фоне */
+.color-3 {
+  background: #000 !important;
+  color: #ff0 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.color-3 *,
+.color-3 *::before,
+.color-3 *::after {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: #ff0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: #ff0 !important;
+}
+
+.color-3 a,
+.color-3 a:visited {
+  color: #ff0 !important;
+  border-bottom: 1px solid #ff0 !important;
+}
+
+.color-3 a:hover,
+.color-3 a:active {
+  color: #ffff66 !important;
+  border-bottom-color: #ffff66 !important;
+  background: #333 !important;
+}
+
+.color-3 svg,
+.color-3 svg * {
+  fill: #ff0 !important;
+  stroke: #ff0 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.color-3 img.icon,
+.color-3 #acc-icon,
+.color-3 #foticon,
+.color-3 .icon img {
+  filter: brightness(150%) contrast(100%) !important;
+  -webkit-filter: brightness(150%) contrast(100%) !important;
+  opacity: 1 !important;
+}
+
+.color-3 button,
+.color-3 input[type="button"],
+.color-3 input[type="submit"] {
+  background-color: #333 !important;
+  color: #ff0 !important;
+  border: 1px solid #ff0 !important;
+  filter: none !important;
+}
+
+.color-3 button:hover,
+.color-3 input[type="button"]:hover,
+.color-3 input[type="submit"]:hover {
+  background-color: #555 !important;
+  color: #ffff66 !important;
+}
+
+.color-3 input,
+.color-3 textarea,
+.color-3 select {
+  background-color: #111 !important;
+  color: #ff0 !important;
+  border: 1px solid #ff0 !important;
+}
+
+.color-3 table {
+  border: 1px solid #ff0 !important;
+}
+
+.color-3 th,
+.color-3 td {
+  border: 1px solid #ff0 !important;
+  color: #ff0 !important;
+}
+
+/* Цветовая схема 4: Зелёный текст на синем фоне */
+.color-4 {
+  background: #00f !important;
+  color: #ff0 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.color-4 *,
+.color-4 *::before,
+.color-4 *::after {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: #ff0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: #ff0 !important;
+}
+
+.color-4 a,
+.color-4 a:visited {
+  color: #0f0 !important;
+  border-bottom: 1px solid #0f0 !important;
+}
+
+.color-4 a:hover,
+.color-4 a:active {
+  color: #90ee90 !important;
+  border-bottom-color: #90ee90 !important;
+  background: #004d00 !important;
+}
+
+.color-4 svg,
+.color-4 svg * {
+  fill: #ff0 !important;
+  stroke: #ff0 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.color-4 img.icon,
+.color-4 #acc-icon,
+.color-4 #foticon,
+.color-4 .icon img {
+  filter: brightness(130%) contrast(110%) !important;
+  -webkit-filter: brightness(130%) contrast(110%) !important;
+  opacity: 1 !important;
+}
+
+.color-4 button,
+.color-4 input[type="button"],
+.color-4 input[type="submit"] {
+  background-color: #004d00 !important;
+  color: #ff0 !important;
+  border: 1px solid #ff0 !important;
+  filter: none !important;
+}
+
+.color-4 button:hover,
+.color-4 input[type="button"]:hover,
+.color-4 input[type="submit"]:hover {
+  background-color: #006600 !important;
+  color: #90ee90 !important;
+}
+
+.color-4 input,
+.color-4 textarea,
+.color-4 select {
+  background-color: #003366 !important;
+  color: #ff0 !important;
+  border: 1px solid #ff0 !important;
+}
+
+.color-4 table {
+  border: 1px solid #ff0 !important;
+}
+
+.color-4 th,
+.color-4 td {
+  border: 1px solid #ff0 !important;
+  color: #ff0 !important;
+}
+
+
+
+/* Цветовая схема 5: Белый текст на зелёном фоне (продолжение) */
+.color-5 *,
+.color-5 *::before,
+.color-5 *::after {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: #00f !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: #fff !important;
+}
+
+.color-5 a,
+.color-5 a:visited {
+  color: #fff !important;
+  border-bottom: 1px solid #fff !important;
+}
+
+.color-5 a:hover,
+.color-5 a:active {
+  color: #add8e6 !important;
+  border-bottom-color: #add8e6 !important;
+  background: #006400 !important;
+}
+
+.color-5 svg,
+.color-5 svg * {
+  fill: #fff !important;
+  stroke: #fff !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.color-5 img.icon,
+.color-5 #acc-icon,
+.color-5 #foticon,
+.color-5 .icon img {
+  filter: brightness(140%) contrast(100%) !important;
+  -webkit-filter: brightness(140%) contrast(100%) !important;
+  opacity: 1 !important;
+}
+
+.color-5 button,
+.color-5 input[type="button"],
+.color-5 input[type="submit"] {
+  background-color: #006400 !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+  filter: none !important;
+}
+
+.color-5 button:hover,
+.color-5 input[type="button"]:hover,
+.color-5 input[type="submit"]:hover {
+  background-color: #008000 !important;
+  color: #add8e6 !important;
+}
+
+.color-5 input,
+.color-5 textarea,
+.color-5 select {
+  background-color: #004d00 !important;
+  color: #fff !important;
+  border: 1px solid #fff !important;
+}
+
+.color-5 table {
+  border: 1px solid #fff !important;
+}
+
+.color-5 th,
+.color-5 td {
+  border: 1px solid #fff !important;
+  color: #fff !important;
+}
+
+/* Дополнительные универсальные стили для элементов в цветовых схемах */
+/* Гарантируем корректное отображение границ и теней */
+* {
+  box-sizing: border-box;
+}
+
+/* Для всех ссылок в схемах — единый стиль подчёркивания */
+a {
+  text-decoration: none;
+}
+
+/* Убираем лишние эффекты для элементов форм в схемах */
+input,
+textarea,
+select,
+button {
+  font-family: inherit;
+  font-size: 100%;
+  line-height: 1.15;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  appearance: none;
+}
+
+/* Общие стили для таблиц во всех схемах */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+th,
+td {
+  padding: 0.5rem;
+  text-align: left;
+  vertical-align: top;
+}
+
+/* Стили для кнопок — общая адаптация */
+button,
+input[type="button"],
+input[type="submit"] {
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Защита от наследования фильтров для ключевых элементов */
+img,
+svg,
+.icon {
+  filter: none !important;
+  -webkit-filter: none !important;
+}
 
 
 

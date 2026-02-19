@@ -1,4 +1,5 @@
 
+
 /**
  * accessibility.js — Версия для слабовидящих
  * Полная инклюзивная панель: шрифт, цвет, озвучка, брайль, скрытие изображений
@@ -22,8 +23,11 @@
       loadAccessibilityStyles();
       setupToolbarHandlers();
       restoreSettings(); // Восстановить сразу после создания
+      isToolbarInitialized = true;
     } else {
       toolbar.style.display = toolbar.style.display === 'none' ? 'flex' : 'none';
+      // Сохраняем состояние видимости панели
+      localStorage.setItem('toolbarVisible', toolbar.style.display !== 'none');
     }
   });
 
@@ -41,7 +45,7 @@
       <div class="p-font">
         <div class="btn-title">Шрифт</div>
         <div class="btn-group btn-group-font-size">
-          <button type="button" class="btn btn-font-size-100 checked" data-action="font" data-size="100" aria-pressed="true" title="Маленький шрифт">
+          <button type="button" class="btn btn-font-size-100" data-action="font" data-size="100" aria-pressed="false" title="Маленький шрифт">
             <span class="font-preview" style="font-size: 0.8em;">А</span>
           </button>
           <button type="button" class="btn btn-font-size-150" data-action="font" data-size="150" aria-pressed="false" title="Средний шрифт">
@@ -56,7 +60,7 @@
       <div class="p-color">
         <div class="btn-title">Цвет</div>
         <div class="btn-group btn-group-color">
-          <button type="button" class="btn btn-color-1 checked" data-action="color" data-scheme="color-1" aria-pressed="true" title="Чёрный на белом">Ц</button>
+          <button type="button" class="btn btn-color-1" data-action="color" data-scheme="color-1" aria-pressed="false" title="Чёрный на белом">Ц</button>
           <button type="button" class="btn btn-color-2" data-action="color" data-scheme="color-2" aria-pressed="false" title="Белый на чёрном">Ц</button>
           <button type="button" class="btn btn-color-3" data-action="color" data-scheme="color-3" aria-pressed="false" title="Жёлтый на чёрном">Ц</button>
           <button type="button" class="btn btn-color-4" data-action="color" data-scheme="color-4" aria-pressed="false" title="Зелёный на чёрном">Ц</button>
@@ -146,31 +150,33 @@
       });
     });
 
-    // Озвучка (скринридер)
-    const audioBtn = toolbar.querySelector('[data-action="audio"]');
-    if (audioBtn) {
-      audioBtn.addEventListener('click', () => {
-        const isOn = audioBtn.getAttribute('aria-pressed') === 'true';
-        const iconOff = audioBtn.querySelector('.icon-audio-off');
-        const iconOn = audioBtn.querySelector('.icon-audio-on');
+// Озвучка (скринридер)
+const audioBtn = toolbar.querySelector('[data-action="audio"]');
+if (audioBtn) {
+  audioBtn.addEventListener('click', () => {
+    const isOn = audioBtn.getAttribute('aria-pressed') === 'true';
+    const iconOff = audioBtn.querySelector('.icon-audio-off');
+    const iconOn = audioBtn.querySelector('.icon-audio-on');
 
-        if (isOn) {
-          iconOff.style.display = 'inline';
-          iconOn.style.display = 'none';
-          audioBtn.setAttribute('aria-pressed', 'false');
-          audioBtn.setAttribute('title', 'Включить озвучку страницы');
-          stopSpeech();
-        } else {
-          iconOff.style.display = 'none';
-          iconOn.style.display = 'inline';
-          audioBtn.setAttribute('aria-pressed', 'true');
-          audioBtn.setAttribute('title', 'Выключить озвучку');
-          speakPageContent();
-        }
-
-        localStorage.setItem('audioEnabled', !isOn);
-      });
+    if (isOn) {
+      // Выключаем озвучку
+      iconOff.style.display = 'inline';
+      iconOn.style.display = 'none';
+      audioBtn.setAttribute('aria-pressed', 'false');
+      audioBtn.setAttribute('title', 'Включить озвучку страницы');
+      stopSpeech();
+    } else {
+      // Включаем озвучку
+      iconOff.style.display = 'none';
+      iconOn.style.display = 'inline';
+      audioBtn.setAttribute('aria-pressed', 'true');
+      audioBtn.setAttribute('title', 'Выключить озвучку');
+      speakPageContent();
     }
+
+    localStorage.setItem('audioEnabled', !isOn);
+  });
+}
 
     // Шрифт Брайля
     const brailleBtn = toolbar.querySelector('[data-action="braille"]');
@@ -203,6 +209,7 @@
       localStorage.removeItem('audioEnabled');
       localStorage.removeItem('brailleMode');
       localStorage.removeItem('imagesEnabled');
+      localStorage.removeItem('toolbarVisible');
       stopSpeech();
       toolbar.remove();
       document.getElementById('toggle-accessible').focus();
@@ -227,12 +234,13 @@
     const savedAudio = localStorage.getItem('audioEnabled') === 'true';
     const savedBraille = localStorage.getItem('brailleMode') === 'true';
     const savedImages = localStorage.getItem('imagesEnabled') !== 'false';
+    const savedToolbarVisible = localStorage.getItem('toolbarVisible') === 'true';
 
     if (savedSize && ['font-size-100', 'font-size-150', 'font-size-200'].includes(savedSize)) {
       html.classList.add(savedSize);
     }
 
-    if (savedColor && /^color-\d$/.test(savedColor)) {
+    if (savedColor && /^color-\\d$/.test(savedColor)) {
       html.classList.add(savedColor);
     }
 
@@ -260,6 +268,7 @@
     const brailleBtn = toolbar.querySelector('[data-action="braille"]');
     if (brailleBtn && savedBraille) {
       brailleBtn.setAttribute('aria-pressed', 'true');
+      brailleBtn.classList.add('checked');
     }
 
     // Изображения
@@ -267,6 +276,7 @@
     if (imagesBtn) {
       imagesBtn.setAttribute('aria-pressed', savedImages ? 'true' : 'false');
       imagesBtn.setAttribute('title', savedImages ? 'Скрыть изображения' : 'Показать изображения');
+      if (!savedImages) imagesBtn.classList.add('checked');
     }
 
     // Аудио
@@ -279,13 +289,22 @@
         audioBtn.setAttribute('title', 'Выключить озвучку');
       }
     }
+
+    // Видимость панели
+    if (savedToolbarVisible && toolbar) {
+      toolbar.style.display = 'flex';
+    }
   }
 
   // Восстановление при загрузке
   window.addEventListener('load', () => {
     const toolbar = document.getElementById('accessibility-toolbar');
-    if (!toolbar) return;
-    restoreSettings();
+    if (toolbar) {
+      restoreSettings();
+    } else if (localStorage.getItem('toolbarVisible') === 'true') {
+      // Если панель должна быть видна, но ещё не создана — создаём
+      toggleBtn.click();
+    }
   });
 
   // === Функции озвучивания ===
@@ -293,21 +312,33 @@
   let isSpeaking = false;
 
   function speakPageContent() {
-    if (isSpeaking || !speechSynthesis) return;
+    if (isSpeaking || !window.speechSynthesis) return;
 
-    const text = Array.from(document.body.querySelectorAll('p, h1, h2, h3, li, button, a'))
-      .map(el => el.innerText.trim())
-      .filter(text => text.length > 10)
-      .join('. ')
-      .replace(/\s+/g, ' ')
-      .substring(0, 600) + '. Конец.';
+    // Собираем текст для озвучки: заголовки, параграфы, списки, кнопки, ссылки
+    const textElements = Array.from(document.body.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, button, a, label'));
+    let text = '';
+
+    for (const el of textElements) {
+      const innerText = el.innerText.trim();
+      if (innerText.length > 10) {
+        text += innerText + '. ';
+      }
+    }
+
+    // Ограничиваем длину текста для озвучки
+    text = text.substring(0, 1200) + '. Конец.';
 
     utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ru-RU';
-    utterance.rate = 0.85;
-    utterance.pitch = 1;
+    utterance.rate = 0.85; // Скорость речи
+    utterance.pitch = 1;   // Тон голоса
 
     utterance.onend = () => {
+      isSpeaking = false;
+    };
+
+    utterance.onerror = (event) => {
+      console.error('Ошибка озвучки:', event);
       isSpeaking = false;
     };
 
@@ -316,14 +347,12 @@
   }
 
   function stopSpeech() {
-    if (speechSynthesis) {
+    if (window.speechSynthesis) {
       speechSynthesis.cancel();
     }
     isSpeaking = false;
   }
 })();
-
-
 
 
 

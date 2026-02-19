@@ -108,7 +108,7 @@ function bindPaginationEvents(currentPage, totalPages) {
   });
 }
 
-
+console.log('✅ pagination.js загружен');
 
 
 

@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Автор — Научные работы РГЭУ (РИНХ)</title>
+  <link rel="stylesheet" href="../css/fonts.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/media.css">
+  <link rel="stylesheet" href="../css/pagination.css">
+  <link rel="stylesheet" href="../css/accessibility.css" disabled id="accessibility">
+  <link rel="stylesheet" href="../css/author.css">
+  <link rel="icon" href="../img/favicon.ico" type="image/x-icon">
+  
+</head>
+<body class="layout-author">
+
+  <!-- Шапка сайта (Хэддер) -->
+  <header alt="Головная часть сайта">
+    <a id="a-logo" href="https://rsue.ru/" target="_blank">
+      <img class="logo" src="../img/logo.svg" alt="Логотип университета">
+    </a>
+    <h1 id="title">Карта научно-исследовательских работ РГЭУ (РИНХ)</h1>
+
+    <!-- Доступность | Локализация -->
+    <div id="acc-local-container">
+      <!-- Версия для слабовидящих -->
+      <a id="toggle-accessible" role="button" tabindex="0" aria-label="Версия для слабовидящих">
+        <img id="acc-icon" src="../img/shape.svg">
+        <span id="acc-span">Версия для слабовидящих</span>
+      </a>
+
+      <!-- Локализация -->
+      <div id="ruen">
+        <a itemprop="Copy" class="lang active">RU</a>
+        <a itemprop="Copy" class="lang">EN</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Заголовок -->
+  <h2 id="h2">Информация об авторе</h2>
+
+  <!-- Профиль автора -->
+  <main aria-label="Профиль автора">
+    <div class="author-container">
+        <section id="author-profile" class="author-section">
+        <div class="author-header">
+            <img src="" alt="Фото автора" id="author-avatar" class="author-avatar">
+            <div class="author-info">
+            <h1 id="author-name">Загрузка...</h1>
+            <p id="author-position" class="author-position"></p>
+            </div>
+        </div>
+        <p id="author-bio" class="author-bio">Биография загружается...</p>
+
+        <h3 id="author-articles-title">Научные работы автора</h3>
+        <div id="no-articles" class="no-articles" style="display: none;">
+            У этого автора пока нет опубликованных научных работ.
+        </div>
+        <div class="articles-grid" id="author-articles">
+            <!-- Сюда вставятся НИРы -->
+        </div>
+        </section>
+    </div>
+</main>
+
+  <!-- Баннеры -->
+  <div class="banners" alt="Баннеры">
+    <ul class="banner-list" aria-label="Список баннеров">
+      <li><a href="https://minobrnauki.gov.ru/" target="_blank"><img src="/banners/МНиВО.banners_220x75-4.jpg" alt="Баннер 1"></a></li>
+      <li><a href="http://www.edu.ru/" target="_blank"><img src="/banners/РО.banners_220x75-6.jpg" alt="Баннер 2"></a></li>
+      <li><a href="/doc/setevoy-institut-POD-FT.pdf" target="_blank"><img src="/banners/МИВСПЛДППП.b-set-inst.png" alt="Баннер 3"></a></li>
+      <li><a href="/logist/index.htm" target="_blank"><img src="/banners/ЮРАЛ.banners_220x75-8.jpg" alt="Баннер 4"></a></li>
+      <li><a href="https://trudvsem.ru/" target="_blank"><img src="/banners/РВРБВ.banners_220x75-5.jpg" alt="Баннер 5"></a></li>
+      <li><a href="http://rsue.ru/universitet/novosti/novosti.php?ELEMENT_ID=1152" target="_blank"><img src="/banners/banner-antinarkotik.jpg" alt="Баннер 6"></a></li>
+      <li><a href="https://map.ncpti.ru" target="_blank"><img src="/banners/НЦПТИ.map_ncpti_banner.jpg" alt="Баннер 7"></a></li>
+      <li><a href="https://rsue.ru/nauka/veo/" target="_blank"><img src="/banners/РРОВЭОР.veo.jpg" alt="Баннер 8"></a></li>
+    </ul>
+  </div>
+
+  <!-- Футер -->
+  <footer aria-label="Нижняя часть сайта">
+    <div class="foot-container" id="foot-con-1">
+      <div class="zagfot" aria-label="Приемная ректора">Приемная ректора</div>
+      <div class="contacts"><span>Телефон:</span> <span>+7 (863) 263-30-80</span></div>
+      <div class="contacts"><span>E-mail:</span> <span><a href="mailto:main@rsue.ru">main@rsue.ru</a></span></div>
+      <div class="contact-link"><span><a href="/doc/telefon-spravochnik-RSUE.pdf" target="_blank">Телефонный справочник</a></span></div>
+    </div>
+
+    <div class="foot-container" id="foot-con-2">
+      <div class="zagfot" aria-label="Приемная комиссия">Приемная комиссия</div>
+      <div class="contacts"><span>Телефон:</span> <span>+7 (863) 237-02-60</span></div>
+      <div class="contacts"><span>E-mail:</span> <span><a href="mailto:pk@rsue.ru">pk@rsue.ru</a></span></div>
+      <div class="contact-link"><span><a href="/abitur">Абитуриенту</a></span></div>
+    </div>
+
+    <div class="foot-container" id="foot-con-3">
+      <div class="zagfot" aria-label="Медиацентр">Медиацентр</div>
+      <div class="contacts"><span>Телефон:</span> <span>+7 (863) 261-38-39</span></div>
+      <div class="contacts"><span>E-mail:</span> <span><a href="mailto:media.rsue@mail.ru">media.rsue@mail.ru</a></span></div>
+    </div>
+
+    <div class="foot-container" id="foot-con-4">
+      <div id="questions"><a href="/FAQ/">Часто задаваемые вопросы</a></div>
+      <div id="icon-list">
+        <a href="https://vk.com/rsue.rinh" target="_blank"><img src="../img/vk.png" id="foticon"></a>
+        <a href="https://t.me/rsue_rinh" target="_blank"><img src="../img/telegram.png" id="foticon"></a>
+        <a href="https://ok.ru/group/60991174279312" target="_blank"><img src="../img/ok.png" id="foticon"></a>
+        <a href="https://rutube.ru/channel/25905156/" target="_blank"><img src="../img/rutube.png" id="foticon"></a>
+        <a href="https://max.ru/rsue_rinh" target="_blank"><img src="../img/max-messenger.png" id="foticon"></a>
+      </div>
+      <div class="zagfot3"><a href="https://pos.gosuslugi.ru" target="_blank">Обращения граждан</a></div>
+      <div class="zagfot3"><a href="/sitemap.php">Карта сайта</a></div>
+    </div>
+  </footer>
+
+  <!-- Скрипты -->
+  <script src="../js/accessibility.js"></script>
+  <script src="../js/author.js"></script>
+</body>
+</html>
+

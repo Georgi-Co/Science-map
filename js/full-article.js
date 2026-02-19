@@ -1,4 +1,5 @@
 
+// full-article.js
 // Получаем ID статьи из URL
 function getArticleIdFromUrl() {
   const params = new URLSearchParams(window.location.search);

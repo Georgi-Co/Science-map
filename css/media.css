@@ -74,7 +74,6 @@
   gap: 20px; /* Отступ между элементами */
   justify-self: center;
   align-self: center;
-  margin: 1% 1% 1% 1%;
 }
   .articles-grid {
   display: grid;
@@ -82,7 +81,6 @@
   grid-template-rows: repeat(3, 1fr);
   flex-wrap: wrap;
   gap: 40px;
-  padding: 1%;
 }
   .banner-list {
     grid-template-columns: repeat(2, 1fr);
@@ -111,7 +109,7 @@
   }
   #search-container {
     grid-template-columns: 1fr;
-    grid-template-rows: 3fr 1fr;
+    grid-template-rows: 3fr 1fr 0.2fr;
     padding: 40px;
     row-gap: 20px;
   }
@@ -137,10 +135,45 @@
     font-size: 14px;
   }
   .clear-button {
-    grid-row: 2;
+    grid-row: 3;
   }
   .zagfot {
-    font-size: 12px;
+  }
+  footer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    padding: 40px 120px 40px 120px;
+    gap: 20px;
+  }
+  .foot-container { /* Класс ячеек футтера */
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    justify-self: center;
+    flex: 0 auto auto;
+    padding: 0;
+  }
+  #foot-con-1 {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 0;
+  }
+  #foot-con-2 {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0;
+  }
+  #foot-con-3 {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 0;
+  }
+  #foot-con-4 {
+    grid-column: 2;
+    grid-row: 2;
+    text-decoration: none;
+    padding: 0;
   }
   .contacts span, a {
     font-size: 11px;
@@ -174,8 +207,6 @@
   main {
     grid-area: main;
     display: grid;
-    grid-template-columns: 1fr 5fr 1fr;
-    grid-template-rows: 1fr;
     margin: 20px;
   }
   #articles-container {
@@ -217,12 +248,11 @@
   }
   #h2 {
     grid-column: 2;
-    font-size: 1.8rem;
     margin: 2% 0 0 8%;
   }
   #search-container {
     grid-template-columns: 1fr;
-    grid-template-rows: 3fr 1fr;
+    grid-template-rows: 3fr 1fr 0.2fr;
     padding: 40px;
     row-gap: 20px;
   }
@@ -259,6 +289,9 @@
     font-size: 0.8rem;
     width: auto;
   }
+  .clear-button {
+    grid-row: 3;
+  }
   #articles-container {
     grid-column: 1;
     display: flex;
@@ -268,37 +301,43 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
-    padding: 10px;
+    padding: 20px;
     gap: 10px;
   }
   .foot-container { /* Класс ячеек футтера */
+    display: flex;
+    flex-direction: column;
+    align-self: flex-start;
+    justify-self: center;
+    flex: 0 auto auto;
+    padding: 20px;
   }
   #foot-con-1 {
-  grid-column: 1;
-  grid-row: 1;
-  padding: 0 45px 0 15px;
+    grid-column: 1;
+    grid-row: 1;
+    padding: 0;
   }
   #foot-con-2 {
-  grid-column: 2;
-  grid-row: 1;
-  padding: 0 45px 0 15px;
+    grid-column: 2;
+    grid-row: 1;
+    padding: 0;
   }
   #foot-con-3 {
-  grid-column: 1;
-  grid-row: 2;
-  padding: 0 45px 0 15px;
+    grid-column: 1;
+    grid-row: 2;
+    padding: 0;
   }
   #foot-con-4 {
-  grid-column: 2;
-  grid-row: 2;
-  padding: 0 45px 0 15px;
-  text-decoration: none;
+    grid-column: 2;
+    grid-row: 2;
+    text-decoration: none;
+    padding: 0;
   }
  .zagfot {
-  font-size: 10px;
+    font-size: 10px;
   }
  .contacts, .contacts span, a {
-  font-size: 10px;
+    font-size: 10px;
   }
   .pagination {
     grid-column: 1;

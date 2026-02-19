@@ -9,7 +9,7 @@ let currentPage = 1;
 
 // === ФУНКЦИИ ===
 
-// Определяем колонки по grid-template-columns
+// Определяем количество колонок сетки
 function getGridColumnsCount() {
   const grid = document.querySelector('.articles-grid');
   if (!grid) return 1;
@@ -30,11 +30,10 @@ function getGridColumnsCount() {
       return Math.max(1, Math.floor((gridWidth + gap) / (cardWidth + gap)));
     }
   }
-
   return 1;
 }
 
-// Определяем строки
+// Определяем количество строк сетки
 function getGridRowsCount() {
   const grid = document.querySelector('.articles-grid');
   if (!grid) return 2;
@@ -45,16 +44,15 @@ function getGridRowsCount() {
   if (template && template !== 'none') {
     return Math.max(1, template.trim().split(/\s+/).length);
   }
-
   return 2;
 }
 
-// Сколько статей на страницу
+// Рассчитываем количество статей на страницу
 function getArticlesPerPage() {
   return getGridColumnsCount() * getGridRowsCount();
 }
 
-// === renderPage — ГЛОБАЛЬНАЯ (для pagination.js)
+// === renderPage — ГЛОБАЛЬНАЯ (для pagination.js и search.js)
 function renderPage(page = 1) {
   currentPage = page;
   const articlesPerPage = getArticlesPerPage();
@@ -73,15 +71,13 @@ function renderPage(page = 1) {
   }
 
   articlesToShow.forEach(article => {
-    // 🔒 article — это уже плоский объект: { id, Title, Publication, authors, ... }
-
     const id = article.id;
     const title = article.Title || article.title || 'Без заголовка';
     const contentBlocks = article.Content || article.content || [];
     const publication = article.Publication || article.publication || article.publishedAt;
     const authors = Array.isArray(article.authors) ? article.authors : [];
 
-    // 🔎 Превью текста
+    // Превью текста (первые 2 абзаца, до 200 символов)
     const previewText = contentBlocks
       .filter(block => block.type === 'paragraph')
       .slice(0, 2)
@@ -92,7 +88,7 @@ function renderPage(page = 1) {
       .join(' ')
       .substring(0, 200) + '...';
 
-    // 🔎 Дата
+    // Форматирование даты
     const date = publication
       ? new Date(publication).toLocaleDateString('ru-RU', {
           day: 'numeric',
@@ -101,15 +97,15 @@ function renderPage(page = 1) {
         })
       : 'Дата не указана';
 
-    // 🔎 Автор
+    // Обработка автора
     const author = authors[0] || null;
     const authorName = author?.Name || author?.name || 'Автор не указан';
     const authorId = author?.id;
     const authorLink = authorId
-      ? `<a href="/author.html?id=${authorId}" class="author-link">${authorName}</a>`
+      ? `<a href="../html/author.html?id=${authorId}">${authorName}</a>`
       : authorName;
 
-    // 🎨 Карточка
+    // Создание карточки статьи
     const card = document.createElement('div');
     card.className = 'article-card';
 
@@ -127,7 +123,7 @@ function renderPage(page = 1) {
     grid.appendChild(card);
   });
 
-  // 📖 Пагинация
+  // Инициализация пагинации (если функция доступна)
   if (typeof createPagination === 'function') {
     const totalPages = Math.ceil(allArticles.length / articlesPerPage);
     createPagination(currentPage, totalPages, '#articles-container');
@@ -145,7 +141,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log('🔍 Загрузка статей с Strapi...');
 
-    // Полный populate — включая authors
     const url = new URL('http://localhost:1337/api/articles');
     url.searchParams.append('populate', '*');
     url.searchParams.append('publicationState', 'published');
@@ -153,29 +148,47 @@ document.addEventListener('DOMContentLoaded', async () => {
     url.searchParams.append('sort', 'Publication:desc');
 
     const response = await fetch(url);
+    
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
     const data = await response.json();
     console.log('📦 Получены данные:', data);
 
-    if (!data.data || !Array.isArray(data.data)) {
-      throw new Error('API вернул неверный формат');
+    if (!data || !data.data || !Array.isArray(data.data)) {
+      throw new Error('API вернул неверный формат (отсутствует data.data)');
     }
 
-    // ✅ Используем напрямую: data.data — это массив статей (без attributes!)
-    allArticles = data.data.filter(article => {
-      // Фильтр: только опубликованные (если есть publishedAt)
-      return article.publishedAt || article.Publication;
-    });
+    // Обработка и фильтрация статей
+    allArticles = data.data
+      .map(item => ({
+        ...item,
+        Title: item.Title || item.title || '',
+        Content: item.Content || item.content || [],
+        Publication: item.Publication || item.publication || item.publishedAt || null,
+        authors: Array.isArray(item.authors) ? item.authors : []
+      }))
+      .filter(article => article.publishedAt || article.Publication);
 
     if (allArticles.length === 0) {
       grid.innerHTML = '<p>Нет опубликованных статей.</p>';
       return;
     }
 
-    // 🎉 Рендерим
+    // Инициализация поиска (если функция setupSearch доступна)
+    if (typeof setupSearch === 'function') {
+      articleSearch = setupSearch(allArticles, renderPage);
+      console.log('✅ Поиск инициализирован');
+    } else {
+      console.error(
+        '❌ Функция setupSearch не найдена. Проверьте:\n' +
+        '- Подключен ли файл search.js?\n' +
+        '- Нет ли ошибок в консоли при загрузке search.js?'
+      );
+    }
+
+    // Рендеринг первой страницы
     renderPage(1);
 
   } catch (error) {
@@ -201,9 +214,15 @@ let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (allArticles.length > 0) {
+    if (allArticles.length > 0 && articleSearch) {
+      // Перестраиваем поиск при ресайзе
+      articleSearch.updateArticles(allArticles);
+      renderPage(currentPage);
+    } else if (allArticles.length > 0) {
+      // Если поиск не инициализирован, просто обновляем страницу
       renderPage(currentPage);
     }
   }, 150);
 });
 
+console.log('✅ script.js загружен');
