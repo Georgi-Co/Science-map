@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔍 Загрузка автора с ID:', authorId);
 
     const url = new URL(`http://localhost:1337/api/authors/${authorId}`);
-    url.searchParams.append('populate', 'Avatar,articles.Image,articles.Faculty,articles.ScienceArea');
+    url.searchParams.append('populate', 'Avatar,articles.Media,articles.Faculty,articles.ScienceArea');
 
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
@@ -63,7 +63,12 @@ function renderArticles(articles) {
   const noArticles = document.getElementById('no-articles');
   const title = document.getElementById('author-articles-title');
 
-  if (articles.length === 0) {
+  if (!container || !noArticles || !title) {
+    console.error('❌ Не найдены необходимые элементы DOM для отображения статей автора');
+    return;
+  }
+
+  if (!articles || articles.length === 0) {
     noArticles.style.display = 'block';
     container.style.display = 'none';
     title.style.display = 'none';
@@ -71,6 +76,7 @@ function renderArticles(articles) {
   }
 
   noArticles.style.display = 'none';
+  container.style.display = 'grid'; // Убеждаемся, что контейнер видим
   container.innerHTML = '';
 
   articles.forEach(article => {
@@ -78,15 +84,31 @@ function renderArticles(articles) {
     const titleText = attrs.Title || 'Без названия';
     const faculty = attrs.Faculty?.data?.attributes?.Name || '';
     const scienceArea = attrs.ScienceArea?.data?.attributes?.Name || '';
-    const imageUrl = attrs.Image?.data?.[0]?.attributes?.url;
-    const preview = (attrs.Description || '').substring(0, 180) + (attrs.Description?.length > 180 ? '...' : '');
+    // Media может быть массивом или одним объектом
+    const mediaData = attrs.Media?.data;
+    const imageUrl = Array.isArray(mediaData) && mediaData.length > 0 
+      ? mediaData[0]?.attributes?.url 
+      : mediaData?.attributes?.url;
+    // Используем превью из Content, если Description отсутствует
+    const contentPreview = Array.isArray(attrs.Content) 
+      ? attrs.Content
+          .filter(block => block.type === 'paragraph')
+          .slice(0, 2)
+          .map(block => {
+            if (!block.children) return '';
+            return block.children.map(child => child.text || '').join('');
+          })
+          .join(' ')
+          .substring(0, 180)
+      : '';
+    const preview = (attrs.Description || contentPreview).substring(0, 180) + ((attrs.Description || contentPreview).length > 180 ? '...' : '');
 
     const card = document.createElement('div');
     card.className = 'article-card';
     card.innerHTML = `
       <article class="article-card-body">
         <h3 class="article-title">
-          <a href="article.html?id=${article.id}" class="article-title-link">${titleText}</a>
+          <a href="full-article.html?id=${article.id}" class="article-title-link">${titleText}</a>
         </h3>
         ${imageUrl 
           ? `<img src="http://localhost:1337${imageUrl}" alt="${titleText}" class="article-image">` 
@@ -96,7 +118,7 @@ function renderArticles(articles) {
           ${scienceArea ? `<span class="tag">${scienceArea}</span>` : ''}
         </div>
         <div class="article-preview">${preview}</div>
-        <button class="read-more" onclick="window.location.href='article.html?id=${article.id}'">Подробнее</button>
+        <button class="read-more" onclick="window.location.href='full-article.html?id=${article.id}'">Подробнее</button>
       </article>
     `;
     container.appendChild(card);

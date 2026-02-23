@@ -197,7 +197,8 @@
     grid-template-columns: 1fr 3fr 1fr;
     grid-template-rows: 
       minmax(60px, auto)    /* header */
-      minmax(60px, auto)    /* h1 */
+      auto   /* panel */
+      minmax(60px, auto)    /* h2 */
       minmax(220px, auto)    /* search */
       auto                  /* main — растёт под контент */
       minmax(80px, auto)    /* banners */
@@ -207,6 +208,7 @@
   main {
     grid-area: main;
     display: grid;
+    grid-template-columns: 1fr 8fr 1fr;
     margin: 20px;
   }
   #articles-container {
@@ -291,11 +293,6 @@
   }
   .clear-button {
     grid-row: 3;
-  }
-  #articles-container {
-    grid-column: 1;
-    display: flex;
-    margin: 3% 5% 3% 5%;
   }
   footer {
     display: grid;

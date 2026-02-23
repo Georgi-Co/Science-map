@@ -2,8 +2,155 @@
 
 /* accessibility.css */
 
-/* Базовая стилизация панели доступности */
-.accessibility-toolbar {
+/* ========== Панель «Версия для слабовидящих» ========== */
+#accessibility-panel-wrap {
+  display: none;
+  margin: 0;
+  padding: 0;
+}
+
+#accessibility-panel-wrap.acc-panel-wrap--open {
+  display: block;
+}
+
+.acc-panel,
+#accessibility-toolbar.acc-panel {
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  margin: 12px auto;
+  max-width: 100%;
+  padding: 16px 20px;
+  z-index: 9998;
+}
+
+.acc-panel__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px 24px;
+}
+
+.acc-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.acc-label {
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.acc-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.acc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: border-color 0.2s, box-shadow 0.2s, text-decoration 0.2s, background-color 0.2s;
+}
+
+.acc-btn:hover {
+  border-style: dotted;
+  border-color: #666;
+  background-color: #eee;
+}
+
+.acc-btn.active,
+.acc-btn[aria-pressed="true"] {
+  border-bottom: 3px solid #000;
+  padding-bottom: 8px;
+}
+
+.acc-btn:hover.active,
+.acc-btn:hover[aria-pressed="true"] {
+  text-decoration: underline;
+}
+
+/* К содержанию — белый фон */
+.acc-btn--content {
+  background: #fff;
+}
+
+.acc-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+/* Шрифт: малая А, средняя А жирнее, крупная А ещё жирнее */
+.acc-font-preview--small {
+  font-size: 0.85em;
+  font-weight: 400;
+}
+
+.acc-font-preview--medium {
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.acc-font-preview--large {
+  font-size: 1.35em;
+  font-weight: 800;
+}
+
+/* Цвет: 3 кнопки «Ц» */
+.acc-btn--color-1 {
+  background: #fff;
+  color: #000;
+  border-color: #333;
+}
+
+.acc-btn--color-2 {
+  background: #000;
+  color: #fff;
+  border-color: #000;
+}
+
+.acc-btn--color-3 {
+  background: #f5f5dc;
+  color: #5c4a32;
+  border-color: #c4a574;
+}
+
+/* Озвучка — иконки */
+.acc-btn--audio .acc-icon {
+  width: 22px;
+  height: 22px;
+}
+
+@media (max-width: 640px) {
+  .acc-panel__inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .acc-group {
+    justify-content: center;
+  }
+}
+
+/* Базовая стилизация панели доступности (legacy) */
+.accessibility-toolbar:not(.acc-panel) {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -229,6 +376,31 @@
 
 
 /* Цветовая схема 2: Белый текст на чёрном фоне (продолжение) */
+/* База: чёрный фон, белый текст */
+.color-2 {
+  background: #000 !important;
+  color: #fff !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.color-2 *,
+.color-2 *::before,
+.color-2 *::after {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: #fff !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: #fff !important;
+}
+
+.color-2 a,
+.color-2 a:visited {
+  color: #7eb8ff !important;
+  border-bottom: 1px solid #7eb8ff !important;
+}
+
 .color-2 a:hover,
 .color-2 a:active {
   color: #fff !important;
@@ -293,6 +465,61 @@
 .color-2 td {
   border: 1px solid #fff !important;
   color: #fff !important;
+}
+
+/* Цветовая схема: бежевая (для панели слабовидящих) */
+.color-beige {
+  background: #f5f5dc !important;
+  color: #3d3529 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.color-beige *,
+.color-beige *::before,
+.color-beige *::after {
+  background-color: transparent !important;
+  background-image: none !important;
+  border-color: #8b7355 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  color: #3d3529 !important;
+}
+
+.color-beige a,
+.color-beige a:visited {
+  color: #1a5490 !important;
+  border-bottom: 1px solid #1a5490 !important;
+}
+
+.color-beige a:hover,
+.color-beige a:active {
+  color: #2a6ab0 !important;
+  border-bottom-color: #2a6ab0 !important;
+  background: #e8e4d0 !important;
+}
+
+.color-beige button,
+.color-beige input[type="button"],
+.color-beige input[type="submit"] {
+  background-color: #e8e4d0 !important;
+  color: #3d3529 !important;
+  border: 1px solid #8b7355 !important;
+  filter: none !important;
+}
+
+.color-beige button:hover,
+.color-beige input[type="button"]:hover,
+.color-beige input[type="submit"]:hover {
+  background-color: #ddd9c4 !important;
+}
+
+.color-beige input,
+.color-beige textarea,
+.color-beige select {
+  background-color: #fffef5 !important;
+  color: #3d3529 !important;
+  border: 1px solid #8b7355 !important;
 }
 
 /* Цветовая схема 3: Жёлтый текст на чёрном фоне */

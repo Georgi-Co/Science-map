@@ -54,21 +54,33 @@ function getArticlesPerPage() {
 
 // === renderPage — ГЛОБАЛЬНАЯ (для pagination.js и search.js)
 function renderPage(page = 1) {
+  console.log('[renderPage] Вызов с page=', page);
+  console.log('[renderPage] Всего статей в allArticles:', allArticles.length);
+  
   currentPage = page;
   const articlesPerPage = getArticlesPerPage();
   const start = (page - 1) * articlesPerPage;
   const end = start + articlesPerPage;
   const articlesToShow = allArticles.slice(start, end);
 
+  console.log('[renderPage] Статей на страницу:', articlesPerPage);
+  console.log('[renderPage] Статей для отображения:', articlesToShow.length);
+
   const grid = document.querySelector('.articles-grid');
-  if (!grid) return;
+  if (!grid) {
+    console.error('[renderPage] ❌ .articles-grid не найден в DOM');
+    return;
+  }
 
   grid.innerHTML = '';
 
   if (articlesToShow.length === 0) {
+    console.warn('[renderPage] ⚠️ Нет статей для отображения');
     grid.innerHTML = '<p class="no-articles">Нет статей для отображения.</p>';
     return;
   }
+  
+  console.log('[renderPage] Начинаю рендеринг', articlesToShow.length, 'статей');
 
   articlesToShow.forEach(article => {
     const id = article.id;
@@ -76,17 +88,29 @@ function renderPage(page = 1) {
     const contentBlocks = article.Content || article.content || [];
     const publication = article.Publication || article.publication || article.publishedAt;
     const authors = Array.isArray(article.authors) ? article.authors : [];
+    const scientificField = article.scienceArea || 'Научная область не указана';
+    const researchDirection = article.scienceDirection || 'Научное направление не указано';
+    const faculty = article.faculty || 'Не указан';
 
     // Превью текста (первые 2 абзаца, до 200 символов)
-    const previewText = contentBlocks
-      .filter(block => block.type === 'paragraph')
-      .slice(0, 2)
-      .map(block => {
-        if (!block.children) return '';
-        return block.children.map(child => child.text || '').join('');
-      })
-      .join(' ')
-      .substring(0, 200) + '...';
+    let previewText = '';
+    if (Array.isArray(contentBlocks) && contentBlocks.length > 0) {
+      const text = contentBlocks
+        .filter(block => block && block.type === 'paragraph')
+        .slice(0, 2)
+        .map(block => {
+          if (!block.children || !Array.isArray(block.children)) return '';
+          return block.children.map(child => child?.text || '').join('');
+        })
+        .join(' ')
+        .trim();
+      
+      previewText = text.length > 0 
+        ? (text.substring(0, 200) + (text.length > 200 ? '...' : ''))
+        : 'Описание отсутствует';
+    } else {
+      previewText = 'Описание отсутствует';
+    }
 
     // Форматирование даты
     const date = publication
@@ -102,7 +126,7 @@ function renderPage(page = 1) {
     const authorName = author?.Name || author?.name || 'Автор не указан';
     const authorId = author?.id;
     const authorLink = authorId
-      ? `<a href="../html/author.html?id=${authorId}">${authorName}</a>`
+      ? `<a href="author.html?id=${authorId}">${authorName}</a>`
       : authorName;
 
     // Создание карточки статьи
@@ -111,10 +135,15 @@ function renderPage(page = 1) {
 
     card.innerHTML = `
       <article class="article-card-body">
+        <div class="article-badges" aria-label="Научная область и научное направление">
+          <div class="article-badge article-badge--field" title="Научная область">${scientificField}</div>
+          <div class="article-badge article-badge--direction" title="Научное направление">${researchDirection}</div>
+        </div>
         <h3 class="article-title">
-          <a href="/article.html?id=${id}" class="article-title-link">${title}</a>
+          <a href="full-article.html?id=${id}" class="article-title-link">${title}</a>
         </h3>
         <div class="article-preview">${previewText}</div>
+        <div class="faculty" aria-label="Факультет статьи">Факультет: <span class="faculty-name">${faculty}</span></div>
         <time class="article-date" datetime="${publication || ''}">📅 ${date}</time>
         <div class="article-author">👤 ${authorLink}</div>
       </article>
@@ -155,41 +184,90 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const data = await response.json();
     console.log('📦 Получены данные:', data);
+    console.log('📦 Структура первой статьи:', data.data?.[0]);
 
     if (!data || !data.data || !Array.isArray(data.data)) {
       throw new Error('API вернул неверный формат (отсутствует data.data)');
     }
 
     // Обработка и фильтрация статей
+    // Strapi v5 возвращает данные в формате: { data: [{ id, attributes: {...} }] }
     allArticles = data.data
-      .map(item => ({
-        ...item,
-        Title: item.Title || item.title || '',
-        Content: item.Content || item.content || [],
-        Publication: item.Publication || item.publication || item.publishedAt || null,
-        authors: Array.isArray(item.authors) ? item.authors : []
-      }))
-      .filter(article => article.publishedAt || article.Publication);
+      .map(item => {
+        // Поддерживаем оба формата: с attributes и без
+        const attrs = item.attributes || item;
+        const authors = attrs.authors?.data || attrs.authors || [];
+
+        // Возможные связи для фильтров (факультет, область, направление)
+        const facultyRel = attrs.Faculty?.data;
+        const scienceAreaRel = attrs.ScienceArea?.data;
+        const scienceDirectionRel = attrs.ScienceDirection?.data;
+
+        const facultyName = facultyRel?.attributes?.Name || '';
+        const scienceAreaName = scienceAreaRel?.attributes?.Name || '';
+        const scienceDirectionName = scienceDirectionRel?.attributes?.Name || '';
+        
+        const article = {
+          id: item.id,
+          Title: attrs.Title || attrs.title || '',
+          Content: attrs.Content || attrs.content || [],
+          Publication: attrs.Publication || attrs.publication || attrs.publishedAt || null,
+          publishedAt: attrs.publishedAt || attrs.Publication || attrs.publication || null,
+          authors: Array.isArray(authors) ? authors.map(author => {
+            // Поддерживаем оба формата автора
+            const authorAttrs = author.attributes || author;
+            return {
+              id: author.id,
+              Name: authorAttrs.Name || authorAttrs.name || '',
+              name: authorAttrs.Name || authorAttrs.name || ''
+            };
+          }) : [],
+          // Поля для работы фильтров на клиенте
+          faculty: facultyName,
+          scienceArea: scienceAreaName,
+          scienceDirection: scienceDirectionName
+        };
+        
+        console.log('📄 Обработанная статья:', { 
+          id: article.id, 
+          title: article.Title, 
+          hasContent: Array.isArray(article.Content) && article.Content.length > 0,
+          hasPublication: !!article.Publication,
+          authorsCount: article.authors.length,
+          faculty: article.faculty,
+          scienceArea: article.scienceArea,
+          scienceDirection: article.scienceDirection
+        });
+        return article;
+      });
+      // Не фильтруем, так как publicationState уже фильтрует на стороне API
+      // Оставляем все статьи, которые были возвращены API
+    
+    console.log('✅ Всего обработано статей:', allArticles.length);
+    console.log('✅ Первая статья:', allArticles[0]);
 
     if (allArticles.length === 0) {
       grid.innerHTML = '<p>Нет опубликованных статей.</p>';
       return;
     }
 
+    // Рендеринг первой страницы ПЕРЕД инициализацией поиска
+    console.log('🎨 Вызываю renderPage(1) с', allArticles.length, 'статьями');
+    renderPage(1);
+
     // Инициализация поиска (если функция setupSearch доступна)
     if (typeof setupSearch === 'function') {
+      console.log('🔍 Инициализирую поиск...');
       articleSearch = setupSearch(allArticles, renderPage);
       console.log('✅ Поиск инициализирован');
     } else {
-      console.error(
-        '❌ Функция setupSearch не найдена. Проверьте:\n' +
+      console.warn(
+        '⚠️ Функция setupSearch не найдена. Поиск будет недоступен.\n' +
+        'Проверьте:\n' +
         '- Подключен ли файл search.js?\n' +
         '- Нет ли ошибок в консоли при загрузке search.js?'
       );
     }
-
-    // Рендеринг первой страницы
-    renderPage(1);
 
   } catch (error) {
     console.error('❌ Ошибка загрузки:', error);

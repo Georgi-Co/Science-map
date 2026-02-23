@@ -45,7 +45,7 @@ async function loadArticle() {
   try {
     // ✅ Работающий populate для одного элемента
     const url = new URL(`http://localhost:1337/api/articles/${articleId}`);
-    url.searchParams.append('populate', 'Image,authors.Image');
+    url.searchParams.append('populate', 'Media,authors.Avatar');
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -64,26 +64,45 @@ async function loadArticle() {
     const title = attrs.Title || 'Без заголовка';
     const contentBlocks = attrs.Content || [];
     const publication = attrs.Publication;
-    const imageUrl = attrs.Image?.data?.[0]?.attributes?.url;
-    const imageAlt = attrs.Image?.data?.[0]?.attributes?.name || title;
+    // Media может быть массивом или одним объектом
+    const mediaData = attrs.Media?.data;
+    const imageUrl = Array.isArray(mediaData) && mediaData.length > 0 
+      ? mediaData[0]?.attributes?.url 
+      : mediaData?.attributes?.url;
+    const imageAlt = Array.isArray(mediaData) && mediaData.length > 0
+      ? mediaData[0]?.attributes?.name || mediaData[0]?.attributes?.alternativeText || title
+      : mediaData?.attributes?.name || mediaData?.attributes?.alternativeText || title;
 
     const authorData = attrs.authors?.data?.[0];
     const authorName = authorData?.attributes?.Name || 'Автор не указан';
     const authorId = authorData?.id;
 
     // Генерация контента
-    const contentHTML = contentBlocks
-      .map(block => {
-        if (block.type === 'paragraph') {
-          return `<p>${block.children.map(child => child.text).join('')}</p>`;
-        }
-        if (block.type === 'heading') {
-          const level = block.level || 2;
-          return `<h${level}>${block.children.map(child => child.text).join('')}</h${level}>`;
-        }
-        return '';
-      })
-      .join('');
+    const contentHTML = Array.isArray(contentBlocks) && contentBlocks.length > 0
+      ? contentBlocks
+          .map(block => {
+            if (!block || !block.type) return '';
+            
+            if (block.type === 'paragraph') {
+              const text = block.children && Array.isArray(block.children)
+                ? block.children.map(child => child?.text || '').join('')
+                : '';
+              return text ? `<p>${text}</p>` : '';
+            }
+            
+            if (block.type === 'heading') {
+              const level = block.level || 2;
+              const text = block.children && Array.isArray(block.children)
+                ? block.children.map(child => child?.text || '').join('')
+                : '';
+              return text ? `<h${level}>${text}</h${level}>` : '';
+            }
+            
+            return '';
+          })
+          .filter(html => html !== '')
+          .join('')
+      : '<p>Содержимое статьи отсутствует.</p>';
 
     // Формируем разметку
     container.innerHTML = `
@@ -94,7 +113,7 @@ async function loadArticle() {
         </time>
         <div class="article-author">
           👤 Автор: ${authorId 
-            ? `<a href="/author.html?id=${authorId}" class="author-link">${authorName}</a>` 
+            ? `<a href="author.html?id=${authorId}" class="author-link">${authorName}</a>` 
             : authorName}
         </div>
       </header>
@@ -112,7 +131,7 @@ async function loadArticle() {
       </div>
 
       <footer class="article-footer">
-        <a href="/" class="back-link">← Вернуться к списку статей</a>
+        <a href="index.html" class="back-link">← Вернуться к списку статей</a>
       </footer>
     `;
 

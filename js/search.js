@@ -33,9 +33,6 @@ class ArticleSearch {
   // Вызовите тест (раскомментируйте для проверки)
   // testSearch();
 
-  
-  this.originalArticles = [...articles];
-
     // Сохраняем исходные статьи (неизменённые)
     this.originalArticles = [...articles];
     // Текущий набор статей (может меняться при фильтрации)
@@ -99,6 +96,15 @@ class ArticleSearch {
       console.log('[Clear] Очистка поля поиска');
       this.searchField.value = ''; // Очищаем поле ввода
 
+      // Сбрасываем выпадающие списки фильтров в исходное состояние
+      const facultySelect = document.querySelector('select[name="faculty-area-list"]');
+      const areaSelect = document.querySelector('select[name="science-area-list"]');
+      const directionSelect = document.querySelector('select[name="science-direction-list"]');
+
+      if (facultySelect) facultySelect.selectedIndex = 0;
+      if (areaSelect) areaSelect.selectedIndex = 0;
+      if (directionSelect) directionSelect.selectedIndex = 0;
+
       console.log('[Clear] Сброс статей к оригиналу');
       this.currentArticles = [...this.originalArticles]; // Возвращаем все статьи
       window.allArticles = this.currentArticles; // Обновляем глобальную переменную
@@ -112,59 +118,160 @@ class ArticleSearch {
     });
   }
 
+  // Читаем текущее состояние фильтров (выпадающие списки)
+  getFilters() {
+    const facultySelect = document.querySelector('select[name="faculty-area-list"]');
+    const areaSelect = document.querySelector('select[name="science-area-list"]');
+    const directionSelect = document.querySelector('select[name="science-direction-list"]');
+
+    const facultyValue = facultySelect?.value || 'All';
+    const areaValue = areaSelect?.value || 'All';
+    const directionValue = directionSelect?.value || 'All';
+
+    const facultyLabel = facultySelect?.selectedOptions?.[0]?.textContent?.trim().toLowerCase() || '';
+    const areaLabel = areaSelect?.selectedOptions?.[0]?.textContent?.trim().toLowerCase() || '';
+    const directionLabel = directionSelect?.selectedOptions?.[0]?.textContent?.trim().toLowerCase() || '';
+
+    const filters = {
+      facultyValue,
+      facultyLabel,
+      areaValue,
+      areaLabel,
+      directionValue,
+      directionLabel
+    };
+
+    console.log('[getFilters] Текущее состояние фильтров:', filters);
+    return filters;
+  }
+
   handleSearch() {
     // Получаем запрос из поля ввода, убираем пробелы и приводим к нижнему регистру
     const query = this.searchField.value.trim().toLowerCase();
     console.log('[handleSearch] Запрос:', query || 'пустой');
-    // Запускаем фильтрацию по запросу
-    this.performSearch(query);
+
+    // Читаем текущее состояние фильтров
+    const filters = this.getFilters();
+
+    // Запускаем фильтрацию по запросу и фильтрам
+    this.performSearch(query, filters);
   }
 
-  performSearch(query) {
+  performSearch(query, filtersFromArgs = null) {
     console.log('[performSearch] Начало фильтрации. Запрос:', query);
     console.log('[performSearch] Исходных статей:', this.originalArticles.length);
 
- if (!query || query.trim() === '') {
-    console.log('[performSearch] Пустой запрос — сброс фильтра');
-    this.currentArticles = [...this.originalArticles];
-    this.showMessage(null);
-    return;
-  }
+    // Нормализуем запрос: убираем пробелы и приводим к нижнему регистру
+    const normalizedQuery = (query || '').trim().toLowerCase();
+    const hasQuery = normalizedQuery.length > 0;
 
-  // Нормализуем запрос: убираем пробелы и приводим к нижнему регистру
-  const normalizedQuery = query.trim().toLowerCase();
+    // Читаем фильтры: либо из аргумента (при клике по кнопке), либо из DOM (при updateArticles)
+    const filters = filtersFromArgs || this.getFilters();
 
-  this.currentArticles = this.originalArticles.filter(article => {
-    // Безопасное получение и нормализация полей
-    const title = (article.Title || article.title || '').toLowerCase();
-    const authorName = (
-      article.authors?.[0]?.Name ||
-      article.authors?.[0]?.name ||
-      ''
-    ).toLowerCase();
+    const hasAnyFilter =
+      filters.facultyValue !== 'All' ||
+      filters.areaValue !== 'All' ||
+      filters.directionValue !== 'All';
 
-    // Собираем весь текст из контента (с проверкой на существование полей)
-    let contentText = '';
-    const contentBlocks = article.Content || article.content || [];
-    
-    for (const block of contentBlocks) {
-      if (block.children && Array.isArray(block.children)) {
-        for (const child of block.children) {
-          if (child.text) {
-            contentText += child.text + ' ';
+    // Если запроса нет и все фильтры в положении "Все" — показываем все статьи без фильтрации
+    if (!hasQuery && !hasAnyFilter) {
+      console.log('[performSearch] Пустой запрос и фильтры по умолчанию — показываем все статьи');
+      this.currentArticles = [...this.originalArticles];
+      this.showMessage(null);
+      window.allArticles = this.currentArticles;
+      this.renderPage(1);
+      return;
+    }
+
+    this.currentArticles = this.originalArticles.filter(article => {
+      // === 1. Поиск по ключевым словам ===
+      // Безопасное получение и нормализация полей
+      const title = (article.Title || article.title || '').toLowerCase();
+      const authorName = (
+        article.authors?.[0]?.Name ||
+        article.authors?.[0]?.name ||
+        ''
+      ).toLowerCase();
+
+      // Собираем весь текст из контента (с проверкой на существование полей)
+      let contentText = '';
+      const contentBlocks = article.Content || article.content || [];
+      
+      if (Array.isArray(contentBlocks)) {
+        for (const block of contentBlocks) {
+          if (block && block.children && Array.isArray(block.children)) {
+            for (const child of block.children) {
+              if (child && child.text) {
+                contentText += child.text + ' ';
+              }
+            }
           }
         }
       }
-    }
-    contentText = contentText.toLowerCase();
+      contentText = contentText.toLowerCase();
 
-    // Проверяем совпадение по любому из полей
-    return (
-      title.includes(normalizedQuery) ||
-      authorName.includes(normalizedQuery) ||
-      contentText.includes(normalizedQuery)
-    );
-  });
+      // === 1. Поиск по ключевым словам ===
+      // Если запрос пустой - пропускаем все статьи по ключевым словам
+      // Если запрос есть - ОБЯЗАТЕЛЬНО должно быть совпадение хотя бы в одном поле
+      let matchesKeyword = true; // По умолчанию пропускаем все (если запрос пустой)
+      
+      if (hasQuery) {
+        // Разбиваем запрос на отдельные слова для более точного поиска
+        const queryWords = normalizedQuery.split(/\s+/).filter(word => word.length > 0);
+        
+        if (queryWords.length > 0) {
+          // Проверяем, что хотя бы ОДНО слово из запроса найдено в любом из полей (OR логика)
+          // Это означает: если пользователь ввёл "экономика финансы", 
+          // то найдёт статьи, где есть хотя бы одно из этих слов
+          matchesKeyword = queryWords.some(word => {
+            const wordFound = (
+              title.includes(word) ||
+              authorName.includes(word) ||
+              contentText.includes(word)
+            );
+            return wordFound;
+          });
+          
+          // Альтернативный вариант: ВСЕ слова должны быть найдены (AND логика)
+          // Раскомментируйте следующую строку и закомментируйте предыдущую, если нужна AND логика:
+          // matchesKeyword = queryWords.every(word => title.includes(word) || authorName.includes(word) || contentText.includes(word));
+          
+          if (!matchesKeyword) {
+            console.log(`[performSearch] Статья "${article.Title}" не содержит ключевых слов "${normalizedQuery}"`);
+          }
+        } else {
+          matchesKeyword = false; // Если запрос состоит только из пробелов
+        }
+      }
+
+      // === 2. Фильтры по выпадающим спискам ===
+      const facultyName = (article.faculty || '').toLowerCase();
+      const scienceAreaName = (article.scienceArea || '').toLowerCase();
+      const scienceDirectionName = (article.scienceDirection || '').toLowerCase();
+
+      const matchesFaculty =
+        filters.facultyValue === 'All' ||
+        (facultyName && facultyName.includes(filters.facultyLabel));
+
+      const matchesArea =
+        filters.areaValue === 'All' ||
+        (scienceAreaName && scienceAreaName.includes(filters.areaLabel));
+
+      const matchesDirection =
+        filters.directionValue === 'All' ||
+        (scienceDirectionName && scienceDirectionName.includes(filters.directionLabel));
+
+      // Статья проходит фильтр только если:
+      // 1. Совпадает по ключевым словам (если они указаны)
+      // 2. И совпадает по всем активным фильтрам
+      const passesFilter = matchesKeyword && matchesFaculty && matchesArea && matchesDirection;
+      
+      if (passesFilter && hasQuery) {
+        console.log(`[performSearch] Статья "${article.Title}" прошла фильтр по запросу "${normalizedQuery}"`);
+      }
+      
+      return passesFilter;
+    });
 
   // Обработка результатов
   if (this.currentArticles.length === 0) {
@@ -229,6 +336,9 @@ class ArticleSearch {
       const contentBlocks = article.Content || article.content || [];
       const publication = article.Publication || article.publication || article.publishedAt;
       const authors = Array.isArray(article.authors) ? article.authors : [];
+      const scientificField = article.scienceArea || 'Научная область не указана';
+      const researchDirection = article.scienceDirection || 'Научное направление не указано';
+      const faculty = article.faculty || 'Не указан';
 
       // Формируем превью текста (первые 2 абзаца, до 200 символов)
       const previewText = contentBlocks
@@ -258,7 +368,7 @@ class ArticleSearch {
 
       // Формируем ссылку на автора, если есть ID, иначе используем просто имя
       const authorLink = authorId
-        ? `<a href="../html/author.html?id=${authorId}">${authorName}</a>`
+        ? `<a href="author.html?id=${authorId}">${authorName}</a>`
         : authorName;
 
       // Создаём элемент-контейнер для карточки статьи
@@ -269,10 +379,15 @@ class ArticleSearch {
       // Формируем HTML-содержимое карточки
       card.innerHTML = `
         <article class="article-card-body">
+          <div class="article-badges" aria-label="Научная область и научное направление">
+            <div class="article-badge article-badge--field" title="Научная область">${scientificField}</div>
+            <div class="article-badge article-badge--direction" title="Научное направление">${researchDirection}</div>
+          </div>
           <h3 class="article-title">
-            <a href="/article.html?id=${id}" class="article-title-link">${title}</a>
+            <a href="full-article.html?id=${id}" class="article-title-link">${title}</a>
           </h3>
           <div class="article-preview">${previewText}</div>
+          <div class="faculty" aria-label="Факультет статьи">Факультет: <span class="faculty-name">${faculty}</span></div>
           <time class="article-date" datetime="${publication || ''}">📅 ${date}</time>
           <div class="article-author">👤 ${authorLink}</div>
         </article>
@@ -301,16 +416,9 @@ class ArticleSearch {
     // Обновляем исходный массив статей
     this.originalArticles = [...articles];
     
-    // Если поле поиска пустое — сбрасываем текущий набор к новым данным
-    if (!this.searchField.value.trim()) {
-      console.log('[updateArticles] Поиск пуст — сброс к оригиналу');
-      this.currentArticles = [...articles];
-      window.allArticles = [...articles];
-    } else {
-      // Иначе — перезапускаем поиск с текущим запросом
-      console.log('[updateArticles] Перезапуск поиска с текущим запросом');
-      this.performSearch(this.searchField.value.trim().toLowerCase());
-    }
+    // Всегда перезапускаем поиск/фильтрацию с учётом текущего запроса и фильтров
+    console.log('[updateArticles] Перезапуск поиска с текущим запросом и фильтрами');
+    this.performSearch(this.searchField.value.trim().toLowerCase());
     
     // Перерисовываем первую страницу с обновлёнными данными
     this.renderPage(1);

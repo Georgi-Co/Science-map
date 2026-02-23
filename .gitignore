@@ -1,1 +1,8 @@
 node_modules
+.codeassistant
+.cursor
+.vscode
+.codeassistant\rules
+.cursor\rules
+.codeassistant\ rules
+.cursor\ rules
