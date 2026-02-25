@@ -13,20 +13,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log('🔍 Загрузка автора с ID:', authorId);
 
-    const url = new URL(`http://localhost:1337/api/authors/${authorId}`);
-    url.searchParams.append('populate', 'Avatar,articles.Media,articles.Faculty,articles.ScienceArea');
+    // Коллекционный запрос (как для статей) — избегаем 400 от вложенного populate
+    const url = new URL('http://localhost:1337/api/authors');
+    url.searchParams.append('filters[id][$eq]', authorId);
+    url.searchParams.append('populate', '*');
+    url.searchParams.append('publicationState', 'published');
 
     const response = await fetch(url);
     if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
 
     const data = await response.json();
-    if (!data.data) throw new Error('Автор не найден');
+    const list = data.data;
+    const author = Array.isArray(list) ? list[0] : null;
+    if (!author) throw new Error('Автор не найден');
 
-    const author = data.data;
-    const attrs = author.attributes;
+    const attrs = author.attributes || author;
+
+    const authorName = attrs.Name || attrs.name || 'Имя не указано';
+
+    // Заголовок страницы и title
+    const pageH2 = document.getElementById('h2');
+    if (pageH2) {
+      pageH2.textContent = authorName;
+    }
+    document.title = `${authorName} — Научные работы РГЭУ (РИНХ)`;
 
     // Заполняем профиль
-    document.getElementById('author-name').textContent = attrs.Name || 'Имя не указано';
+    document.getElementById('author-name').textContent = authorName;
 
     const positionEl = document.getElementById('author-position');
     if (attrs.Info) {
@@ -35,22 +48,23 @@ document.addEventListener('DOMContentLoaded', async () => {
       positionEl.style.display = 'none';
     }
 
-    document.getElementById('author-bio').textContent =
-      attrs.Bio || 'Биография отсутствует.';
+    // Информация об авторе: Info или Bio (плоский формат — поля сразу в attrs)
+    const authorInfo = attrs.Info || attrs.Bio || attrs.info || attrs.bio || 'Информация не указана.';
+    document.getElementById('author-bio').textContent = authorInfo;
 
-    // Фото
-    const avatar = attrs.Avatar?.data?.attributes;
+    // Фото: поддержка плоского формата (Avatar — объект с url) и вложенного (data.attributes)
+    const avatarData = attrs.Avatar?.data?.attributes ?? attrs.Avatar?.attributes ?? attrs.Avatar;
     const avatarImg = document.getElementById('author-avatar');
-    if (avatar && avatar.url) {
-      avatarImg.src = `http://localhost:1337${avatar.url}`;
-      avatarImg.alt = `Фото ${attrs.Name}`;
+    if (avatarData && avatarData.url) {
+      avatarImg.src = `http://localhost:1337${avatarData.url}`;
+      avatarImg.alt = `Фото ${authorName}`;
     } else {
       avatarImg.style.display = 'none';
     }
 
-    // Загружаем статьи
-    const articles = attrs.articles?.data || [];
-    renderArticles(articles);
+    // Статьи: плоский массив (attrs.articles) или вложенный (attrs.articles?.data)
+    const articles = attrs.articles?.data ?? attrs.articles ?? [];
+    renderArticles(Array.isArray(articles) ? articles : []);
 
   } catch (error) {
     console.error('❌ Ошибка:', error);
@@ -80,45 +94,48 @@ function renderArticles(articles) {
   container.innerHTML = '';
 
   articles.forEach(article => {
-    const attrs = article.attributes;
-    const titleText = attrs.Title || 'Без названия';
-    const faculty = attrs.Faculty?.data?.attributes?.Name || '';
-    const scienceArea = attrs.ScienceArea?.data?.attributes?.Name || '';
-    // Media может быть массивом или одним объектом
-    const mediaData = attrs.Media?.data;
-    const imageUrl = Array.isArray(mediaData) && mediaData.length > 0 
-      ? mediaData[0]?.attributes?.url 
-      : mediaData?.attributes?.url;
-    // Используем превью из Content, если Description отсутствует
-    const contentPreview = Array.isArray(attrs.Content) 
-      ? attrs.Content
-          .filter(block => block.type === 'paragraph')
+    const a = article.attributes || article;
+    const titleText = a.Title || a.title || 'Без названия';
+    const articleId = article.id;
+    const faculty = a.Faculty?.data?.attributes?.Name ?? a.Faculty?.Name ?? '';
+    const scienceArea = a.ScienceArea?.data?.attributes?.Name ?? a.ScienceArea?.Name ?? '';
+    const mediaRaw = a.Media?.data ?? a.Media;
+    const mediaList = Array.isArray(mediaRaw) ? mediaRaw : mediaRaw ? [mediaRaw] : [];
+    const firstMedia = mediaList[0];
+    const mediaAttrs = firstMedia?.attributes ?? firstMedia;
+    const imageUrl = mediaAttrs?.url || '';
+
+    const contentBlocks = a.Content || a.content || [];
+    const contentPreview = Array.isArray(contentBlocks)
+      ? contentBlocks
+          .filter(block => block && block.type === 'paragraph')
           .slice(0, 2)
           .map(block => {
             if (!block.children) return '';
-            return block.children.map(child => child.text || '').join('');
+            return block.children.map(child => (child && child.text) || '').join('');
           })
           .join(' ')
-          .substring(0, 180)
+          .trim()
       : '';
-    const preview = (attrs.Description || contentPreview).substring(0, 180) + ((attrs.Description || contentPreview).length > 180 ? '...' : '');
+    const desc = a.Description || contentPreview;
+    const preview = (desc.length > 180 ? desc.substring(0, 180) + '...' : desc) || 'Нет описания';
 
     const card = document.createElement('div');
     card.className = 'article-card';
     card.innerHTML = `
       <article class="article-card-body">
         <h3 class="article-title">
-          <a href="full-article.html?id=${article.id}" class="article-title-link">${titleText}</a>
+          <a href="full-article.html?id=${articleId}" class="article-title-link">${titleText}</a>
         </h3>
-        ${imageUrl 
-          ? `<img src="http://localhost:1337${imageUrl}" alt="${titleText}" class="article-image">` 
+        ${imageUrl
+          ? `<img src="http://localhost:1337${imageUrl}" alt="${titleText}" class="article-image">`
           : ''}
         <div class="article-meta">
           ${faculty ? `<span class="tag">${faculty}</span>` : ''}
           ${scienceArea ? `<span class="tag">${scienceArea}</span>` : ''}
         </div>
         <div class="article-preview">${preview}</div>
-        <button class="read-more" onclick="window.location.href='full-article.html?id=${article.id}'">Подробнее</button>
+        <button class="read-more" onclick="window.location.href='full-article.html?id=${articleId}'">Подробнее</button>
       </article>
     `;
     container.appendChild(card);

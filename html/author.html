@@ -43,28 +43,30 @@
   <h2 id="h2">Информация об авторе</h2>
 
   <!-- Профиль автора -->
-  <main aria-label="Профиль автора">
+  <main class="layout-author author-page" aria-label="Профиль автора">
     <div class="author-container">
-        <section id="author-profile" class="author-section">
+      <section id="author-profile" class="author-section">
         <div class="author-header">
-            <img src="" alt="Фото автора" id="author-avatar" class="author-avatar">
-            <div class="author-info">
+          <div class="author-photo-frame">
+            <img src="" alt="Фото автора" id="author-avatar" class="author-avatar-large">
+          </div>
+          <div class="author-info">
             <h1 id="author-name">Загрузка...</h1>
             <p id="author-position" class="author-position"></p>
-            </div>
+          </div>
         </div>
         <p id="author-bio" class="author-bio">Биография загружается...</p>
 
         <h3 id="author-articles-title">Научные работы автора</h3>
         <div id="no-articles" class="no-articles" style="display: none;">
-            У этого автора пока нет опубликованных научных работ.
+          У этого автора пока нет опубликованных научных работ.
         </div>
         <div class="articles-grid" id="author-articles">
-            <!-- Сюда вставятся НИРы -->
+          <!-- Сюда вставятся НИРы -->
         </div>
-        </section>
+      </section>
     </div>
-</main>
+  </main>
 
   <!-- Баннеры -->
   <div class="banners" alt="Баннеры">

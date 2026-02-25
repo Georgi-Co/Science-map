@@ -107,7 +107,8 @@ class ArticleSearch {
 
       console.log('[Clear] Сброс статей к оригиналу');
       this.currentArticles = [...this.originalArticles]; // Возвращаем все статьи
-      window.allArticles = this.currentArticles; // Обновляем глобальную переменную
+      // Обновляем глобальный массив, который использует renderPage() из script.js
+      allArticles = this.currentArticles;
 
       console.log('[Clear] Удаление сообщения');
       this.showMessage(null); // Скрываем сообщение об отсутствии результатов
@@ -178,7 +179,8 @@ class ArticleSearch {
       console.log('[performSearch] Пустой запрос и фильтры по умолчанию — показываем все статьи');
       this.currentArticles = [...this.originalArticles];
       this.showMessage(null);
-      window.allArticles = this.currentArticles;
+      // Обновляем глобальный массив, который использует renderPage() из script.js
+      allArticles = this.currentArticles;
       this.renderPage(1);
       return;
     }
@@ -282,9 +284,10 @@ class ArticleSearch {
     this.showMessage(null);
   }
 
-    // Обновляем глобальную переменную с текущими статьями
-    window.allArticles = this.currentArticles;
-    console.log('[performSearch] Обновление window.allArticles:', window.allArticles.length);
+    // Обновляем глобальный массив с текущими статьями,
+    // который использует renderPage() из script.js
+    allArticles = this.currentArticles;
+    console.log('[performSearch] Обновление allArticles:', allArticles.length);
     // Перерисовываем первую страницу с отфильтрованными статьями
     this.renderPage(1);
   }
@@ -453,6 +456,7 @@ function setupSearch(articles, renderPage) {
 
 // Сообщение о загрузке скрипта (для отладки)
 console.log('✅ search.js загружен');
+
 
 
 

@@ -63,39 +63,6 @@
           "localized": true
         }
       }
-    },
-    "faculty": {
-      "type": "enumeration",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "enum": [
-        "Факультет Менеджмента и предпринимательства",
-        "Факультет Торгового дела",
-        "Факультет Компьютерных технологий и информационной безопасности",
-        "Учетно-экономический факультет",
-        "Факультет Экономики и финансов",
-        "Юридический факультет",
-        "Факультет Лингвистики и журналистики"
-      ]
-    },
-    "scientificField": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
-    },
-    "researchDirection": {
-      "type": "string",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
     }
   }
 }

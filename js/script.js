@@ -149,6 +149,19 @@ function renderPage(page = 1) {
       </article>
     `;
 
+    // Переход к полной статье по клику на всю карточку
+    card.addEventListener('click', (event) => {
+      const target = event.target;
+      const link = target.closest('a');
+
+      // Если клик по ссылке (заголовок, автор и т.п.) — не перехватываем
+      if (link) {
+        return;
+      }
+
+      window.location.href = `full-article.html?id=${id}`;
+    });
+
     grid.appendChild(card);
   });
 
@@ -304,3 +317,4 @@ window.addEventListener('resize', () => {
 });
 
 console.log('✅ script.js загружен');
+

@@ -71,16 +71,16 @@ body { /* Главный контейнер (тело сайта) */
 }
 
 
-/* Главный контейнер (тело сайта) для страниц article.html, author.html*/
+/* Главный контейнер (тело сайта) для страниц full-article.html, author.html*/
 /* Специально разграничены с основным body для разграничения в структуре */
 body.layout-article,
 body.layout-author {
   display: grid;
-  grid-template-columns: 1fr 2fr 1fr;
+  grid-template-columns: 1fr 4fr 1fr;
   grid-template-rows: 
     minmax(60px, auto)    /* header */
-    minmax(40px, auto)    /* panel */
-    minmax(40px, 100px)   /* h1 / заголовок */
+    auto                  /* panel */
+    minmax(40px, 100px)   /* h2 / заголовок */
     auto                  /* main — растёт */
     minmax(100px, auto)    /* banners */
     minmax(80px, auto);   /* footer */
@@ -237,6 +237,25 @@ main {
   display: grid;
   flex: 1;
   grid-template-columns: 1fr 3fr 1fr;
+}
+
+/* main-контейнер для страницы author.html */
+main.layout-author {
+  grid-area: main;
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* main-контейнер для страниц full-article.html (и других layout-страниц) */
+main.layout-article {
+  grid-area: main;
+  grid-column: 2;
+  display: block;           /* не сетка как на главной */
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 
@@ -487,7 +506,7 @@ main {
 .articles-grid {  
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* 3 колонки фиксированной ширины */
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-rows: repeat(4, auto);
   flex-wrap: wrap;
   gap: 40px;
 }
@@ -790,3 +809,4 @@ footer {
   align-self: center;
   justify-self: center;
 }
+

@@ -43,9 +43,11 @@ async function loadArticle() {
   }
 
   try {
-    // ✅ Работающий populate для одного элемента
-    const url = new URL(`http://localhost:1337/api/articles/${articleId}`);
-    url.searchParams.append('populate', 'Media,authors.Avatar');
+    // Запрос как в script.js: тот же API и populate, фильтр по id (Strapi v5 — плоский ответ)
+    const url = new URL('http://localhost:1337/api/articles');
+    url.searchParams.append('filters[id][$eq]', articleId);
+    url.searchParams.append('populate', '*');
+    url.searchParams.append('publicationState', 'published');
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -53,31 +55,129 @@ async function loadArticle() {
     }
 
     const data = await response.json();
-    const article = data.data;
+    const articles = data.data;
+    const article = Array.isArray(articles) ? articles[0] : null;
 
     if (!article) {
       container.innerHTML = '<p>❌ Статья не найдена или не опубликована.</p>';
       return;
     }
 
-    const attrs = article.attributes;
-    const title = attrs.Title || 'Без заголовка';
-    const contentBlocks = attrs.Content || [];
-    const publication = attrs.Publication;
-    // Media может быть массивом или одним объектом
-    const mediaData = attrs.Media?.data;
-    const imageUrl = Array.isArray(mediaData) && mediaData.length > 0 
-      ? mediaData[0]?.attributes?.url 
-      : mediaData?.attributes?.url;
-    const imageAlt = Array.isArray(mediaData) && mediaData.length > 0
-      ? mediaData[0]?.attributes?.name || mediaData[0]?.attributes?.alternativeText || title
-      : mediaData?.attributes?.name || mediaData?.attributes?.alternativeText || title;
+    // Поддержка и плоского формата (Strapi v5), и вложенного (attributes)
+    const attrs = article.attributes || article;
+    const title = attrs.Title || attrs.title || 'Без заголовка';
+    const contentBlocks = attrs.Content || attrs.content || [];
+    const publication = attrs.Publication || attrs.publication;
 
-    const authorData = attrs.authors?.data?.[0];
-    const authorName = authorData?.attributes?.Name || 'Автор не указан';
-    const authorId = authorData?.id;
+    // Заголовок статьи в верхний h2 (область grid "h2")
+    const pageH2 = document.getElementById('h2');
+    if (pageH2) {
+      pageH2.textContent = title;
+    }
+    document.title = `${title} — РГЭУ (РИНХ)`;
 
-    // Генерация контента
+    // Медиа: может быть data (вложенный) или сразу массив/объект (плоский)
+    const mediaRaw = attrs.Media?.data ?? attrs.Media;
+    const mediaList = Array.isArray(mediaRaw)
+      ? mediaRaw
+      : mediaRaw
+        ? [mediaRaw]
+        : [];
+    const mediaItems = mediaList.map(function (item) {
+      return item?.attributes || item;
+    }).filter(Boolean);
+
+    let mainImage = mediaItems[0] || null;
+    const extraMedia = mediaItems.slice(1);
+    const imageUrl = mainImage?.url;
+    const imageAlt = mainImage?.name || mainImage?.alternativeText || title;
+
+    const mediaHTML = extraMedia.length
+      ? `
+        <section class="article-media" aria-label="Медиафайлы статьи">
+          <h2 class="article-section-title">Медиафайлы</h2>
+          <div class="article-media-grid">
+            ${extraMedia.map(media => {
+              const url = media.url;
+              const name = media.name || media.alternativeText || 'Медиафайл';
+              const mime = media.mime || '';
+
+              if (!url) {
+                return '';
+              }
+
+              if (mime.startsWith('image/')) {
+                return `
+                  <figure class="article-media-item">
+                    <img 
+                      src="http://localhost:1337${url}" 
+                      alt="${name}" 
+                      loading="lazy"
+                    >
+                    <figcaption>${name}</figcaption>
+                  </figure>
+                `;
+              }
+
+              if (mime.startsWith('video/')) {
+                return `
+                  <figure class="article-media-item">
+                    <video controls preload="metadata">
+                      <source src="http://localhost:1337${url}" type="${mime}">
+                      Ваш браузер не поддерживает воспроизведение видео.
+                    </video>
+                    <figcaption>${name}</figcaption>
+                  </figure>
+                `;
+              }
+
+              return `
+                <div class="article-media-item">
+                  <a href="http://localhost:1337${url}" target="_blank" rel="noopener">
+                    ${name}
+                  </a>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </section>
+      `
+      : '';
+
+    // Авторы: и data (вложенный), и плоский массив
+    const authorsRaw = attrs.authors?.data ?? attrs.authors;
+    const authorsList = Array.isArray(authorsRaw) ? authorsRaw : authorsRaw ? [authorsRaw] : [];
+    const authorsHTML = authorsList.length
+      ? authorsList.map(author => {
+          const a = author?.attributes || author;
+          const name = a?.Name || a?.name || 'Автор';
+          const id = author?.id;
+          return id
+            ? `<a href="author.html?id=${id}" class="author-link">${name}</a>`
+            : `<span class="author-name">${name}</span>`;
+        }).join(', ')
+      : 'Автор(ы) не указаны';
+
+    // Теги
+    const tagsRaw = attrs.Tags?.data ?? attrs.tags?.data ?? attrs.Tags ?? attrs.tags;
+    const tagsList = Array.isArray(tagsRaw) ? tagsRaw : tagsRaw ? [tagsRaw] : [];
+    const tagsData = tagsList;
+    const tagsHTML = tagsData.length
+      ? `
+        <section class="article-tags" aria-label="Теги статьи">
+          <h2 class="article-section-title">Теги</h2>
+          <ul class="article-tags-list">
+            ${tagsData.map(tagItem => {
+              const t = tagItem?.attributes || tagItem || {};
+              const tagName = t.Name || t.name || '';
+              return tagName ? `<li class="article-tag">${tagName}</li>` : '';
+            }).join('')}
+          </ul>
+        </section>
+      `
+      : '';
+
+    // Генерация основного текстового контента
     const contentHTML = Array.isArray(contentBlocks) && contentBlocks.length > 0
       ? contentBlocks
           .map(block => {
@@ -104,19 +204,12 @@ async function loadArticle() {
           .join('')
       : '<p>Содержимое статьи отсутствует.</p>';
 
-    // Формируем разметку
+    // Формируем разметку полной статьи (без дублирования заголовка — он уже в h2)
     container.innerHTML = `
-      <header class="article-header">
-        <h1>${title}</h1>
-        <time datetime="${publication}" class="article-date">
-          📅 Опубликовано: ${formatDate(publication)}
-        </time>
-        <div class="article-author">
-          👤 Автор: ${authorId 
-            ? `<a href="author.html?id=${authorId}" class="author-link">${authorName}</a>` 
-            : authorName}
-        </div>
-      </header>
+      <div class="article-meta" aria-label="Метаданные статьи">
+        <time datetime="${publication || ''}">${formatDate(publication)}</time>
+        <span>Автор(ы): ${authorsHTML}</span>
+      </div>
 
       ${imageUrl 
         ? `<img 
@@ -130,6 +223,9 @@ async function loadArticle() {
         ${contentHTML}
       </div>
 
+      ${mediaHTML}
+      ${tagsHTML}
+
       <footer class="article-footer">
         <a href="index.html" class="back-link">← Вернуться к списку статей</a>
       </footer>
@@ -138,7 +234,7 @@ async function loadArticle() {
   } catch (error) {
     console.error('❌ Ошибка загрузки статьи:', error);
     container.innerHTML = `
-      <p>Ошибка загрузки статьи. Проверь:</p>
+      <p>Ошибка загрузки статьи. Сообщение: <code>${error.message}</code></p>
       <ul>
         <li>Работает ли Strapi: <a href="http://localhost:1337">http://localhost:1337</a></li>
         <li>Опубликована ли статья с ID=${articleId}</li>
