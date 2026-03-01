@@ -33,6 +33,12 @@ main.layout-author.author-page {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
 }
 
+/* Заголовок "Информация об авторе" внутри карточки */
+body.layout-author #h2 {
+  margin: 0 0 24px;
+  font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+}
+
 /* Шапка профиля: фото + текст */
 .author-header {
   display: flex;

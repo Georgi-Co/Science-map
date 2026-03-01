@@ -10,7 +10,7 @@
   --q-positive: #21ba45;
   --q-negative: #c10015;
   --q-info: #0f42ce; /* Цвет научной области */
-  --q-warning: #f0b12b; /* Цвет научного направления */  
+  --q-warning: #fcba04; /* Цвет научного направления */  
   --q-dark: #2a2e32;
   --q-dark-page: #212529;
   --q-text-color: #222222;
@@ -154,6 +154,24 @@ h1 {
   z-index: 15;
 }
 
+#title a {
+  display: flex;
+  justify-self: center;
+  align-self: center;
+  max-height: 100px;
+  padding: 10px;
+  flex: 1;
+  font-family:"LatoWeb";
+  font-size: clamp(1rem, 2.5vw, 2.1rem);
+  font-weight: 900;
+  letter-spacing: .01em;
+  line-height: 1.25;
+  filter: blur(0.45px);
+  z-index: 15;
+  color: inherit;
+  text-decoration: none; /* Не меняем стиль шрифта и подчёркивание */
+}
+
 #acc-local-container {
   grid-column: 3;
   display: grid;
@@ -229,6 +247,26 @@ h1 {
 #ruen a {
   min-width: 16px;
   min-height: 16px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+#ruen a.active {
+  color: var(--q-focus-color); /* Используем переменную для цвета активного языка */
+  font-weight: bold;
+}
+
+#ruen a:hover {
+  color: var(--q-focus-color); /* Используем переменную для цвета при наведении */
+}
+
+/* Стили для активной кнопки в режиме доступности */
+.acc-panel--open #ruen a.active {
+  color: var(--q-focus-color); /* Используем переменную для цвета активного языка */
+}
+
+.acc-panel--open #ruen a:hover {
+  color: var(--q-focus-color); /* Используем переменную для цвета при наведении */
 }
 
 /* Стили секции main*/
@@ -676,6 +714,30 @@ main.layout-article {
   text-align: justify;
 }
 
+/* Строка тегов в карточке на главной */
+.article-tags-line {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.article-tag-chip {
+  border: 1px solid var(--q-alternative);
+  background-color: transparent;
+  color: var(--q-alternative);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.article-tag-chip:hover,
+.article-tag-chip:focus {
+  background-color: var(--q-alternative);
+  color: #fff;
+}
+
 .banners { /* Контейнер баннеров*/
   grid-row: 3;
   grid-column: 2;
@@ -741,6 +803,10 @@ footer {
   box-shadow: 0 -6px 10px -2px rgba(0, 0, 0, 0.2);
 }
 
+footer a {
+  text-decoration: none; /* Убираем подчеркивание у всех ссылок в футере */
+}
+
 .foot-container { /* Класс ячеек футтера */
   display: flex;
   flex-direction: column;
@@ -767,7 +833,6 @@ footer {
 #foot-con-4 {
   grid-column: 4;
   padding: 0 45px 0 15px;
-  text-decoration: none;
 }
 
 .zagfot { /* Заголовки колонок футтера*/

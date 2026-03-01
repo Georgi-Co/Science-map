@@ -37,6 +37,10 @@ class ArticleSearch {
     this.originalArticles = [...articles];
     // Текущий набор статей (может меняться при фильтрации)
     this.currentArticles = [...articles];
+
+    // Активный тег из URL (если задан ?tag=...)
+    const params = new URLSearchParams(window.location.search);
+    this.activeTag = params.get('tag') ? params.get('tag').toLowerCase() : null;
     // Функция для перерисовки страниц (передаётся извне)
     this.renderPage = renderPageFunction;
 
@@ -110,6 +114,12 @@ class ArticleSearch {
       // Обновляем глобальный массив, который использует renderPage() из script.js
       allArticles = this.currentArticles;
 
+      // Сбрасываем активный тег и очищаем параметр ?tag в URL
+      this.activeTag = null;
+      const url = new URL(window.location.href);
+      url.searchParams.delete('tag');
+      window.history.replaceState({}, '', url.toString());
+
       console.log('[Clear] Удаление сообщения');
       this.showMessage(null); // Скрываем сообщение об отсутствии результатов
 
@@ -169,13 +179,15 @@ class ArticleSearch {
     // Читаем фильтры: либо из аргумента (при клике по кнопке), либо из DOM (при updateArticles)
     const filters = filtersFromArgs || this.getFilters();
 
+    const hasTagFilter = !!this.activeTag;
+
     const hasAnyFilter =
       filters.facultyValue !== 'All' ||
       filters.areaValue !== 'All' ||
       filters.directionValue !== 'All';
 
-    // Если запроса нет и все фильтры в положении "Все" — показываем все статьи без фильтрации
-    if (!hasQuery && !hasAnyFilter) {
+    // Если запроса нет, тегов нет и все фильтры в положении "Все" — показываем все статьи без фильтрации
+    if (!hasQuery && !hasAnyFilter && !hasTagFilter) {
       console.log('[performSearch] Пустой запрос и фильтры по умолчанию — показываем все статьи');
       this.currentArticles = [...this.originalArticles];
       this.showMessage(null);
@@ -263,10 +275,17 @@ class ArticleSearch {
         filters.directionValue === 'All' ||
         (scienceDirectionName && scienceDirectionName.includes(filters.directionLabel));
 
+      // === 3. Фильтр по тегу (если задан activeTag) ===
+      const articleTags = Array.isArray(article.tags) ? article.tags : [];
+      const matchesTag =
+        !this.activeTag ||
+        articleTags.some(tag => (tag || '').toLowerCase() === this.activeTag);
+
       // Статья проходит фильтр только если:
       // 1. Совпадает по ключевым словам (если они указаны)
       // 2. И совпадает по всем активным фильтрам
-      const passesFilter = matchesKeyword && matchesFaculty && matchesArea && matchesDirection;
+      // 3. И соответствует активному тегу (если он задан)
+      const passesFilter = matchesKeyword && matchesFaculty && matchesArea && matchesDirection && matchesTag;
       
       if (passesFilter && hasQuery) {
         console.log(`[performSearch] Статья "${article.Title}" прошла фильтр по запросу "${normalizedQuery}"`);

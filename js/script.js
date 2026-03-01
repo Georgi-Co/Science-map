@@ -91,6 +91,7 @@ function renderPage(page = 1) {
     const scientificField = article.scienceArea || 'Научная область не указана';
     const researchDirection = article.scienceDirection || 'Научное направление не указано';
     const faculty = article.faculty || 'Не указан';
+    const tags = Array.isArray(article.tags) ? article.tags : [];
 
     // Превью текста (первые 2 абзаца, до 200 символов)
     let previewText = '';
@@ -146,6 +147,10 @@ function renderPage(page = 1) {
         <div class="faculty" aria-label="Факультет статьи">Факультет: <span class="faculty-name">${faculty}</span></div>
         <time class="article-date" datetime="${publication || ''}">📅 ${date}</time>
         <div class="article-author">👤 ${authorLink}</div>
+        ${tags.length ? `
+        <div class="article-tags-line" aria-label="Теги статьи">
+          ${tags.map(tag => `<button type="button" class="article-tag-chip" data-tag="${tag}">${tag}</button>`).join('')}
+        </div>` : ''}
       </article>
     `;
 
@@ -163,6 +168,25 @@ function renderPage(page = 1) {
     });
 
     grid.appendChild(card);
+  });
+
+  // Навешиваем обработчики на теги после рендера карточек
+  const tagChips = document.querySelectorAll('.article-tag-chip');
+  tagChips.forEach(chip => {
+    const tag = chip.getAttribute('data-tag');
+    if (!tag) return;
+    chip.addEventListener('click', (event) => {
+      // Не даём клику по тегу срабатывать как клик по карточке
+      event.stopPropagation();
+      const url = new URL(window.location.href);
+      url.searchParams.set('tag', tag);
+      window.history.replaceState({}, '', url.toString());
+
+      if (typeof articleSearch === 'object' && articleSearch) {
+        articleSearch.activeTag = tag.toLowerCase();
+        articleSearch.performSearch(articleSearch.searchField?.value || '');
+      }
+    });
   });
 
   // Инициализация пагинации (если функция доступна)
@@ -211,6 +235,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         const attrs = item.attributes || item;
         const authors = attrs.authors?.data || attrs.authors || [];
 
+        // Теги
+        const tagsRaw = attrs.Tags?.data ?? attrs.tags?.data ?? attrs.Tags ?? attrs.tags;
+        const tagsList = Array.isArray(tagsRaw) ? tagsRaw : tagsRaw ? [tagsRaw] : [];
+        const tags = tagsList
+          .map(tagItem => {
+            const t = tagItem.attributes || tagItem || {};
+            return t.Name || t.name || '';
+          })
+          .filter(Boolean);
+
         // Возможные связи для фильтров (факультет, область, направление)
         const facultyRel = attrs.Faculty?.data;
         const scienceAreaRel = attrs.ScienceArea?.data;
@@ -238,7 +272,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           // Поля для работы фильтров на клиенте
           faculty: facultyName,
           scienceArea: scienceAreaName,
-          scienceDirection: scienceDirectionName
+          scienceDirection: scienceDirectionName,
+          tags
         };
         
         console.log('📄 Обработанная статья:', { 

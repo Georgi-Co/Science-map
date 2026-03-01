@@ -177,6 +177,32 @@ async function loadArticle() {
       `
       : '';
 
+    // Вложенные файлы
+    const filesRaw = attrs.Files?.data ?? attrs.Files;
+    const filesList = Array.isArray(filesRaw) ? filesRaw : filesRaw ? [filesRaw] : [];
+    const filesData = filesList.map(item => item?.attributes || item).filter(Boolean);
+    const filesHTML = filesData.length
+      ? `
+        <section class="article-files" aria-label="Вложенные файлы">
+          <h2 class="article-section-title">Вложенные файлы</h2>
+          <ul class="article-files-list">
+            ${filesData.map(fileItem => {
+              const url = fileItem?.url;
+              const name = fileItem?.name || 'Файл';
+              return url ? `
+                <li>
+                  <a href="http://localhost:1337${url}" target="_blank" class="article-file" download>
+                    <span class="file-icon">📎</span>
+                    ${name}
+                  </a>
+                </li>
+              ` : '';
+            }).join('')}
+          </ul>
+        </section>
+      `
+      : '';
+
     // Генерация основного текстового контента
     const contentHTML = Array.isArray(contentBlocks) && contentBlocks.length > 0
       ? contentBlocks
@@ -225,9 +251,10 @@ async function loadArticle() {
 
       ${mediaHTML}
       ${tagsHTML}
+      ${filesHTML}
 
       <footer class="article-footer">
-        <a href="index.html" class="back-link">← Вернуться к списку статей</a>
+        <a href="index.html" class="back-link" data-i18n="← Вернуться к списку статей">← Вернуться к списку статей</a>
       </footer>
     `;
 

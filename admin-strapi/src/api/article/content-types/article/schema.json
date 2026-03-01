@@ -31,6 +31,35 @@
         }
       }
     },
+    "Slug": {
+      "type": "uid",
+      "targetField": "Title"
+    },
+    "Publication": {
+      "type": "date",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "Faculty": {
+      "type": "enumeration",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "enum": [
+        "Факультет Менеджмента и предпринимательства",
+        "Факультет Торгового дела",
+        "Факультет Компьютерных технологий и информационной безопасности",
+        "Учетно-экономический факультет",
+        "Факультет Экономики и финансов",
+        "Юридический факультет",
+        "Факультет Лингвистики и журналистики"
+      ]
+    },
     "Media": {
       "type": "media",
       "pluginOptions": {
@@ -46,23 +75,16 @@
         "audios"
       ]
     },
-    "Slug": {
-      "type": "uid",
-      "targetField": "Title"
-    },
     "authors": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::author.author",
       "inversedBy": "articles"
     },
-    "Publication": {
-      "type": "date",
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      }
+    "tags": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::tag.tag"
     }
   }
 }
