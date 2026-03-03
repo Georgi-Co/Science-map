@@ -5,11 +5,26 @@
  */
 
 (function () {
+  // Получаем кнопку переключения панели доступности
   const toggleBtn = document.getElementById('toggle-accessible');
   if (!toggleBtn) return;
 
+  // Базовый путь к иконкам
   const ICON_BASE = '../img/';
 
+  // Функция для получения перевода
+  function t(key) {
+    if (window.localization && typeof window.localization.getTranslation === 'function') {
+      return window.localization.getTranslation(key);
+    }
+    // Fallback: возвращаем ключ (русский текст по умолчанию)
+    return key;
+  }
+
+  /**
+   * Создает контейнер для панели доступности
+   * @returns {HTMLElement|null} Элемент контейнера или null, если не удалось создать
+   */
   function getPanelContainer() {
     const header = document.querySelector('header');
     if (!header || !header.nextElementSibling) return null;
@@ -23,6 +38,10 @@
     return wrap;
   }
 
+  /**
+   * Создает панель доступности с элементами управления
+   * @returns {HTMLElement|null} Элемент панели или null, если не удалось создать
+   */
   function createPanel() {
     const wrap = getPanelContainer();
     if (!wrap) return null;
@@ -31,61 +50,64 @@
     panel.id = 'accessibility-toolbar';
     panel.className = 'acc-panel';
     panel.setAttribute('role', 'region');
-    panel.setAttribute('aria-label', 'Версия для слабовидящих');
+    panel.setAttribute('aria-label', t('Версия для слабовидящих'));
+    
+    // Создаем HTML-разметку панели с кнопками управления
     panel.innerHTML = `
       <div class="acc-panel__inner">
         <div class="acc-group acc-group--content">
-          <button type="button" class="acc-btn acc-btn--content" data-action="content" title="Перейти к содержанию">
-            <img src="${ICON_BASE}arrow_circle_down.svg" alt="" class="acc-icon" aria-hidden="true"> К содержанию
+          <button type="button" class="acc-btn acc-btn--content" data-action="content" title="${t('Перейти к содержанию')}">
+            <img src="${ICON_BASE}arrow_circle_down.svg" alt="" class="acc-icon" aria-hidden="true"> ${t('К содержанию')}
           </button>
         </div>
 
         <div class="acc-group acc-group--font">
-          <span class="acc-label">Шрифт</span>
+          <span class="acc-label">${t('Шрифт')}</span>
           <div class="acc-btn-group acc-btn-group--font">
-            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="100" aria-pressed="false" title="Маленький шрифт">
+            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="100" aria-pressed="false" title="${t('Маленький шрифт')}">
               <span class="acc-font-preview acc-font-preview--small">А</span>
             </button>
-            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="150" aria-pressed="false" title="Средний шрифт">
+            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="150" aria-pressed="false" title="${t('Средний шрифт')}">
               <span class="acc-font-preview acc-font-preview--medium">А</span>
             </button>
-            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="200" aria-pressed="false" title="Крупный шрифт">
+            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="200" aria-pressed="false" title="${t('Крупный шрифт')}">
               <span class="acc-font-preview acc-font-preview--large">А</span>
             </button>
           </div>
         </div>
 
         <div class="acc-group acc-group--color">
-          <span class="acc-label">Цвет</span>
+          <span class="acc-label">${t('Цвет')}</span>
           <div class="acc-btn-group acc-btn-group--color">
-            <button type="button" class="acc-btn acc-btn--color acc-btn--color-1" data-action="color" data-scheme="color-1" aria-pressed="false" title="Бело-чёрная">Ц</button>
-            <button type="button" class="acc-btn acc-btn--color acc-btn--color-2" data-action="color" data-scheme="color-2" aria-pressed="false" title="Чёрно-белая">Ц</button>
-            <button type="button" class="acc-btn acc-btn--color acc-btn--color-3" data-action="color" data-scheme="color-beige" aria-pressed="false" title="Бежевая">Ц</button>
+            <button type="button" class="acc-btn acc-btn--color acc-btn--color-1" data-action="color" data-scheme="color-1" aria-pressed="false" title="${t('Бело-чёрная')}">Ц</button>
+            <button type="button" class="acc-btn acc-btn--color acc-btn--color-2" data-action="color" data-scheme="color-2" aria-pressed="false" title="${t('Чёрно-белая')}">Ц</button>
+            <button type="button" class="acc-btn acc-btn--color acc-btn--color-3" data-action="color" data-scheme="color-beige" aria-pressed="false" title="${t('Бежевая')}">Ц</button>
           </div>
         </div>
 
         <div class="acc-group acc-group--audio">
-          <span class="acc-label">Озвучка</span>
+          <span class="acc-label">${t('Озвучка')}</span>
           <div class="acc-btn-group">
             <button type="button"
                     class="acc-btn acc-btn--audio"
                     data-action="audio-toggle"
                     aria-pressed="false"
-                    title="Включить озвучку страницы">
-              <img src="${ICON_BASE}volume_off.svg" alt="Озвучка выкл" class="acc-icon acc-icon-audio acc-icon-audio--off" aria-hidden="true">
-              <img src="${ICON_BASE}volume_on.svg"  alt="Озвучка вкл"  class="acc-icon acc-icon-audio acc-icon-audio--on"  aria-hidden="true" style="display:none;">
+                    title="${t('Включить озвучку страницы')}">
+              <img src="${ICON_BASE}volume_off.svg" alt="${t('Озвучка выкл')}" class="acc-icon acc-icon-audio acc-icon-audio--off" aria-hidden="true">
+              <img src="${ICON_BASE}volume_on.svg"  alt="${t('Озвучка вкл')}"  class="acc-icon acc-icon-audio acc-icon-audio--on"  aria-hidden="true" style="display:none;">
             </button>
           </div>
         </div>
 
         <div class="acc-group acc-group--normal">
+        <span class="acc-label">${t('Обычная версия')}</span>
           <div class="acc-btn-group">
             <button type="button"
                     class="acc-btn acc-btn--normal"
                     data-action="reset"
                     aria-pressed="false"
-                    title="Обычная версия сайта">
-              <img src="${ICON_BASE}visibility_off.svg" alt="Обычная версия" class="acc-icon" aria-hidden="true">
+                    title="${t('Обычная версия сайта')}">
+              <img src="${ICON_BASE}visibility_off.svg" alt="${t('Обычная версия')}" class="acc-icon" aria-hidden="true">
             </button>
           </div>
         </div>
@@ -97,6 +119,72 @@
     return panel;
   }
 
+  /**
+   * Обновляет тексты панели доступности в соответствии с текущим языком
+   * @param {HTMLElement} panel - Панель доступности
+   */
+  function updatePanelTexts(panel) {
+    if (!panel) return;
+    // Обновляем тексты кнопок и заголовков
+    const contentBtn = panel.querySelector('[data-action="content"]');
+    if (contentBtn) {
+      contentBtn.title = t('Перейти к содержанию');
+      contentBtn.querySelector('.acc-icon').nextSibling.textContent = ' ' + t('К содержанию');
+    }
+    panel.querySelectorAll('.acc-label').forEach(label => {
+      const text = label.textContent.trim();
+      let key;
+      if (text === 'Шрифт') key = 'Шрифт';
+      else if (text === 'Цвет') key = 'Цвет';
+      else if (text === 'Озвучка') key = 'Озвучка';
+      else if (text === 'Обычная версия') key = 'Обычная версия';
+      else return;
+      label.textContent = t(key);
+    });
+    // Обновляем title у кнопок шрифта
+    panel.querySelectorAll('[data-action="font"]').forEach(btn => {
+      const size = btn.getAttribute('data-size');
+      let key;
+      if (size === '100') key = 'Маленький шрифт';
+      else if (size === '150') key = 'Средний шрифт';
+      else if (size === '200') key = 'Крупный шрифт';
+      else return;
+      btn.title = t(key);
+    });
+    // Обновляем title у кнопок цвета
+    panel.querySelectorAll('[data-action="color"]').forEach(btn => {
+      const scheme = btn.getAttribute('data-scheme');
+      let key;
+      if (scheme === 'color-1') key = 'Бело-чёрная';
+      else if (scheme === 'color-2') key = 'Чёрно-белая';
+      else if (scheme === 'color-beige') key = 'Бежевая';
+      else return;
+      btn.title = t(key);
+    });
+    // Обновляем title у кнопки аудио
+    const audioBtn = panel.querySelector('[data-action="audio-toggle"]');
+    if (audioBtn) {
+      audioBtn.title = t('Включить озвучку страницы');
+    }
+    // Обновляем alt у иконок аудио
+    const iconOff = audioBtn?.querySelector('.acc-icon-audio--off');
+    const iconOn = audioBtn?.querySelector('.acc-icon-audio--on');
+    if (iconOff) iconOff.alt = t('Озвучка выкл');
+    if (iconOn) iconOn.alt = t('Озвучка вкл');
+    // Обновляем title у кнопки обычной версии
+    const resetBtn = panel.querySelector('[data-action="reset"]');
+    if (resetBtn) {
+      resetBtn.title = t('Обычная версия сайта');
+      const icon = resetBtn.querySelector('.acc-icon');
+      if (icon) icon.alt = t('Обычная версия');
+    }
+    // Обновляем aria-label панели
+    panel.setAttribute('aria-label', t('Версия для слабовидящих'));
+  }
+
+  /**
+   * Загружает стили для панели доступности
+   */
   function loadAccessibilityStyles() {
     if (document.getElementById('accessibility-css')) return;
     const link = document.createElement('link');
@@ -106,6 +194,12 @@
     document.head.appendChild(link);
   }
 
+  /**
+   * Обновляет состояние кнопок в группе
+   * @param {HTMLElement} panel - Панель доступности
+   * @param {string} groupSelector - Селектор группы кнопок
+   * @param {HTMLElement} activeBtn - Активная кнопка
+   */
   function updateButtonState(panel, groupSelector, activeBtn) {
     if (!panel) return;
     panel.querySelectorAll(groupSelector).forEach(function (btn) {
@@ -118,9 +212,14 @@
     }
   }
 
+  /**
+   * Настраивает обработчики событий для элементов панели
+   * @param {HTMLElement} panel - Панель доступности
+   */
   function setupHandlers(panel) {
     const html = document.documentElement;
 
+    // Обработчик кнопки "К содержанию"
     panel.querySelector('[data-action="content"]')?.addEventListener('click', function () {
       const target = document.getElementById('articles-container') || document.querySelector('main');
       if (target) {
@@ -130,6 +229,7 @@
       }
     });
 
+    // Обработчики кнопок изменения размера шрифта
     panel.querySelectorAll('[data-action="font"]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         const size = btn.getAttribute('data-size');
@@ -140,6 +240,7 @@
       });
     });
 
+    // Обработчики кнопок изменения цветовой схемы
     panel.querySelectorAll('[data-action="color"]').forEach(function (btn) {
       btn.addEventListener('click', function () {
         const scheme = btn.getAttribute('data-scheme');
@@ -187,6 +288,11 @@
     }
   }
 
+  /**
+   * Устанавливает состояние аудио кнопки
+   * @param {HTMLElement} panel - Панель доступности
+   * @param {boolean} on - Состояние включения
+   */
   function setAudioState(panel, on) {
     if (!panel) return;
     var audioBtn = panel.querySelector('[data-action="audio-toggle"]');
@@ -205,6 +311,10 @@
     localStorage.setItem('accAudioEnabled', on ? 'true' : 'false');
   }
 
+  /**
+   * Восстанавливает сохраненные настройки доступности
+   * @param {HTMLElement} panel - Панель доступности
+   */
   function restoreSettings(panel) {
     var html = document.documentElement;
     var savedSize = localStorage.getItem('accFontSize');
@@ -230,6 +340,7 @@
 
   var panelWrap = null;
 
+  // Обработчик клика по кнопке переключения панели доступности
   toggleBtn.addEventListener('click', function (e) {
     e.preventDefault();
     panelWrap = document.getElementById('accessibility-panel-wrap');
@@ -246,6 +357,10 @@
         restoreSettings(panel);
       }
     }
+    // Обновляем тексты панели в соответствии с текущим языком
+    if (panel) {
+      updatePanelTexts(panel);
+    }
     if (panelWrap) {
       var isHidden = panelWrap.getAttribute('aria-hidden') === 'true';
       panelWrap.setAttribute('aria-hidden', !isHidden);
@@ -254,6 +369,7 @@
     }
   });
 
+  // При загрузке страницы проверяем, нужно ли открыть панель доступности
   window.addEventListener('load', function () {
     if (localStorage.getItem('accPanelOpen') === 'true') {
       toggleBtn.click();
@@ -263,6 +379,9 @@
   var utterance = null;
   var isSpeaking = false;
 
+  /**
+   * Озвучивает содержимое страницы
+   */
   function speakPageContent() {
     if (isSpeaking || !window.speechSynthesis) return;
     var textEls = document.body.querySelectorAll('p, h1, h2, h3, h4, h5, h6, li, button, a, label');
@@ -281,6 +400,9 @@
     isSpeaking = true;
   }
 
+  /**
+   * Останавливает озвучку
+   */
   function stopSpeech() {
     if (window.speechSynthesis) speechSynthesis.cancel();
     isSpeaking = false;

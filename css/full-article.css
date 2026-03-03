@@ -13,7 +13,7 @@
   grid-area: main;
   max-width: 900px; /* Ограничиваем ширину для комфортного чтения */
   margin: 0 auto;   /* Центрируем внутри main */
-  padding: 20px;
+  padding: 80px;
   font-family: 'Roboto', sans-serif;
   line-height: 1.8;
   color: #333;
@@ -62,8 +62,10 @@
 
 /* === 4. Изображение статьи === */
 .article-full-image {
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: 360px;
+  max-height: 360px;
   border-radius: 8px;
   margin: 24px 0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

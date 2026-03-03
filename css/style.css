@@ -486,7 +486,7 @@ main.layout-article {
   transition: all 0.2s ease;
     /* Подчёркивание — пунктирное, близко к тексту */
   text-decoration: underline;
-  text-decoration-style: dashed;
+  text-decoration-style: dashed !important;
   text-decoration-color: #666;
   text-underline-offset: 8px; /* Расстояние от текста до пунктира */
   text-decoration-thickness: 1.5px; /* Толщина пунктира */
@@ -833,6 +833,7 @@ footer a {
 #foot-con-4 {
   grid-column: 4;
   padding: 0 45px 0 15px;
+  row-gap: 10px;
 }
 
 .zagfot { /* Заголовки колонок футтера*/

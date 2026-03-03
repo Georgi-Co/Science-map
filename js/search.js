@@ -1,6 +1,6 @@
 
 
-// search.js — расширенная версия с отладкой
+// search.js — логика поиска
 
 class ArticleSearch {
   constructor(articles, renderPageFunction) {

@@ -1,4 +1,3 @@
-
 // pagination.js — клиентская пагинация с перепривязкой обработчиков
 
 /**
@@ -23,11 +22,11 @@ function createPagination(currentPage = 1, totalPages = 1, containerSelector = '
   // Удаляем старые блоки пагинации
   container.querySelectorAll('.pagination').forEach(el => el.remove());
 
-  // Генерация HTML
+  // Генерация HTML с учетом текущего языка
   const generatePaginationHTML = () => {
     const prevButton = `
-      <button class="pagination-prev" ${currentPage <= 1 ? 'disabled' : ''} aria-label="Предыдущая страница">
-        &lt; Назад
+      <button class="pagination-prev" ${currentPage <= 1 ? 'disabled' : ''} aria-label="${window.localization.getTranslation("Предыдущая страница")}">
+        < ${window.localization.getTranslation("Назад")}
       </button>
     `;
 
@@ -38,7 +37,7 @@ function createPagination(currentPage = 1, totalPages = 1, containerSelector = '
         <button 
           class="pagination-page ${isActive ? 'active' : ''}" 
           data-page="${page}"
-          aria-label="Страница ${page}" 
+          aria-label="${window.localization.getTranslation("Страница")} ${page}" 
           ${isActive ? 'aria-current="page"' : ''}>
           ${page}
         </button>
@@ -46,8 +45,8 @@ function createPagination(currentPage = 1, totalPages = 1, containerSelector = '
     }).join('');
 
     const nextButton = `
-      <button class="pagination-next" ${currentPage >= totalPages ? 'disabled' : ''} aria-label="Следующая страница">
-        Вперёд &gt;
+      <button class="pagination-next" ${currentPage >= totalPages ? 'disabled' : ''} aria-label="${window.localization.getTranslation("Следующая страница")}">
+        ${window.localization.getTranslation("Вперёд")} >
       </button>
     `;
 
@@ -108,7 +107,22 @@ function bindPaginationEvents(currentPage, totalPages) {
   });
 }
 
+// Функция для обновления пагинации при смене языка
+function updatePaginationLanguage() {
+  // Находим контейнер пагинации
+  const container = document.querySelector('#articles-container');
+  if (!container) return;
+  
+  // Получаем текущую страницу и общее количество страниц
+  // (предполагаем, что эти значения доступны глобально)
+  const currentPage = window.currentPaginationPage || 1;
+  const totalPages = window.totalPaginationPages || 1;
+  
+  // Пересоздаем пагинацию
+  createPagination(currentPage, totalPages, '#articles-container');
+}
+
+// Добавляем обновление пагинации при смене языка
+document.addEventListener('languageChanged', updatePaginationLanguage);
+
 console.log('✅ pagination.js загружен');
-
-
-
