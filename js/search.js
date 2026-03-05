@@ -5,33 +5,33 @@
 class ArticleSearch {
   constructor(articles, renderPageFunction) {
     console.log('[ArticleSearch] Конструктор вызван');
-    
-      // Выводим структуру первой статьи для анализа
-  if (articles.length > 0) {
-    console.log('[ArticleSearch] Пример структуры статьи:', {
-      id: articles[0].id,
-      Title: articles[0].Title,
-      title: articles[0].title,
-      Content: Array.isArray(articles[0].Content) ? articles[0].Content.length : 'нет',
-      content: Array.isArray(articles[0].content) ? articles[0].content.length : 'нет',
-      authors: Array.isArray(articles[0].authors) ? articles[0].authors.length : 'нет'
-    });
-  }
+
+    // Выводим структуру первой статьи для анализа
+    if (articles.length > 0) {
+      console.log('[ArticleSearch] Пример структуры статьи:', {
+        id: articles[0].id,
+        Title: articles[0].Title,
+        title: articles[0].title,
+        Content: Array.isArray(articles[0].Content) ? articles[0].Content.length : 'нет',
+        content: Array.isArray(articles[0].content) ? articles[0].content.length : 'нет',
+        authors: Array.isArray(articles[0].authors) ? articles[0].authors.length : 'нет'
+      });
+    }
 
     // Вставьте после класса ArticleSearch
-  function testSearch() {
-    const testArticles = [
-      { id: 1, Title: "JavaScript для начинающих", Content: [{ children: [{ text: "Основы JS" }] }], authors: [{ Name: "Алексей" }] },
-      { id: 2, Title: "CSS Grid", Content: [{ children: [{ text: "Верстка" }] }, { children: [{ text: "Адаптивность" }] }] }
-    ];
+    function testSearch() {
+      const testArticles = [
+        { id: 1, Title: "JavaScript для начинающих", Content: [{ children: [{ text: "Основы JS" }] }], authors: [{ Name: "Алексей" }] },
+        { id: 2, Title: "CSS Grid", Content: [{ children: [{ text: "Верстка" }] }, { children: [{ text: "Адаптивность" }] }] }
+      ];
 
-    const search = new ArticleSearch(testArticles, () => console.log("Тест рендера"));
-    search.performSearch("JS"); // Должно найти первую статью
-    console.log("Результаты теста:", search.currentArticles);
-  }
+      const search = new ArticleSearch(testArticles, () => console.log("Тест рендера"));
+      search.performSearch("JS"); // Должно найти первую статью
+      console.log("Результаты теста:", search.currentArticles);
+    }
 
-  // Вызовите тест (раскомментируйте для проверки)
-  // testSearch();
+    // Вызовите тест (раскомментируйте для проверки)
+    // testSearch();
 
     // Сохраняем исходные статьи (неизменённые)
     this.originalArticles = [...articles];
@@ -210,7 +210,7 @@ class ArticleSearch {
       // Собираем весь текст из контента (с проверкой на существование полей)
       let contentText = '';
       const contentBlocks = article.Content || article.content || [];
-      
+
       if (Array.isArray(contentBlocks)) {
         for (const block of contentBlocks) {
           if (block && block.children && Array.isArray(block.children)) {
@@ -228,11 +228,11 @@ class ArticleSearch {
       // Если запрос пустой - пропускаем все статьи по ключевым словам
       // Если запрос есть - ОБЯЗАТЕЛЬНО должно быть совпадение хотя бы в одном поле
       let matchesKeyword = true; // По умолчанию пропускаем все (если запрос пустой)
-      
+
       if (hasQuery) {
         // Разбиваем запрос на отдельные слова для более точного поиска
         const queryWords = normalizedQuery.split(/\s+/).filter(word => word.length > 0);
-        
+
         if (queryWords.length > 0) {
           // Проверяем, что хотя бы ОДНО слово из запроса найдено в любом из полей (OR логика)
           // Это означает: если пользователь ввёл "экономика финансы", 
@@ -245,11 +245,11 @@ class ArticleSearch {
             );
             return wordFound;
           });
-          
+
           // Альтернативный вариант: ВСЕ слова должны быть найдены (AND логика)
           // Раскомментируйте следующую строку и закомментируйте предыдущую, если нужна AND логика:
           // matchesKeyword = queryWords.every(word => title.includes(word) || authorName.includes(word) || contentText.includes(word));
-          
+
           if (!matchesKeyword) {
             console.log(`[performSearch] Статья "${article.Title}" не содержит ключевых слов "${normalizedQuery}"`);
           }
@@ -286,22 +286,22 @@ class ArticleSearch {
       // 2. И совпадает по всем активным фильтрам
       // 3. И соответствует активному тегу (если он задан)
       const passesFilter = matchesKeyword && matchesFaculty && matchesArea && matchesDirection && matchesTag;
-      
+
       if (passesFilter && hasQuery) {
         console.log(`[performSearch] Статья "${article.Title}" прошла фильтр по запросу "${normalizedQuery}"`);
       }
-      
+
       return passesFilter;
     });
 
-  // Обработка результатов
-  if (this.currentArticles.length === 0) {
-    console.log('[performSearch] Нет результатов');
-    this.showMessage('❌ Ничего не найдено.');
-  } else {
-    console.log('[performSearch] Найдено статей:', this.currentArticles.length);
-    this.showMessage(null);
-  }
+    // Обработка результатов
+    if (this.currentArticles.length === 0) {
+      console.log('[performSearch] Нет результатов');
+      this.showMessage('❌ Ничего не найдено.');
+    } else {
+      console.log('[performSearch] Найдено статей:', this.currentArticles.length);
+      this.showMessage(null);
+    }
 
     // Обновляем глобальный массив с текущими статьями,
     // который использует renderPage() из script.js
@@ -326,30 +326,30 @@ class ArticleSearch {
 
   renderPage(page = 1) {
 
-  console.log('[renderPage] Вызов с page=', page);
-  
-  const articlesPerPage = getArticlesPerPage();
-  console.log('[renderPage] Статьи на страницу:', articlesPerPage);
+    console.log('[renderPage] Вызов с page=', page);
+
+    const articlesPerPage = getArticlesPerPage();
+    console.log('[renderPage] Статьи на страницу:', articlesPerPage);
 
 
-  // Используем currentArticles (отфильтрованные данные), а не window.allArticles
-  const start = (page - 1) * articlesPerPage;
-  const end = start + articlesPerPage;
-  const articlesToShow = this.currentArticles.slice(start, end);
+    // Используем currentArticles (отфильтрованные данные), а не window.allArticles
+    const start = (page - 1) * articlesPerPage;
+    const end = start + articlesPerPage;
+    const articlesToShow = this.currentArticles.slice(start, end);
 
-  const grid = document.querySelector('.articles-grid');
-  if (!grid) {
-    console.error('[renderPage] .articles-grid не найден');
-    return;
-  }
+    const grid = document.querySelector('.articles-grid');
+    if (!grid) {
+      console.error('[renderPage] .articles-grid не найден');
+      return;
+    }
 
-  grid.innerHTML = ''; // Очищаем контейнер
+    grid.innerHTML = ''; // Очищаем контейнер
 
-  if (articlesToShow.length === 0) {
-    grid.innerHTML = '<p class="no-articles">Нет статей для отображения.</p>';
-    console.log('[renderPage] Нет статей для отображения');
-    return;
-  }
+    if (articlesToShow.length === 0) {
+      grid.innerHTML = '<p class="no-articles">Нет статей для отображения.</p>';
+      console.log('[renderPage] Нет статей для отображения');
+      return;
+    }
 
     // Для каждой статьи создаём карточку и добавляем в контейнер
     articlesToShow.forEach(article => {
@@ -358,9 +358,9 @@ class ArticleSearch {
       const contentBlocks = article.Content || article.content || [];
       const publication = article.Publication || article.publication || article.publishedAt;
       const authors = Array.isArray(article.authors) ? article.authors : [];
-      const scientificField = article.scienceArea || 'Научная область не указана';
-      const researchDirection = article.scienceDirection || 'Научное направление не указано';
-      const faculty = article.faculty || 'Не указан';
+      const scientificField = article.scienceArea || '';
+      const researchDirection = article.scienceDirection || '';
+      const faculty = article.faculty || '';
 
       // Формируем превью текста (первые 2 абзаца, до 200 символов)
       const previewText = contentBlocks
@@ -373,13 +373,13 @@ class ArticleSearch {
         .join(' ')
         .substring(0, 200) + '...';
 
-            // Форматируем дату публикации
+      // Форматируем дату публикации
       const date = publication
         ? new Date(publication).toLocaleDateString('ru-RU', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-          })
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        })
         : 'Дата не указана';
 
       // Обработка информации об авторе
@@ -393,6 +393,14 @@ class ArticleSearch {
         ? `<a href="author.html?id=${authorId}">${authorName}</a>`
         : authorName;
 
+      // Получаем функцию перевода
+      const t = (key) => window.localization?.getTranslation?.(key) || key;
+
+      // Локализованные названия плашек
+      const fieldDisplay = scientificField ? t(scientificField) : t('Научная область не указана');
+      const directionDisplay = researchDirection ? t(researchDirection) : t('Научное направление не указано');
+      const facultyDisplay = faculty ? faculty : t('Не указан');
+
       // Создаём элемент-контейнер для карточки статьи
       const card = document.createElement('div');
       card.className = 'article-card'; // Назначаем CSS-класс для стилизации
@@ -401,15 +409,15 @@ class ArticleSearch {
       // Формируем HTML-содержимое карточки
       card.innerHTML = `
         <article class="article-card-body">
-          <div class="article-badges" aria-label="Научная область и научное направление">
-            <div class="article-badge article-badge--field" title="Научная область">${scientificField}</div>
-            <div class="article-badge article-badge--direction" title="Научное направление">${researchDirection}</div>
+          <div class="article-badges" aria-label="${t('Научная область')} ${t('Научное направление')}">
+            <div class="article-badge article-badge--field" title="${fieldDisplay}">${fieldDisplay}</div>
+            <div class="article-badge article-badge--direction" title="${directionDisplay}">${directionDisplay}</div>
           </div>
           <h3 class="article-title">
             <a href="full-article.html?id=${id}" class="article-title-link">${title}</a>
           </h3>
           <div class="article-preview">${previewText}</div>
-          <div class="faculty" aria-label="Факультет статьи">Факультет: <span class="faculty-name">${faculty}</span></div>
+          <div class="faculty" aria-label="${t('Факультет:')}">${t('Факультет:')} <span class="faculty-name">${facultyDisplay}</span></div>
           <time class="article-date" datetime="${publication || ''}">📅 ${date}</time>
           <div class="article-author">👤 ${authorLink}</div>
         </article>
@@ -420,28 +428,28 @@ class ArticleSearch {
     });
 
     // Выводим в консоль количество отрисованных карточек (для отладки)
-      console.log('[renderPage] Отрисовано карточек:', document.querySelectorAll('.article-card').length);
+    console.log('[renderPage] Отрисовано карточек:', document.querySelectorAll('.article-card').length);
 
-      // Инициализация пагинации
-      if (typeof createPagination === 'function') {
-        const totalPages = Math.ceil(this.currentArticles.length / articlesPerPage);
-        createPagination(page, totalPages);
-      } else {
-        console.warn('[renderPage] Функция createPagination не найдена');
-      }
+    // Инициализация пагинации
+    if (typeof createPagination === 'function') {
+      const totalPages = Math.ceil(this.currentArticles.length / articlesPerPage);
+      createPagination(page, totalPages);
+    } else {
+      console.warn('[renderPage] Функция createPagination не найдена');
     }
+  }
 
   // Метод для обновления списка статей (например, при динамической загрузке новых данных)
   updateArticles(articles) {
     console.log('[updateArticles] Обновление списка статей. Новое количество:', articles.length);
-    
+
     // Обновляем исходный массив статей
     this.originalArticles = [...articles];
-    
+
     // Всегда перезапускаем поиск/фильтрацию с учётом текущего запроса и фильтров
     console.log('[updateArticles] Перезапуск поиска с текущим запросом и фильтрами');
     this.performSearch(this.searchField.value.trim().toLowerCase());
-    
+
     // Перерисовываем первую страницу с обновлёнными данными
     this.renderPage(1);
   }
@@ -454,21 +462,21 @@ let articleSearch = null;
 // Функция для инициализации поиска (внешняя точка входа)
 function setupSearch(articles, renderPage) {
   console.log('[setupSearch] Инициализация поиска');
-  
+
   // Проверка корректности входных данных
   if (!articles || !Array.isArray(articles)) {
     console.error('[setupSearch] Некорректные данные статей:', articles);
     return null;
   }
-  
+
   if (typeof renderPage !== 'function') {
     console.error('[setupSearch] renderPage не является функцией');
     return null;
   }
-  
+
   // Создаём экземпляр класса и сохраняем в глобальную переменную
   articleSearch = new ArticleSearch(articles, renderPage);
-  
+
   console.log('[setupSearch] ArticleSearch создан:', articleSearch);
   return articleSearch;
 }

@@ -31,26 +31,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const authorName = attrs.Name || attrs.name || 'Имя не указано';
 
-    // Заголовок страницы и title
-    const pageH2 = document.getElementById('h2');
-    if (pageH2) {
-      pageH2.textContent = authorName;
-    }
     document.title = `${authorName} — Научные работы РГЭУ (РИНХ)`;
 
     // Заполняем профиль
     document.getElementById('author-name').textContent = authorName;
 
     const positionEl = document.getElementById('author-position');
-    if (attrs.Info) {
-      positionEl.textContent = attrs.Info;
+    const infoText = attrs.Info || attrs.info || '';
+    if (infoText) {
+      positionEl.textContent = infoText;
     } else {
       positionEl.style.display = 'none';
     }
 
-    // Информация об авторе: Info или Bio (плоский формат — поля сразу в attrs)
-    const authorInfo = attrs.Info || attrs.Bio || attrs.info || attrs.bio || 'Информация не указана.';
-    document.getElementById('author-bio').textContent = authorInfo;
+    const bioText = attrs.Bio || attrs.bio || '';
+    const bioEl = document.getElementById('author-bio');
+    if (bioText) {
+      bioEl.textContent = bioText;
+    } else {
+      bioEl.style.display = 'none';
+    }
 
     // Фото: поддержка плоского формата (Avatar — объект с url) и вложенного (data.attributes)
     const avatarData = attrs.Avatar?.data?.attributes ?? attrs.Avatar?.attributes ?? attrs.Avatar;
@@ -108,14 +108,14 @@ function renderArticles(articles) {
     const contentBlocks = a.Content || a.content || [];
     const contentPreview = Array.isArray(contentBlocks)
       ? contentBlocks
-          .filter(block => block && block.type === 'paragraph')
-          .slice(0, 2)
-          .map(block => {
-            if (!block.children) return '';
-            return block.children.map(child => (child && child.text) || '').join('');
-          })
-          .join(' ')
-          .trim()
+        .filter(block => block && block.type === 'paragraph')
+        .slice(0, 2)
+        .map(block => {
+          if (!block.children) return '';
+          return block.children.map(child => (child && child.text) || '').join('');
+        })
+        .join(' ')
+        .trim()
       : '';
     const desc = a.Description || contentPreview;
     const preview = (desc.length > 180 ? desc.substring(0, 180) + '...' : desc) || 'Нет описания';
@@ -128,8 +128,8 @@ function renderArticles(articles) {
           <a href="full-article.html?id=${articleId}" class="article-title-link">${titleText}</a>
         </h3>
         ${imageUrl
-          ? `<img src="http://localhost:1337${imageUrl}" alt="${titleText}" class="article-image">`
-          : ''}
+        ? `<img src="http://localhost:1337${imageUrl}" alt="${titleText}" class="article-image">`
+        : ''}
         <div class="article-meta">
           ${faculty ? `<span class="tag">${faculty}</span>` : ''}
           ${scienceArea ? `<span class="tag">${scienceArea}</span>` : ''}

@@ -56,7 +56,7 @@ function getArticlesPerPage() {
 function renderPage(page = 1) {
   console.log('[renderPage] Вызов с page=', page);
   console.log('[renderPage] Всего статей в allArticles:', allArticles.length);
-  
+
   currentPage = page;
   const articlesPerPage = getArticlesPerPage();
   const start = (page - 1) * articlesPerPage;
@@ -79,7 +79,7 @@ function renderPage(page = 1) {
     grid.innerHTML = '<p class="no-articles">Нет статей для отображения.</p>';
     return;
   }
-  
+
   console.log('[renderPage] Начинаю рендеринг', articlesToShow.length, 'статей');
 
   articlesToShow.forEach(article => {
@@ -88,9 +88,9 @@ function renderPage(page = 1) {
     const contentBlocks = article.Content || article.content || [];
     const publication = article.Publication || article.publication || article.publishedAt;
     const authors = Array.isArray(article.authors) ? article.authors : [];
-    const scientificField = article.scienceArea || 'Научная область не указана';
-    const researchDirection = article.scienceDirection || 'Научное направление не указано';
-    const faculty = article.faculty || 'Не указан';
+    const scientificField = article.scienceArea || '';
+    const researchDirection = article.scienceDirection || '';
+    const faculty = article.faculty || '';
     const tags = Array.isArray(article.tags) ? article.tags : [];
 
     // Превью текста (первые 2 абзаца, до 200 символов)
@@ -105,8 +105,8 @@ function renderPage(page = 1) {
         })
         .join(' ')
         .trim();
-      
-      previewText = text.length > 0 
+
+      previewText = text.length > 0
         ? (text.substring(0, 200) + (text.length > 200 ? '...' : ''))
         : 'Описание отсутствует';
     } else {
@@ -116,10 +116,10 @@ function renderPage(page = 1) {
     // Форматирование даты
     const date = publication
       ? new Date(publication).toLocaleDateString('ru-RU', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        })
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
       : 'Дата не указана';
 
     // Обработка автора
@@ -130,21 +130,29 @@ function renderPage(page = 1) {
       ? `<a href="author.html?id=${authorId}">${authorName}</a>`
       : authorName;
 
+    // Получаем функцию перевода
+    const t = (key) => window.localization?.getTranslation?.(key) || key;
+
+    // Локализованные названия плашек
+    const fieldDisplay = scientificField ? t(scientificField) : t('Научная область не указана');
+    const directionDisplay = researchDirection ? t(researchDirection) : t('Научное направление не указано');
+    const facultyDisplay = faculty ? faculty : t('Не указан');
+
     // Создание карточки статьи
     const card = document.createElement('div');
     card.className = 'article-card';
 
     card.innerHTML = `
       <article class="article-card-body">
-        <div class="article-badges" aria-label="Научная область и научное направление">
-          <div class="article-badge article-badge--field" title="Научная область">${scientificField}</div>
-          <div class="article-badge article-badge--direction" title="Научное направление">${researchDirection}</div>
+        <div class="article-badges" aria-label="${t('Научная область')} ${t('Научное направление')}">
+          <div class="article-badge article-badge--field" title="${fieldDisplay}">${fieldDisplay}</div>
+          <div class="article-badge article-badge--direction" title="${directionDisplay}">${directionDisplay}</div>
         </div>
         <h3 class="article-title">
           <a href="full-article.html?id=${id}" class="article-title-link">${title}</a>
         </h3>
         <div class="article-preview">${previewText}</div>
-        <div class="faculty" aria-label="Факультет статьи">Факультет: <span class="faculty-name">${faculty}</span></div>
+        <div class="faculty" aria-label="${t('Факультет:')}">${t('Факультет:')} <span class="faculty-name">${facultyDisplay}</span></div>
         <time class="article-date" datetime="${publication || ''}">📅 ${date}</time>
         <div class="article-author">👤 ${authorLink}</div>
         ${tags.length ? `
@@ -214,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     url.searchParams.append('sort', 'Publication:desc');
 
     const response = await fetch(url);
-    
+
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
@@ -246,14 +254,15 @@ document.addEventListener('DOMContentLoaded', async () => {
           .filter(Boolean);
 
         // Возможные связи для фильтров (факультет, область, направление)
-        const facultyRel = attrs.Faculty?.data;
-        const scienceAreaRel = attrs.ScienceArea?.data;
-        const scienceDirectionRel = attrs.ScienceDirection?.data;
+        // Strapi v5: enum-поля приходят как плоские строки
+        // Strapi v4: relations приходят как { data: { attributes: { Name: ... } } }
+        const facultyName = (typeof attrs.Faculty === 'string' ? attrs.Faculty : null)
+          || attrs.Faculty?.data?.attributes?.Name || '';
+        const scienceAreaName = (typeof attrs.ScienceArea === 'string' ? attrs.ScienceArea : null)
+          || attrs.ScienceArea?.data?.attributes?.Name || '';
+        const scienceDirectionName = (typeof attrs.ScienceDirection === 'string' ? attrs.ScienceDirection : null)
+          || attrs.ScienceDirection?.data?.attributes?.Name || '';
 
-        const facultyName = facultyRel?.attributes?.Name || '';
-        const scienceAreaName = scienceAreaRel?.attributes?.Name || '';
-        const scienceDirectionName = scienceDirectionRel?.attributes?.Name || '';
-        
         const article = {
           id: item.id,
           Title: attrs.Title || attrs.title || '',
@@ -275,10 +284,10 @@ document.addEventListener('DOMContentLoaded', async () => {
           scienceDirection: scienceDirectionName,
           tags
         };
-        
-        console.log('📄 Обработанная статья:', { 
-          id: article.id, 
-          title: article.Title, 
+
+        console.log('📄 Обработанная статья:', {
+          id: article.id,
+          title: article.Title,
           hasContent: Array.isArray(article.Content) && article.Content.length > 0,
           hasPublication: !!article.Publication,
           authorsCount: article.authors.length,
@@ -288,9 +297,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         return article;
       });
-      // Не фильтруем, так как publicationState уже фильтрует на стороне API
-      // Оставляем все статьи, которые были возвращены API
-    
+    // Не фильтруем, так как publicationState уже фильтрует на стороне API
+    // Оставляем все статьи, которые были возвращены API
+
     console.log('✅ Всего обработано статей:', allArticles.length);
     console.log('✅ Первая статья:', allArticles[0]);
 
@@ -353,3 +362,9 @@ window.addEventListener('resize', () => {
 
 console.log('✅ script.js загружен');
 
+// При смене языка — перерисовываем карточки
+document.addEventListener('languageChanged', () => {
+  if (allArticles.length > 0) {
+    renderPage(currentPage);
+  }
+});

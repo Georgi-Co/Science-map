@@ -55,6 +55,10 @@ function createPagination(currentPage = 1, totalPages = 1, containerSelector = '
 
   const paginationHTML = generatePaginationHTML();
 
+  // Сохраняем текущее состояние для обновления при смене языка
+  window.currentPaginationPage = currentPage;
+  window.totalPaginationPages = totalPages;
+
   // Вставляем сверху
   const topPagination = document.createElement('div');
   topPagination.className = 'pagination';
@@ -112,12 +116,12 @@ function updatePaginationLanguage() {
   // Находим контейнер пагинации
   const container = document.querySelector('#articles-container');
   if (!container) return;
-  
+
   // Получаем текущую страницу и общее количество страниц
   // (предполагаем, что эти значения доступны глобально)
   const currentPage = window.currentPaginationPage || 1;
   const totalPages = window.totalPaginationPages || 1;
-  
+
   // Пересоздаем пагинацию
   createPagination(currentPage, totalPages, '#articles-container');
 }

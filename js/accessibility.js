@@ -51,7 +51,7 @@
     panel.className = 'acc-panel';
     panel.setAttribute('role', 'region');
     panel.setAttribute('aria-label', t('Версия для слабовидящих'));
-    
+
     // Создаем HTML-разметку панели с кнопками управления
     panel.innerHTML = `
       <div class="acc-panel__inner">
@@ -62,7 +62,7 @@
         </div>
 
         <div class="acc-group acc-group--font">
-          <span class="acc-label">${t('Шрифт')}</span>
+          <span class="acc-label" data-i18n-key="Шрифт">${t('Шрифт')}</span>
           <div class="acc-btn-group acc-btn-group--font">
             <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="100" aria-pressed="false" title="${t('Маленький шрифт')}">
               <span class="acc-font-preview acc-font-preview--small">А</span>
@@ -77,16 +77,16 @@
         </div>
 
         <div class="acc-group acc-group--color">
-          <span class="acc-label">${t('Цвет')}</span>
+          <span class="acc-label" data-i18n-key="Цвет">${t('Цвет')}</span>
           <div class="acc-btn-group acc-btn-group--color">
-            <button type="button" class="acc-btn acc-btn--color acc-btn--color-1" data-action="color" data-scheme="color-1" aria-pressed="false" title="${t('Бело-чёрная')}">Ц</button>
-            <button type="button" class="acc-btn acc-btn--color acc-btn--color-2" data-action="color" data-scheme="color-2" aria-pressed="false" title="${t('Чёрно-белая')}">Ц</button>
-            <button type="button" class="acc-btn acc-btn--color acc-btn--color-3" data-action="color" data-scheme="color-beige" aria-pressed="false" title="${t('Бежевая')}">Ц</button>
+            <button type="button" class="acc-btn acc-btn--color acc-btn--color-1" data-action="color" data-scheme="color-1" aria-pressed="false" title="${t('Цветовая схема №1')}">Ц</button>
+            <button type="button" class="acc-btn acc-btn--color acc-btn--color-2" data-action="color" data-scheme="color-2" aria-pressed="false" title="${t('Цветовая схема №2')}">Ц</button>
+            <button type="button" class="acc-btn acc-btn--color acc-btn--color-3" data-action="color" data-scheme="color-beige" aria-pressed="false" title="${t('Цветовая схема №3')}">Ц</button>
           </div>
         </div>
 
         <div class="acc-group acc-group--audio">
-          <span class="acc-label">${t('Озвучка')}</span>
+          <span class="acc-label" data-i18n-key="Озвучка">${t('Озвучка')}</span>
           <div class="acc-btn-group">
             <button type="button"
                     class="acc-btn acc-btn--audio"
@@ -100,7 +100,7 @@
         </div>
 
         <div class="acc-group acc-group--normal">
-        <span class="acc-label">${t('Обычная версия')}</span>
+        <span class="acc-label" data-i18n-key="Обычная версия">${t('Обычная версия')}</span>
           <div class="acc-btn-group">
             <button type="button"
                     class="acc-btn acc-btn--normal"
@@ -132,14 +132,10 @@
       contentBtn.querySelector('.acc-icon').nextSibling.textContent = ' ' + t('К содержанию');
     }
     panel.querySelectorAll('.acc-label').forEach(label => {
-      const text = label.textContent.trim();
-      let key;
-      if (text === 'Шрифт') key = 'Шрифт';
-      else if (text === 'Цвет') key = 'Цвет';
-      else if (text === 'Озвучка') key = 'Озвучка';
-      else if (text === 'Обычная версия') key = 'Обычная версия';
-      else return;
-      label.textContent = t(key);
+      const key = label.getAttribute('data-i18n-key');
+      if (key) {
+        label.textContent = t(key);
+      }
     });
     // Обновляем title у кнопок шрифта
     panel.querySelectorAll('[data-action="font"]').forEach(btn => {
@@ -155,9 +151,9 @@
     panel.querySelectorAll('[data-action="color"]').forEach(btn => {
       const scheme = btn.getAttribute('data-scheme');
       let key;
-      if (scheme === 'color-1') key = 'Бело-чёрная';
-      else if (scheme === 'color-2') key = 'Чёрно-белая';
-      else if (scheme === 'color-beige') key = 'Бежевая';
+      if (scheme === 'color-1') key = 'Цветовая схема №1';
+      else if (scheme === 'color-2') key = 'Цветовая схема №2';
+      else if (scheme === 'color-beige') key = 'Цветовая схема №3';
       else return;
       btn.title = t(key);
     });
@@ -278,6 +274,10 @@
         localStorage.removeItem('accColorScheme');
         localStorage.removeItem('accAudioEnabled');
 
+        // Сбрасываем активные состояния кнопок размеров шрифта и цветовых схем
+        updateButtonState(panel, '.acc-btn-group--font .acc-btn', null);
+        updateButtonState(panel, '.acc-btn-group--color .acc-btn', null);
+
         var wrap = document.getElementById('accessibility-panel-wrap');
         if (wrap) {
           wrap.setAttribute('aria-hidden', 'true');
@@ -299,13 +299,13 @@
     if (!audioBtn) return;
 
     var iconOff = audioBtn.querySelector('.acc-icon-audio--off');
-    var iconOn  = audioBtn.querySelector('.acc-icon-audio--on');
+    var iconOn = audioBtn.querySelector('.acc-icon-audio--on');
 
     audioBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
     audioBtn.classList.toggle('active', on);
     if (iconOff && iconOn) {
       iconOff.style.display = on ? 'none' : 'block';
-      iconOn.style.display  = on ? 'block' : 'none';
+      iconOn.style.display = on ? 'block' : 'none';
     }
 
     localStorage.setItem('accAudioEnabled', on ? 'true' : 'false');
@@ -373,6 +373,14 @@
   window.addEventListener('load', function () {
     if (localStorage.getItem('accPanelOpen') === 'true') {
       toggleBtn.click();
+    }
+  });
+
+  // Обновляем тексты панели при смене языка
+  document.addEventListener('languageChanged', function () {
+    const panel = document.getElementById('accessibility-toolbar');
+    if (panel) {
+      updatePanelTexts(panel);
     }
   });
 

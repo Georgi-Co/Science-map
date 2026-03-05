@@ -89,7 +89,20 @@ const translations = {
     "Включить озвучку страницы": "Включить озвучку страницы",
     "Обычная версия сайта": "Обычная версия сайта",
     "Озвучка выкл": "Озвучка выкл",
-    "Озвучка вкл": "Озвучка вкл"
+    "Озвучка вкл": "Озвучка вкл",
+    "Скачать PDF": "Скачать PDF",
+    "Скачать статью в формате PDF": "Скачать статью в формате PDF",
+    "Научная область": "Научная область",
+    "Научное направление": "Научное направление",
+    "Научная область не указана": "Научная область не указана",
+    "Научное направление не указано": "Научное направление не указано",
+    "Факультет:": "Факультет:",
+    "Не указан": "Не указан",
+    "Автор не указан": "Автор не указан",
+    "Дата не указана": "Дата не указана",
+    "Описание отсутствует": "Описание отсутствует",
+    "Без заголовка": "Без заголовка",
+    "Нет статей для отображения.": "Нет статей для отображения."
   },
   en: {
     "Все научные проекты": "All Research Projects",
@@ -172,13 +185,25 @@ const translations = {
     "Маленький шрифт": "Small font",
     "Средний шрифт": "Medium font",
     "Крупный шрифт": "Large font",
-    "Бело-чёрная": "White-black",
-    "Чёрно-белая": "Black-white",
-    "Бежевая": "Beige",
+    "Цветовая схема №1": "White-black",
+    "Цветовая схема №2": "Black-white",
+    "Цветовая схема №3": "Beige",
     "Включить озвучку страницы": "Enable page speech",
     "Обычная версия сайта": "Normal version of the site",
     "Озвучка выкл": "Speech off",
-    "Озвучка вкл": "Speech on"
+    "Озвучка вкл": "Speech on",
+    "Скачать PDF": "Download PDF",
+    "Скачать статью в формате PDF": "Download article as PDF",
+    "Научная область": "Scientific Area",
+    "Научное направление": "Research Direction",
+    "Научная область не указана": "Scientific area not specified",
+    "Научное направление не указано": "Research direction not specified",
+    "Не указан": "Not specified",
+    "Автор не указан": "Author not specified",
+    "Дата не указана": "Date not specified",
+    "Описание отсутствует": "No description",
+    "Без заголовка": "Untitled",
+    "Нет статей для отображения.": "No articles to display."
   }
 };
 
@@ -191,6 +216,8 @@ function setLanguage(lang) {
   localStorage.setItem('language', lang);
   updateContent();
   updateActiveLanguageButton();
+  // Оповещаем другие модули (пагинация, панель доступности) о смене языка
+  document.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
 }
 
 // Функция для получения перевода
@@ -278,5 +305,5 @@ window.localization = {
   setLanguage,
   getTranslation,
   updateContent,
-  currentLanguage
+  get currentLanguage() { return currentLanguage; }
 };

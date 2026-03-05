@@ -1,60 +1,114 @@
-
 /* author.css — стили страницы автора */
+/* Современный, отзывчивый и премиальный дизайн */
 
 /* Трёхколоночная сетка body для layout-author: 1fr 5fr 1fr */
 body.layout-author {
-  grid-template-columns: 1fr 5fr 1fr;
+  /* Базовые стили из style.css */
 }
 
-/* Основной контейнер main — по центру, как в full-article */
+/* Основной контейнер main — по центру */
 main.layout-author.author-page {
   grid-area: main;
   grid-column: 2;
   width: 100%;
-  max-width: 100%;
+  max-width: 1200px;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
 /* Обёртка профиля автора */
 .author-container {
   display: flex;
   justify-content: center;
-  padding: 20px;
+  padding: 40px 20px;
 }
 
 /* Карточка автора по центру */
 .author-section {
   width: 100%;
-  max-width: 900px;
   margin: 0 auto;
-  padding: 24px 24px 32px;
+  padding: 50px 60px;
   background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border-radius: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06), 0 2px 10px rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.author-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, #0e1060, #0f42ce, #2ca1ff, #9C27B0);
 }
 
 /* Заголовок "Информация об авторе" внутри карточки */
 body.layout-author #h2 {
-  margin: 0 0 24px;
-  font-size: clamp(1.6rem, 2.5vw, 2.1rem);
+  margin: 0 0 40px;
+  font-size: 32px;
+  color: #0e1060;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-align: center;
+  position: relative;
+  padding-bottom: 15px;
 }
+
+body.layout-author #h2::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: #2ca1ff;
+  border-radius: 2px;
+}
+
 
 /* Шапка профиля: фото + текст */
 .author-header {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 24px;
+  gap: 40px;
+  margin-bottom: 40px;
+  background: #f8f9fc;
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.02);
+  border: 1px solid #edf2f7;
 }
 
-/* Рамка для фото автора — 400x400 */
+/* Рамка для фото автора */
 .author-photo-frame {
-  width: 400px;
-  height: 400px;
-  border-radius: 16px;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  /* Круглое фото смотрится премиальнее */
   overflow: hidden;
-  background-color: #f2f2f2;
+  background-color: #ffffff;
   flex-shrink: 0;
+  box-shadow: 0 10px 25px rgba(14, 16, 96, 0.15);
+  border: 5px solid #ffffff;
+  position: relative;
+}
+
+.author-photo-frame::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(44, 161, 255, 0.3);
+  pointer-events: none;
 }
 
 /* Крупное фото автора */
@@ -63,74 +117,200 @@ body.layout-author #h2 {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.5s ease;
 }
+
+.author-photo-frame:hover .author-avatar-large {
+  transform: scale(1.05);
+}
+
 
 /* Текстовая информация об авторе */
 .author-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* Имя автора */
 #author-name {
-  margin: 0 0 8px;
+  margin: 0 0 15px;
+  font-size: 38px;
+  color: #1a202c;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -1px;
 }
 
 /* Должность автора */
 .author-position {
   margin: 0;
-  color: #555;
+  color: #4a5568;
+  font-size: 20px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* Биография и список НИРов */
+.author-position::before {
+  content: '🎓';
+  font-size: 24px;
+}
+
+/* Биография */
 .author-bio {
-  margin: 24px 0;
-  line-height: 1.6;
+  margin: 0 0 50px 0;
+  line-height: 1.8;
+  font-size: 18px;
+  color: #4a5568;
+  text-align: justify;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 16px;
+  border-left: 4px solid #0f42ce;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
 }
 
 /* Заголовок списка НИРов */
 #author-articles-title {
-  margin-top: 24px;
-  margin-bottom: 12px;
+  margin: 0 0 30px 0;
+  font-size: 28px;
+  color: #0e1060;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#author-articles-title::before {
+  content: '📚';
+  font-size: 26px;
 }
 
 /* Блок "нет статей" */
 .no-articles {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  padding: 30px;
+  text-align: center;
+  background: #f7fafc;
+  border-radius: 12px;
+  color: #718096;
+  font-size: 18px;
+  font-style: italic;
+  border: 1px dashed #cbd5e0;
 }
 
 /* Сетка НИРов автора — используем существующую .articles-grid из style.css */
 #author-articles {
-  margin-top: 8px;
+  margin-top: 20px;
 }
 
 /* Планшеты */
-@media (min-width: 601px) and (max-width: 1024px) {
+@media (min-width: 769px) and (max-width: 1024px) {
+  .author-container {
+    padding: 20px 10px;
+  }
+
+  .author-section {
+    padding: 40px;
+  }
+
+  .author-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 20px;
+    gap: 25px;
+  }
+
   .author-photo-frame {
-    width: 260px;
-    height: 260px;
+    width: 220px;
+    height: 220px;
+  }
+
+  .author-position {
+    justify-content: center;
+  }
+
+  body.layout-author #h2 {
+    font-size: 28px;
+  }
+
+  #author-name {
+    font-size: 32px;
   }
 }
 
 /* Мобильные устройства */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  body.layout-author {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'header'
+      'panel'
+      'main'
+      'banners'
+      'footer';
+  }
+
   main.layout-author.author-page {
-    margin: 0 16px 16px;
+    grid-column: 1;
+  }
+
+  .author-container {
+    padding: 15px;
+  }
+
+  .author-section {
+    padding: 30px 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  body.layout-author #h2 {
+    font-size: 26px;
+    margin-bottom: 30px;
   }
 
   .author-header {
     flex-direction: column;
     align-items: center;
     text-align: center;
+    gap: 20px;
+    padding: 20px 15px;
+    border-radius: 16px;
   }
 
   .author-photo-frame {
     width: 180px;
     height: 180px;
+    border-width: 3px;
+  }
+
+  #author-name {
+    font-size: 26px;
+  }
+
+  .author-position {
+    font-size: 16px;
+    justify-content: center;
+  }
+
+  .author-position::before {
+    font-size: 20px;
   }
 
   .author-bio {
     text-align: left;
+    font-size: 16px;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 40px;
+  }
+
+  #author-articles-title {
+    font-size: 22px;
   }
 }
-

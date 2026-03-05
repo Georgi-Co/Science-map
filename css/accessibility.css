@@ -156,21 +156,21 @@ select {
 ========================= */
 
 .acc-btn--color-1 {
-  background: #ffffff;
-  color: #000000;
-  border-color: #000000;
+  background: #ffffff !important;
+  color: #000000 !important;
+  border-color: #000000 !important;
 }
 
 .acc-btn--color-2 {
-  background: #000000;
-  color: #ffffff;
-  border-color: #000000;
+  background: #000000 !important;
+  color: #ffffff !important;
+  border-color: #000000 !important;
 }
 
-.acc-btn--color-3 {
-  background: #f5f5dc;
-  color: #5c4a32;
-  border-color: #c4a574;
+#accessibility-toolbar > div > div.acc-group.acc-group--color > div > button.acc-btn.acc-btn--color.acc-btn--color-3 {
+  background: #f5f5dc !important;
+  color: #5c4a32 !important;
+  border-color: #c4a574 !important;
 }
 
 
@@ -207,44 +207,104 @@ html.no-images picture {
    Применяются к body, не трогают панель
 ======================================================= */
 
-/* ---------- Чёрно-белая ---------- */
-
-html.color-1 body {
-  background: #ffffff;
-  color: #000000;
+/* ---------- Цветовая схема №1 (Черным по белому) ---------- */
+html.color-1 {
+  /* только чёрный, белый и серый */
+  --q-secondary: #ffffff;          /* фон страницы */
+  --q-text-color: #000000;         /* основной текст */
+  --q-text-label-color: #000000;
+  --q-primary: #000000;            /* шапка/футер в оттенках чёрного */
+  --q-alternative: #333333;
+  --q-warning: #666666;
+  --white: #ffffff;
+  --q-dark: #000000;
+  --q-dark-page: #000000;
+  --q-text-color-opacity: #808080;
+  --q-focus-color: #ffffff;
 }
 
-html.color-1 body *:not(.acc-panel):not(.acc-panel *) {
+/* Обесцвечивание мейн-секции, баннеров, лого сайта */
+html.color-1 main, html.color-1 div.banners, html.color-1 #a-logo {
   color: #000000;
-  border-color: #000000;
+  /* глобальное обесцвечивание main, кроме исключений ниже */
+  filter: grayscale(100%);
+  -webkit-filter: grayscale(100%);
 }
 
 
-/* ---------- Белый на чёрном ---------- */
 
+/* ---------- Цветовая схема №2 (Белым по черному) ---------- */
+html.color-2 {
+  --q-secondary: #000000;          /* основной фон */
+  --q-text-color: #ffffff;         /* основной текст */
+  --q-text-label-color: #ffffff;
+  --q-primary: #000000;            /* шапка/футер на чёрном */
+  --q-alternative: #ffffff;
+  --q-warning: #ffffff;
+  --white: #000000;                /* все «белые» фоны становятся чёрными */
+  --q-dark: #000000;
+  --q-dark-page: #000000;
+  --q-text-color-opacity: #e0e0e0;
+  --q-focus-color: #ffff00;        /* жёлтый акцент для контраста */
+}
 html.color-2 body {
   background: #000000;
   color: #ffffff;
 }
 
-html.color-2 body *:not(.acc-panel):not(.acc-panel *) {
-  color: #ffffff;
-  border-color: #ffffff;
+html.color-2 body *:not(.acc-panel):not(.acc-panel *):not(#accessibility-panel-wrap):not(#accessibility-panel-wrap *)
+:not(#accessibility-toolbar):not(#accessibility-toolbar *)
+{
+  color: var(--q-text-color);
+  border-color: var(--q-text-color);
+  background-color: #000000 !important; /* белый на сплошном чёрном фоне */
 }
 
 
-/* ---------- Бежевая схема ---------- */
-
+/* ---------- Цветовая схема №3 (Бежевая схема) ---------- */
+html.color-beige {
+  --q-secondary: #f5f0e6;          /* мягкий бежевый фон */
+  --q-text-color: #3b2f1f;         /* тёплый тёмно-коричневый текст */
+  --q-text-label-color: #4a3a28;
+  --q-primary: #5c4a32;            /* шапка/футер в тёплом коричневом */
+  --q-alternative: #8b7355;        /* кнопки/бейджи */
+  --q-warning: #c9a46b;
+  --white: #f9f4ea;                /* светлый бежевый вместо чистого белого */
+  --q-dark: #3d2f22;
+  --q-dark-page: #3d2f22;
+  --q-text-color-opacity: #9b8a76;
+  --q-focus-color: #d28b36;
+}
 html.color-beige body {
-  background: #f5f5dc;
-  color: #3d3529;
+  background: var(--q-secondary);
+  color: var(--q-text-color);
 }
-
-html.color-beige body *:not(.acc-panel):not(.acc-panel *) {
-  color: #3d3529;
+html.color-beige body *:not(.acc-panel):not(.acc-panel *):not(#accessibility-panel-wrap):not(#accessibility-panel-wrap *)
+:not(#accessibility-toolbar):not(#accessibility-toolbar *)
+{
+  color: var(--q-text-color);
   border-color: #8b7355;
 }
 
+
+/* Изображения остаются неизменными во всех цветовых схемах */
+html.color-1 img,
+html.color-1 svg,
+html.color-1 picture,
+html.color-1 video,
+html.color-2 img,
+html.color-2 svg,
+html.color-2 picture,
+html.color-2 video,
+html.color-beige img,
+html.color-beige svg,
+html.color-beige picture,
+html.color-beige video {
+  filter: none !important;
+  -webkit-filter: none !important;
+  color: initial !important;
+  border-color: initial !important;
+}
 
 /* =========================
    АДАПТИВ
@@ -263,6 +323,55 @@ html.color-beige body *:not(.acc-panel):not(.acc-panel *) {
 
 
 
+/* =========================
+   Исключения из правил цветовой схемы
+========================= */
+
+html.color-1 header, html.color-1 header *, html.color-1 footer, html.color-1 footer * {
+  color: #ffffff !important;
+  background: #000000;
+}
+
+html.color-2 header, html.color-2 footer, html.color-2 article > div.article-badges > div.article-badge.article-badge--field, html.color-2 article > div.article-badges > div.article-badge--direction {
+  border-color: #ffffff;
+  border: 1px solid #ffffff;
+}
 
 
 
+html.color-beige header, html.color-beige header *, html.color-beige footer, html.color-beige footer * {
+  background: #5c4a32 !important;
+  color: #ffffff !important;
+}
+
+
+html.color-2 acc-btn--color-2,
+html.color-1 acc-btn--color-2,
+html.color-beige acc-btn--color-2 { /* для кнопки цвета 2 в панели доступности*/
+  color: #ffffff !important;
+}
+
+html.color-2 #accessibility-toolbar > div > div.acc-group.acc-group--normal > span,
+#accessibility-toolbar > div > div.acc-group.acc-group--audio > span, #accessibility-toolbar > div > div.acc-group.acc-group--color > span,
+#accessibility-toolbar > div > div.acc-group.acc-group--font > span {
+  color: #000;
+}
+
+html.color-1 article-badge.article-badge--field, html.color-1 article-badge.article-badge--direction {
+  color: #ffffff !important;
+}
+
+
+html.color-1 .article-title-link a:hover, html.color-2 .article-title-link a:hover, html.color-beige .article-title-link a:hover {
+  text-decoration: overline;
+}
+
+html.color-1 .article-card:hover .article-title-link, html.color-2 .article-card:hover .article-title-link, html.color-beige .article-card:hover .article-title-link {
+  color: var(--q-warning) !important;
+}
+
+html.color-1 div > button.acc-btn.acc-btn--color.acc-btn--color-3 {
+  background: #f5f5dc !important;
+  color: #5c4a32 !important;
+  border-color: #c4a574 !important;
+}
