@@ -673,8 +673,8 @@ main.layout-article {
 /* Плашки "Научная область" и "Научное направление" */
 .article-badges {
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  flex-wrap: nowrap; /* Не Переносить бейджи (плашки) */
+  gap: 12px;
   align-items: flex-start;
 }
 
@@ -682,8 +682,7 @@ main.layout-article {
   display: inline-block;
   padding: 8px 10px;
   min-height: 38px;
-  min-width: 120px;
-  max-width: 200px;
+  max-width: auto;
   border-radius: 6px;
   font-size: 0.85rem;
   font-weight: 700;
@@ -704,10 +703,12 @@ main.layout-article {
 .article-badge--field {
   /* Научная область */
   background: var(--q-alternative);
+  min-width: 140px;
 }
 
 .article-badge--direction {
   /* Научное направление */
+  margin-right: 40px; /* Отступ от края паддинга, чтобы не впритык */
   background: var(--q-warning);
 }
 
