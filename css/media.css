@@ -17,6 +17,9 @@
   .search-input {
     min-width: 400px;
   }
+  .article-card-body {
+    padding: 40px;
+  }
 }
 
         /* Десктоп меньший экран*/
@@ -97,6 +100,7 @@
   #title {
     display: flex;
     justify-self: center;
+    padding-left: 30px; /* Чуть наростил отступ для заголовка */
   }
   #h2 {
     font-size: 2rem;
@@ -105,27 +109,28 @@
     max-width: 800px;
   }
   .selector {
-    width: clamp(120px, 90%, 500px);
+    width: auto;
   }
   #search-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 3fr 1fr 0.2fr;
-    padding: 40px;
-    row-gap: 20px;
+    grid-template-rows: 2fr 0.7fr 0.4fr; /* 2fr - поиск, 1fr - кнопки, 0.5fr - результаты */
+    padding: 30px 50px 40px 50px; /* Сверху отступ чуть больше внутри */
   }
   #container_sl {
     display: flex;
     flex-direction: column;
   }
   .search-controls {
-    grid-row: 2;
+    flex-direction: column;
+    margin: 0;
+    padding: 0 40px 0 40px;
+    gap: 10px;
   }
   .search-label {
     font-size: 1rem;
     margin-left: 2%;
   }
   .search-input{
-    max-width: 220px;
+    max-width: auto;
     font-size: 0.7rem;
   }
   .search-button {
@@ -134,8 +139,11 @@
     align-self: center;
     font-size: 14px;
   }
-  .clear-button {
+  #clear-button {
+    align-self: center;
+    justify-self: center;
     grid-row: 3;
+    font-size: clamp(12px, 1vw + 12px, 13px);
   }
   .zagfot {
   }
@@ -175,182 +183,404 @@
     text-decoration: none;
     padding: 0;
   }
-  .contacts span, a {
-    font-size: 11px;
-  }
   #icon-list a {
   }
 }
 
+
+
         /* Мобильные */
-@media (max-width: 600px) {
-  header {
-    display: grid;
-    grid-template-columns: 1fr 3fr 2fr;
-    padding: 10px;
-    gap: 5px;
-  }
-  #title {
-    margin: 0 2px 0 2px;
-  }
-  body {
-    grid-template-columns: 1fr 3fr 1fr;
-    grid-template-rows: 
-      minmax(60px, auto)    /* header */
-      auto   /* panel */
-      minmax(60px, auto)    /* h2 */
-      minmax(220px, auto)    /* search */
-      auto                  /* main — растёт под контент */
-      minmax(80px, auto)    /* banners */
-      minmax(60px, auto);   /* footer */
-    row-gap: 10px;
-  }
-  main {
-    grid-area: main;
-    display: grid;
-    grid-template-columns: 1fr 8fr 1fr;
-    margin: 20px;
-  }
-  #articles-container {
-  grid-area: main;
-  grid-column: 2;
-  display: grid;
-  grid-template-rows: auto 3fr auto; /* Строки: пагинация сверху, сетка, пагинация снизу */
-  grid-template-columns: 1fr;
-  gap: 20px; /* Отступ между элементами */
-  justify-self: center;
-  align-self: center;
-  margin: 1% 1% 1% 1%;
-  }
-  .articles-grid {
-  display: grid;
-  grid-template-columns: 1fr; /* В 1 колонку */
-  grid-template-rows: repeat(4, auto);
+@media (min-width: 381px) and (max-width: 600px) {
+ header {
+   display: grid;
+   grid-template-columns: 1fr 3fr 2fr;
+   padding: 10px;
+   gap: 5px;
+ }
+ #title {
+   margin: 0 2px 0 2px;
+ }
+ #acc-local-container {
+  margin-top: 10px;
+ }
+ #acc-span {
   flex-wrap: wrap;
-  gap: 40px;
-  padding: 1%;
-  }
-  .banner-list {
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 20px;
-    row-gap: 10px;
-  }
-  .banner-list img {
-    width: 75%;
-    height: auto;
-  }
-  .logo {
-    margin-left: 0;
-    max-width: 50px;
-  }
-  #a-logo { /* Контейнер логотипа*/
-    justify-self: center;
-    margin-left: 0;
-    padding: 0;
-  }
-  #h2 {
-    grid-column: 2;
-    margin: 2% 0 0 8%;
-  }
-  #search-container {
-    grid-template-columns: 1fr;
-    grid-template-rows: 3fr 1fr 0.2fr;
-    padding: 40px;
-    row-gap: 20px;
-  }
-  #container_sl {
-    display: flex;
-    flex-direction: column;
-  }
-  .search-controls {
-    grid-row: 2;
-  }
-  #container-sl { /* Контейнер выпадающих списков и лейблов над ними*/
-    max-width: 400px;
-  }
-  label,.selector, option {
-    font-size: 0.8rem;
-  }
-  .search-label {
-    margin-left: 2%;
-  }
-  .selector {
-    font-size: 0.65rem;
-    padding: 5% 5% 5% 5%;
-    max-height: 55%;
-  }
-  .search-input{
-    max-width: 190px;
-    font-size: 0.6rem;
-  }
-  .search-label {
-    font-size: 0.75rem;
-    margin-left: 3%;
-  }
-  .search-button {
-    font-size: 0.8rem;
-    width: auto;
-  }
-  .clear-button {
-    grid-row: 3;
-  }
-  footer {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 1fr 1fr;
-    padding: 20px;
-    gap: 10px;
-  }
-  .foot-container { /* Класс ячеек футтера */
-    display: flex;
-    flex-direction: column;
-    align-self: flex-start;
-    justify-self: center;
-    flex: 0 auto auto;
-    padding: 20px;
-  }
-  #foot-con-1 {
-    grid-column: 1;
-    grid-row: 1;
-    padding: 0;
-  }
-  #foot-con-2 {
-    grid-column: 2;
-    grid-row: 1;
-    padding: 0;
-  }
-  #foot-con-3 {
-    grid-column: 1;
-    grid-row: 2;
-    padding: 0;
-  }
-  #foot-con-4 {
-    grid-column: 2;
-    grid-row: 2;
-    text-decoration: none;
-    padding: 0;
-  }
- .zagfot {
-    font-size: 10px;
-  }
- .contacts, .contacts span, a {
-    font-size: 10px;
-  }
-  .pagination {
-    grid-column: 1;
-    gap: 8px;
-    margin: 3% 0 4% 0;
-  }
-  .pagination button {
-    min-width: 36px;
-    height: 36px;
-    font-size: 0.9rem;
-    padding: 0 10px;
-  }
+  white-space: wrap;
+ }
+ body {
+   grid-template-columns: 1fr 3fr 1fr;
+   grid-template-rows:
+     minmax(60px, auto)    /* header */
+     auto   /* panel */
+     minmax(60px, auto)    /* h2 */
+     minmax(220px, auto)    /* search */
+     auto                  /* main — растёт под контент */
+     minmax(80px, auto)    /* banners */
+     minmax(60px, auto);   /* footer */
+   row-gap: 10px;
+ }
+ main {
+   grid-area: main;
+   display: grid;
+   grid-template-columns: 1fr 8fr 1fr;
+   margin: 20px;
+ }
+ #articles-container {
+ grid-area: main;
+ grid-column: 2;
+ display: grid;
+ grid-template-rows: auto 3fr auto; /* Строки: пагинация сверху, сетка, пагинация снизу */
+ grid-template-columns: 1fr;
+ gap: 20px; /* Отступ между элементами */
+ justify-self: center;
+ align-self: center;
+ margin: 0 auto;
+ max-width: 95%;
+ }
+ .articles-grid {
+ display: grid;
+ grid-template-columns: 1fr; /* В 1 колонку */
+ grid-template-rows: repeat(4, auto);
+ flex-wrap: wrap;
+ gap: 20px;
+ max-width: 100%;
+ margin: 0 auto;
+ }
+ .banner-list {
+   grid-template-columns: repeat(2, 1fr);
+   column-gap: 20px;
+   row-gap: 10px;
+ }
+ .banner-list img {
+   width: 100%;
+   height: auto;
+ }
+ .logo {
+   margin-left: 0;
+   max-width: 70px;
+ }
+ #a-logo { /* Контейнер логотипа*/
+   justify-self: center;
+   margin-left: 0;
+   padding: 0;
+ }
+ #h2 {
+   grid-column: 2;
+   margin: 2% 0 0 8%;
+   font-size: 1.5rem;
+ }
+ #search-container {
+  grid-area: search;
+   grid-column: 2;
+   grid-template-columns: 1fr;
+   grid-template-rows: 3fr 2fr;
+   padding: 40px;
+   row-gap: 12px;
+ }
+ #container_sl {
+   display: flex;
+   flex-direction: column;
+ }
+ .search-controls {
+   grid-row: 2;
+   flex-direction: column;
+   gap: 10px;
+ }
+ #container-sl { /* Контейнер выпадающих списков и лейблов над ними*/
+   max-width: 100%;
+ }
+ label,.selector, option {
+   font-size: 0.85rem;
+ }
+ .search-label {
+   margin-left: 2%;
+   font-size: 0.85rem;
+ }
+ .selector {
+   font-size: 0.85rem;
+   padding: 8px;
+   max-height: none;
+   min-height: 38px;
+ }
+ .search-input{
+   max-width: 100%;
+   font-size: 0.85rem;
+   padding: 8px;
+   min-height: 38px;
+ }
+ .clear-button {
+   font-size: 0.85rem;
+   min-height: 38px;
+ }
+ .banner-list {
+  padding: 0;
+ }
+ .banner-list img {
+  width: clamp(140px, 2vw, 186px);
+ }
+ footer {
+   display: grid;
+   grid-template-columns: 1fr 1fr;
+   grid-template-rows: 1fr 1fr;
+   padding: 30px;
+   gap: 15px;
+ }
+ footer * {
+  font-size: clamp(10px, max(2vw + 8px), 14px);
+  overflow-y: hidden;
+ }
+ .foot-container { /* Класс ячеек футтера */
+   display: flex;
+   flex-direction: column;
+   align-self: flex-start;
+   justify-self: center;
+   flex: 0 auto auto;
+   padding: 15px;
+ }
+ #foot-con-1 {
+   grid-column: 1;
+   grid-row: 1;
+   padding: 0;
+ }
+ #foot-con-2 {
+   grid-column: 2;
+   grid-row: 1;
+   padding: 0;
+ }
+ #foot-con-3 {
+   grid-column: 1;
+   grid-row: 2;
+   padding: 0;
+ }
+ #foot-con-4 {
+   grid-column: 2;
+   grid-row: 2;
+   text-decoration: none;
+   padding: 0;
+ }
+.zagfot {
+   font-size: 14px; /* Размер тут */
+ }
+.contacts, .contacts span, a {
+   font-size: 11px; /* Размер тут */
+ }
+ .pagination {
+   grid-column: 1;
+   gap: 8px;
+   margin: 3% 0 4% 0;
+ }
+ .pagination button {
+   min-width: 44px;
+   height: 44px;
+   font-size: 1rem;
+   padding: 0 12px;
+ }
+}
+
+/* Очень маленькие мобильные устройства */
+@media (max-width: 380px) {
+ header {
+   display: grid;
+   grid-template-columns: 1fr 3fr 2fr;
+   padding: 10px;
+   gap: 5px;
+ }
+ #title {
+   margin: 0 2px 0 2px;
+ }
+ #acc-local-container {
+  margin-top: 10px;
+ }
+ #acc-span {
+  flex-wrap: wrap;
+  white-space: wrap;
+ }
+ body {
+   grid-template-columns: 1fr 3fr 1fr;
+   grid-template-rows:
+     minmax(60px, auto)    /* header */
+     auto   /* panel */
+     minmax(60px, auto)    /* h2 */
+     minmax(220px, auto)    /* search */
+     auto                  /* main — растёт под контент */
+     minmax(80px, auto)    /* banners */
+     minmax(60px, auto);   /* footer */
+   row-gap: 10px;
+ }
+ main {
+   grid-area: main;
+   display: grid;
+   grid-template-columns: 1fr 8fr 1fr;
+   margin: 20px;
+ }
+ #articles-container {
+ grid-area: main;
+ grid-column: 2;
+ display: grid;
+ grid-template-rows: auto 3fr auto; /* Строки: пагинация сверху, сетка, пагинация снизу */
+ grid-template-columns: 1fr;
+ gap: 20px; /* Отступ между элементами */
+ justify-self: center;
+ align-self: center;
+ margin: 0 auto;
+ max-width: 95%;
+ }
+ .articles-grid {
+ display: grid;
+ grid-template-columns: 1fr; /* В 1 колонку */
+ grid-template-rows: repeat(4, auto);
+ flex-wrap: wrap;
+ gap: 20px;
+ padding: 1%;
+ max-width: 100%;
+ margin: 0 auto;
+ }
+ .banner-list {
+   grid-template-columns: repeat(2, 1fr);
+   column-gap: 20px;
+   row-gap: 10px;
+ }
+ .banner-list img {
+   width: 100%;
+   height: auto;
+   width: clamp(130px, 2vw, 185px); /* Размер для баннеров */
+ }
+ .logo {
+   margin-left: 0;
+   max-width: 70px;
+ }
+ #a-logo { /* Контейнер логотипа*/
+   justify-self: center;
+   margin-left: 0;
+   padding: 0;
+ }
+ #h2 {
+   grid-column: 2;
+   margin: 2% 0 0 8%;
+   font-size: 1.5rem;
+ }
+ #search-container {
+  grid-area: search;
+   grid-column: 2;
+   grid-template-columns: 1fr;
+   grid-template-rows: 3fr 2fr;
+   padding: 40px;
+   row-gap: 12px;
+ }
+ #container_sl {
+   display: flex;
+   flex-direction: column;
+ }
+ .search-controls {
+   grid-row: 2;
+   flex-direction: column;
+   gap: 10px;
+ }
+ #container-sl { /* Контейнер выпадающих списков и лейблов над ними*/
+   max-width: 100%;
+ }
+ label,.selector, option {
+   font-size: 0.85rem;
+ }
+ .search-label {
+   margin-left: 2%;
+   font-size: 0.85rem;
+ }
+ .search-list {
+  min-width: 0;
+ }
+ .selector {
+   font-size: 0.85rem;
+   padding: 8px;
+   flex-shrink: 1;
+   width: auto;
+   min-width: 0;
+   max-width: auto;
+   max-height: 0;
+   min-height: 38px;
+ }
+ .search-input{
+   max-width: 100%;
+   font-size: 0.85rem;
+   padding: 8px;
+   min-height: 38px;
+ }
+ .clear-button {
+   font-size: 0.85rem;
+   min-height: 38px;
+ }
+ .banner-list {
+  padding: 0;
+ }
+ footer {
+   display: flex; 
+   flex-direction: column; /* В 1 колонку */
+   justify-content: center;
+   align-content: center;
+   padding: 40px;
+   gap: 15px;
+ }
+ footer * {
+  font-size: clamp(8px, max(2vw + 8px), 12px);
+  overflow-y: hidden;
+ }
+ .foot-container { /* Класс ячеек футтера */
+   display: flex;
+   flex-direction: column;
+   align-self: flex-start;
+   justify-self: center;
+   flex: 0 auto auto;
+   padding: 15px;
+   margin-left: 15%;
+ }
+ #foot-con-1 {
+   grid-column: 1;
+   grid-row: 1;
+   padding: 0;
+ }
+ #foot-con-2 {
+   grid-column: 2;
+   grid-row: 1;
+   padding: 0;
+ }
+ #foot-con-3 {
+   grid-column: 1;
+   grid-row: 2;
+   padding: 0;
+ }
+ #foot-con-4 {
+   grid-column: 2;
+   grid-row: 2;
+   text-decoration: none;
+   padding: 0;
+ }
+.zagfot {
+   font-size: clamp(8px, max(2vw + 8px), 12px);
+ }
+.contacts, .contacts span, a {
+   font-size: clamp(8px, max(2vw + 8px), 12px);
+ }
+ #questions {
+    margin: 0; /* Убрал отступ для #questions */
+ }
+ .pagination {
+   grid-column: 1;
+   gap: 8px;
+   margin: 3% 0 4% 0;
+ }
+ .pagination button {
+   min-width: 44px;
+   height: 44px;
+   font-size: 1rem;
+   padding: 0 12px;
+ }
 }
 
 
-/* Мобильные (минимальная ширина для мобильных устройств 380px*/
+/* Очень маленькие мобильные устройства (максим. ширина для мобильных устройств 380px) */
+
+
+/* Мобильные (минимальная ширина для мобильных устройств 380px) */
 
 
 /* Планшеты (минимальная ширина для планшетов 768 пикселей/ 1024 пикселей альбомная ориентация)*/
@@ -358,3 +588,64 @@
 
 /* Десктопы (минимальная ширина экранов 1280 × 960, 1024 × 600)*/
 
+
+
+
+
+/* Общие правила для мобильных устройств */
+@media (max-width: 600px) {
+  body {
+   grid-template-columns: 1fr 6fr 1fr;
+  }
+  main {
+    margin: 20px 0 20px 0;
+  }
+  .article-badges {
+    flex-wrap: wrap; /* Перенос бейджей для мобильных из-за узкого экрана */
+    margin: 0;
+  }
+  .article-badge--direction {
+    margin: 0;
+  }
+  #ruen a {
+    min-width: 0;
+    min-height: 0;
+  }
+  .article-date, .article-author {
+    font-size: clamp(10px, max(2vw + 10px), 14px);
+  }
+  #search-field {
+    padding-right: 40px; /* отступ = ширина SVG + небольшой запас */
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  #search-container {
+    grid-template-rows: 2fr 0.7fr 0.4fr; /* 2fr - поиск, 1fr - кнопки, 0.5fr - результаты */
+    padding: 20px 30px 20px 30px;
+  }
+  .search-controls {
+    flex-direction: column;
+    margin: 0;
+    gap: 10px;
+  }
+  #clear-button {
+    align-self: center;
+    justify-self: center;
+    grid-row: 3;
+    font-size: clamp(12px, 1vw + 12px, 13px);
+  }
+  #container_sl {
+    row-gap: 10px;
+  }
+  .search-list {
+    max-height: 80px;
+  }
+  .pagination * {
+    font-size: clamp(8px, max(2vw + 8px), 12px);
+  }
+  #search-button {
+    min-width: 0;
+    max-width: 50px;
+    font-size: clamp(10px, 1vw + 10px, 12px);
+  }
+}
