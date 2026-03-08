@@ -338,7 +338,9 @@ body.layout-article {
 }
 
 .download-pdf-btn {
-  position: absolute;
+  display: flex;
+  align-self: center;
+  justify-self: center;
   right: 40px;
   left: auto;
 }
@@ -493,113 +495,5 @@ body.layout-article {
 
   100% {
     opacity: 0.6;
-  }
-}
-
-/* === 10. Адаптивность под мобильные и планшеты === */
-@media (max-width: 1024px) {
-
-  /* Изменяем шаблон сетки для layout-article, чтобы контент был по центру, 
-     а не сжимался между боковыми колонками в 1fr 4fr 1fr */
-  body.layout-article {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      'header'
-      'panel'
-      'h2'
-      'main'
-      'banners'
-      'footer';
-  }
-
-  main.layout-article {
-    grid-column: 1;
-    padding: 0 20px;
-  }
-}
-
-@media (max-width: 768px) {
-  .article-page {
-    padding: 30px 20px;
-    margin: 15px 0;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
-  }
-
-  #full-article h1 {
-    font-size: 26px;
-    line-height: 1.3;
-  }
-
-  .article-meta {
-    font-size: 14px;
-    gap: 8px;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .article-body p,
-  .article-body li {
-    font-size: 16px;
-    text-align: left;
-    /* На мобилках выключка по ширине может ломать читаемость */
-  }
-
-  .article-body h2 {
-    font-size: 24px;
-  }
-
-  .article-body h3 {
-    font-size: 20px;
-  }
-
-  .article-tags,
-  .article-files {
-    padding: 16px;
-  }
-
-  .article-tag {
-    font-size: 13px;
-    padding: 6px 12px;
-  }
-
-  .article-file {
-    font-size: 13px;
-    padding: 10px 16px;
-    width: 100%;
-    justify-content: center;
-  }
-
-  .article-actions {
-    flex-direction: column;
-  }
-
-  .back-link,
-  .download-pdf-btn {
-    position: static;
-    font-size: 15px;
-    padding: 12px 24px;
-    margin: 0;
-    width: 100%;
-  }
-}
-
-/* Скрыть кнопки при печати */
-@media print {
-
-  .download-pdf-btn,
-  .back-link,
-  .article-actions,
-  header,
-  footer,
-  .banners,
-  #acc-local-container {
-    display: none !important;
-  }
-
-  .article-page {
-    box-shadow: none;
-    padding: 0;
-    margin: 0;
   }
 }

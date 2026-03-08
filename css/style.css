@@ -94,8 +94,7 @@ body {
 
 /* Главный контейнер (тело сайта) для страниц full-article.html, author.html*/
 /* Специально разграничены с основным body для разграничения в структуре */
-body.layout-article,
-body.layout-author {
+body.layout-article {
   display: grid;
   grid-template-columns: 1fr 4fr 1fr;
   grid-template-rows:
@@ -115,6 +114,29 @@ body.layout-author {
     'header header header'
     'panel panel panel'
     'h2 h2 h2'
+    'main main main'
+    'banners banners banners'
+    'footer footer footer';
+  row-gap: 20px;
+}
+
+body.layout-author {
+    display: grid;
+  grid-template-columns: 1fr 4fr 1fr;
+  grid-template-rows:
+    minmax(60px, auto)
+    /* header */
+    auto
+    /* panel */
+    auto
+    /* main — растёт */
+    minmax(100px, auto)
+    /* banners */
+    minmax(80px, auto);
+  /* footer */
+  grid-template-areas:
+    'header header header'
+    'panel panel panel'
     'main main main'
     'banners banners banners'
     'footer footer footer';

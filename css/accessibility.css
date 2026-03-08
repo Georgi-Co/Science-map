@@ -40,6 +40,10 @@ select {
    ПАНЕЛЬ ДОСТУПНОСТИ
 ========================= */
 
+#accessibility-toolbar {
+  overflow: hidden;
+}
+
 .acc-panel {
   background: #ffffff;
   border: 1px solid #ccc;
@@ -108,6 +112,14 @@ select {
 .acc-btn:hover {
   background: #f0f0f0;
   border-style: dotted;
+}
+
+.acc-btn .acc-btn--font {
+  overflow: hidden; 
+}
+
+.acc-font-preview {
+  overflow: hidden;
 }
 
 /* Активная кнопка */

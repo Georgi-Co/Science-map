@@ -255,8 +255,8 @@ async function loadArticle() {
 
       <div class="article-footer article-actions">
         <a href="index.html" class="back-link" data-i18n="← Вернуться к списку статей">← Вернуться к списку статей</a>
-        <button id="download-pdf" class="download-pdf-btn" data-i18n="Скачать PDF" title="Скачать статью в формате PDF">Скачать PDF</button>
       </div>
+      <button id="download-pdf" class="download-pdf-btn" data-i18n="Скачать PDF" title="Скачать статью в формате PDF">Скачать PDF</button>
     `;
 
     // Привязываем обработчик генерации PDF

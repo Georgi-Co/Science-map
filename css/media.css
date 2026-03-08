@@ -24,12 +24,39 @@
 
         /* Десктоп меньший экран*/
 @media (min-width: 1025px) and (max-width: 1440px) {
+  body.layout-article,
+  body.layout-author {
+  display: grid;
+  grid-template-columns: 1fr 4fr 1fr;
+  grid-template-rows:
+    minmax(60px, auto)
+    /* header */
+    auto
+    /* panel */
+    minmax(40px, 100px)
+    /* h2 / заголовок */
+    auto
+    /* main — растёт */
+    minmax(100px, auto)
+    /* banners */
+    minmax(80px, auto);
+  /* footer */
+  grid-template-areas:
+    'header header header'
+    'panel panel panel'
+    'h2 h2 h2'
+    'main main main'
+    'banners banners banners'
+    'footer footer footer';
+  row-gap: 20px;
+}
   header {
     display: grid;
     grid-template-columns: 1fr 3fr 1fr;
   }
   #title {
     justify-self: flex-start;
+    overflow: hidden;
   }
   .selector {
     min-width: 150px;
@@ -647,5 +674,23 @@
     min-width: 0;
     max-width: 50px;
     font-size: clamp(10px, 1vw + 10px, 12px);
+  }
+  main.layout-article {
+    padding: 10px 10px 30px 10px;
+  }
+  main.layout-author {
+    overflow: hidden;
+  }
+  #full-article > div.article-footer.article-actions > a, #download-pdf {
+    display: block;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    max-height: 70px;
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 10px;
+  }
+  #author-profile, .author-container {
+    overflow: hidden;
   }
 }
