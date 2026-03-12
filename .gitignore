@@ -4,3 +4,4 @@ node_modules
 .vscode/
 .codeassistant/rules/
 .cursor/rules/
+projects_for_strapi.md
