@@ -68,6 +68,7 @@ async function loadArticle() {
     const title = attrs.Title || attrs.title || 'Без заголовка';
     const contentBlocks = attrs.Content || attrs.content || [];
     const publication = attrs.Publication || attrs.publication;
+    const description = attrs.Description || attrs.description || '';
 
     // Заголовок статьи в верхний h2 (область grid "h2")
     const pageH2 = document.getElementById('h2');
@@ -210,6 +211,7 @@ async function loadArticle() {
       : '';
 
     // Генерация основного текстового контента
+    let firstParagraphFound = false;
     const contentHTML = Array.isArray(contentBlocks) && contentBlocks.length > 0
       ? contentBlocks
         .map(block => {
@@ -219,7 +221,14 @@ async function loadArticle() {
             const text = block.children && Array.isArray(block.children)
               ? block.children.map(child => child?.text || '').join('')
               : '';
-            return text ? `<p>${text}</p>` : '';
+            if (!text) return '';
+
+            if (!firstParagraphFound) {
+              firstParagraphFound = true;
+              return `<div class="article-purpose"><strong>Цели проекта:</strong> ${text}</div>`;
+            } else {
+              return `<p>${text}</p>`;
+            }
           }
 
           if (block.type === 'heading') {
@@ -244,6 +253,7 @@ async function loadArticle() {
       </div>
 
       <div class="article-body">
+        ${description ? `<div class="article-description"><strong>Краткое описание:</strong> ${description}</div>` : ''}
         ${contentHTML}
       </div>
 

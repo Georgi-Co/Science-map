@@ -85,6 +85,7 @@ function renderPage(page = 1) {
   articlesToShow.forEach(article => {
     const id = article.id;
     const title = article.Title || article.title || 'Без заголовка';
+    const description = article.Description || article.description || '';
     const contentBlocks = article.Content || article.content || [];
     const publication = article.Publication || article.publication || article.publishedAt;
     const authors = Array.isArray(article.authors) ? article.authors : [];
@@ -151,7 +152,8 @@ function renderPage(page = 1) {
         <h3 class="article-title">
           <a href="full-article.html?id=${id}" class="article-title-link">${title}</a>
         </h3>
-        <div class="article-preview">${previewText}</div>
+        <div class="article-description">Описание: ${description}</div>
+        <div class="article-preview">Цели проекта: ${previewText}</div>
         <div class="faculty" aria-label="${t('Факультет:')}">${t('Факультет:')} <span class="faculty-name">${facultyDisplay}</span></div>
         <time class="article-date" datetime="${publication || ''}">📅 ${date}</time>
         <div class="article-author">👤 ${authorLink}</div>
@@ -266,6 +268,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const article = {
           id: item.id,
           Title: attrs.Title || attrs.title || '',
+          Description: attrs.Description || attrs.description || '',
           Content: attrs.Content || attrs.content || [],
           Publication: attrs.Publication || attrs.publication || attrs.publishedAt || null,
           publishedAt: attrs.publishedAt || attrs.Publication || attrs.publication || null,

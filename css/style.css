@@ -368,7 +368,7 @@ main.layout-article {
   display: flex;
   align-self: center;
   justify-self: flex-start;
-  margin: 40px 0 0 40px;
+  margin-left: 40px;
   font-size: clamp(1.6rem, 2.5vw, 2.1rem);
   font-weight: 500;
   font-style: normal;
@@ -570,17 +570,12 @@ main.layout-article {
   /* margin: 0 0 0 auto; Оттолкнуть вправо от #search-controls */
   transition: all 0.2s ease;
   /* Подчёркивание — пунктирное, близко к тексту */
-  text-decoration: underline;
-  text-decoration-style: dashed !important;
-  text-decoration-color: #666;
-  text-underline-offset: 8px;
-  /* Расстояние от текста до пунктира */
-  text-decoration-thickness: 1.5px;
-  /* Толщина пунктира */
+  border-bottom: 2px dashed #666;
+  padding-bottom: 2px;
 }
 
 #clear-button:hover {
-  text-decoration-color: var(--q-negative);
+  border-bottom-color: var(--q-negative);
   color: var(--q-negative);
 }
 
@@ -825,12 +820,19 @@ main.layout-article {
 /* Аннотация / контент — читаемость */
 .article-abstract,
 .article-content,
-.article-preview {
+.article-preview,
+.article-description {
   font-size: 1rem;
   color: #4a5568;
   line-height: 1.6;
   margin: 0 0 15px 0;
-  flex: 1;
+  flex: 1 1 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.article-author {
+  text-decoration: none;
 }
 
 .article-content p,

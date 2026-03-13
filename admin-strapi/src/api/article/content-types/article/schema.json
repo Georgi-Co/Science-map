@@ -23,6 +23,14 @@
         }
       }
     },
+    "Description": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
     "Content": {
       "type": "blocks",
       "pluginOptions": {
