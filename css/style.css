@@ -751,11 +751,20 @@ main.layout-article {
   display: flex;
   gap: 6px;
   align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.faculty strong {
+  flex-shrink: 0;
 }
 
 .faculty-name {
   font-weight: 700;
   color: var(--q-alternative);
+  white-space: normal;
+  word-break: break-word;
+  flex: 1;
+  min-width: 0;
 }
 
 /* Метаданные — автор, дата */
@@ -831,8 +840,28 @@ main.layout-article {
   text-overflow: ellipsis;
 }
 
+/* Общая стилизация для всех <strong> внутри карточек статей */
+.article-card-body strong {
+  font-weight: 700;
+  color: var(--q-primary);
+}
 .article-author {
   text-decoration: none;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.article-author a {
+  text-decoration: none;
+}
+
+.article-author .icon-people,
+.article-author .icon-person {
+  vertical-align: bottom;
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
 }
 
 .article-content p,

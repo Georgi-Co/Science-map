@@ -152,11 +152,11 @@ function renderPage(page = 1) {
         <h3 class="article-title">
           <a href="full-article.html?id=${id}" class="article-title-link">${title}</a>
         </h3>
-        <div class="article-description">Описание: ${description}</div>
-        <div class="article-preview">Цели проекта: ${previewText}</div>
-        <div class="faculty" aria-label="${t('Факультет:')}">${t('Факультет:')} <span class="faculty-name">${facultyDisplay}</span></div>
-        <time class="article-date" datetime="${publication || ''}">📅 ${date}</time>
-        <div class="article-author">👤 ${authorLink}</div>
+        <div class="article-description"><strong>Описание: </strong>${description}</div>
+        <!-- <div class="article-preview"><strong>Цели проекта: </strong>${previewText}</div> -->
+        <div class="faculty" aria-label="${t('Факультет:')}"><strong>${t('Факультет:')}</strong> <span class="faculty-name">${facultyDisplay}</span></div>
+        <time class="article-date" datetime="${publication || ''}"><strong>Дата публикации: </strong>📅 ${date}</time>
+        <div class="article-author"><img src="../img/people.svg" alt="Авторы" class="icon-people"><strong> Авторы: </strong><img src="../img/person.svg" alt="Автор" class="icon-person"> ${authorLink}</div>
         ${tags.length ? `
         <div class="article-tags-line" aria-label="Теги статьи">
           ${tags.map(tag => `<button type="button" class="article-tag-chip" data-tag="${tag}">${tag}</button>`).join('')}
