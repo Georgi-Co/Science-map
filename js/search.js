@@ -201,11 +201,8 @@ class ArticleSearch {
       // === 1. Поиск по ключевым словам ===
       // Безопасное получение и нормализация полей
       const title = (article.Title || article.title || '').toLowerCase();
-      const authorName = (
-        article.authors?.[0]?.Name ||
-        article.authors?.[0]?.name ||
-        ''
-      ).toLowerCase();
+      const authors = Array.isArray(article.authors) ? article.authors : [];
+      const authorNames = authors.map(a => (a?.Name || a?.name || '').toLowerCase()).filter(Boolean);
 
       // Собираем весь текст из контента (с проверкой на существование полей)
       let contentText = '';
@@ -240,7 +237,7 @@ class ArticleSearch {
           matchesKeyword = queryWords.some(word => {
             const wordFound = (
               title.includes(word) ||
-              authorName.includes(word) ||
+              authorNames.some(name => name.includes(word)) ||
               contentText.includes(word)
             );
             return wordFound;
@@ -248,7 +245,7 @@ class ArticleSearch {
 
           // Альтернативный вариант: ВСЕ слова должны быть найдены (AND логика)
           // Раскомментируйте следующую строку и закомментируйте предыдущую, если нужна AND логика:
-          // matchesKeyword = queryWords.every(word => title.includes(word) || authorName.includes(word) || contentText.includes(word));
+          // matchesKeyword = queryWords.every(word => title.includes(word) || authorNames.some(name => name.includes(word)) || contentText.includes(word));
 
           if (!matchesKeyword) {
             console.log(`[performSearch] Статья "${article.Title}" не содержит ключевых слов "${normalizedQuery}"`);
@@ -382,16 +379,18 @@ class ArticleSearch {
         })
         : 'Дата не указана';
 
-      // Обработка информации об авторе
-      const author = authors[0] || null; // Берём первого автора из массива (если есть)
-      const authorName = author?.Name || author?.name || 'Автор не указан'; // Пытаемся получить имя (с учётом разных вариантов поля)
-      const authorId = author?.id; // Получаем ID автора для формирования ссылки
-
-
-      // Формируем ссылку на автора, если есть ID, иначе используем просто имя
-      const authorLink = authorId
-        ? `<a href="author.html?id=${authorId}">${authorName}</a>`
-        : authorName;
+      // Обработка авторов (все)
+      const authorsHTML = authors.length
+        ? authors.map(author => {
+            const authorName = author?.Name || author?.name || 'Автор';
+            const authorId = author?.id;
+            const iconPerson = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="icon-person" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>`;
+            const link = authorId
+              ? `<a href="author.html?id=${authorId}">${authorName}</a>`
+              : `<span class="author-name">${authorName}</span>`;
+            return `${iconPerson} ${link}`;
+          }).join(', ')
+        : 'Автор не указан';
 
       // Получаем функцию перевода
       const t = (key) => window.localization?.getTranslation?.(key) || key;
@@ -419,7 +418,7 @@ class ArticleSearch {
           <div class="article-preview">${previewText}</div>
           <div class="faculty" aria-label="${t('Факультет:')}">${t('Факультет:')} <span class="faculty-name">${facultyDisplay}</span></div>
           <time class="article-date" datetime="${publication || ''}">${date}</time>
-          <div class="article-author">👤 ${authorLink}</div>
+          <div class="article-author"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="icon-people" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg><strong> Авторы: </strong> ${authorsHTML}</div>
         </article>
       `;
 
