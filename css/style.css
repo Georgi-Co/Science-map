@@ -788,6 +788,20 @@ main.layout-article {
   font-size: 0.9em;
 }
 
+
+/* Иконка календаря для даты */
+time.article-date::before {
+  content: "";
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  background-image: url("../img/calendar.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 0.3em;
+  vertical-align: middle;
+}
 /* Кнопка "Подробнее" в карточке */
 .read-more {
   display: block;

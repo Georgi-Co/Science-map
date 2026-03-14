@@ -69,6 +69,8 @@ async function loadArticle() {
     const contentBlocks = attrs.Content || attrs.content || [];
     const publication = attrs.Publication || attrs.publication;
     const description = attrs.Description || attrs.description || '';
+    const solutions = attrs.Solutions || attrs.solutions || '';
+    const purposes = attrs.Purposes || attrs.purposes || '';
 
     // Заголовок статьи в верхний h2 (область grid "h2")
     const pageH2 = document.getElementById('h2');
@@ -212,7 +214,7 @@ async function loadArticle() {
 
     // Генерация основного текстового контента
     let firstParagraphFound = false;
-    const contentHTML = Array.isArray(contentBlocks) && contentBlocks.length > 0
+    const contentInnerHTML = Array.isArray(contentBlocks) && contentBlocks.length > 0
       ? contentBlocks
         .map(block => {
           if (!block || !block.type) return '';
@@ -225,7 +227,7 @@ async function loadArticle() {
 
             if (!firstParagraphFound) {
               firstParagraphFound = true;
-              return `<div class="article-purpose"><strong>Цели проекта:</strong> ${text}</div>`;
+              return `<div class="article-content-text">${text}</div>`;
             } else {
               return `<p>${text}</p>`;
             }
@@ -244,6 +246,7 @@ async function loadArticle() {
         .filter(html => html !== '')
         .join('')
       : '<p>Содержимое статьи отсутствует.</p>';
+    const contentHTML = `<div id="article-content-full-text">${contentInnerHTML}</div>`;
 
     // Формируем разметку полной статьи (без дублирования заголовка — он уже в h2)
     container.innerHTML = `
@@ -254,7 +257,9 @@ async function loadArticle() {
 
       <div class="article-body">
         ${description ? `<div class="article-description"><strong>Краткое описание:</strong> ${description}</div>` : ''}
+        ${purposes ? `<div class="article-purposes"><strong>Цели проекта:</strong> ${purposes.replace(/\n/g, '<br>')}</div>` : ''}
         ${contentHTML}
+        ${solutions ? `<div class="article-solutions"><strong>Решения:</strong> ${solutions.replace(/\n/g, '<br>')}</div>` : ''}
       </div>
 
       ${carouselHTML}
@@ -376,5 +381,6 @@ function downloadArticlePDF(title) {
 
 // Запускаем при загрузке
 document.addEventListener('DOMContentLoaded', loadArticle);
+
 
 

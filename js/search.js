@@ -418,7 +418,7 @@ class ArticleSearch {
           </h3>
           <div class="article-preview">${previewText}</div>
           <div class="faculty" aria-label="${t('Факультет:')}">${t('Факультет:')} <span class="faculty-name">${facultyDisplay}</span></div>
-          <time class="article-date" datetime="${publication || ''}">📅 ${date}</time>
+          <time class="article-date" datetime="${publication || ''}">${date}</time>
           <div class="article-author">👤 ${authorLink}</div>
         </article>
       `;

@@ -102,8 +102,16 @@ body.layout-article {
 }
 
 .article-meta time::before {
-  content: "📅\00a0";
-  /* Иконка и неразрывный пробел */
+  content: "";
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  background-image: url("../img/calendar.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 0.3em;
+  vertical-align: middle;
 }
 
 .article-meta .author-link {
@@ -227,6 +235,19 @@ body.layout-article {
 .article-section-title::before {
   content: "🏷️";
 }
+/* Иконка тегов через SVG */
+.article-tags .article-section-title::before {
+  content: "";
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  background-image: url("../img/tags.svg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  margin-right: 0.3em;
+  vertical-align: middle;
+}
 
 .article-tags-list {
   display: flex;
@@ -334,7 +355,7 @@ body.layout-article {
   border: none;
   cursor: pointer;
   background: linear-gradient(135deg, var(--q-button) 0%, var(--q-button-hover) 100%);
-  box-shadow: 0 4px 12px rgba(14, 16, 96, 0.25);
+  /*box-shadow: 0 4px 12px rgba(14, 16, 96, 0.25); */
 }
 
 .download-pdf-btn {
@@ -349,7 +370,7 @@ body.layout-article {
 .download-pdf-btn:hover {
   background: linear-gradient(135deg, var(--q-button-hover) 0%, var(--q-button) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(14, 16, 96, 0.35);
+  /* box-shadow: 0 6px 16px rgba(14, 16, 96, 0.35); */
 }
 
 .back-link:active,
@@ -511,12 +532,45 @@ body.layout-article {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
 
-.article-description strong, .article-purpose strong {
+.article-description strong, .article-content-text strong {
   color: #0e1060;
   font-weight: 700;
 }
-/* === 12. Блок целей проекта (оформление как у описания) === */
-.article-purpose {
+/* === 12. Блок контентного текста (простой текст) === */
+#article-content-full-text {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+.article-content-text {
+  margin: 25px 0;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #2c3e50;
+}
+
+/* === 13. Блок решений (Solutions) === */
+.article-solutions {
+  margin: 25px 0;
+  padding: 20px;
+  background-color: #f0f8ff;
+  border-left: 5px solid #2ca1ff;
+  border-radius: 10px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: #2c3e50;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
+}
+
+.article-solutions strong {
+  color: #0e1060;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+/* === 14. Блок целей (Purposes) === */
+.article-purposes {
   margin: 25px 0;
   padding: 20px;
   background-color: #f8f9fc;
@@ -527,3 +581,12 @@ body.layout-article {
   color: #2c3e50;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
+
+.article-purposes strong {
+  color: #0e1060;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.5em;
+}
+
+

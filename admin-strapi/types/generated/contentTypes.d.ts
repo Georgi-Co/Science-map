@@ -536,6 +536,12 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
         };
       }>;
     publishedAt: Schema.Attribute.DateTime;
+    Purposes: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     ScienceArea: Schema.Attribute.Enumeration<
       [
         '\u042D\u043A\u043E\u043D\u043E\u043C\u0438\u043A\u0430',
@@ -587,6 +593,12 @@ export interface ApiArticleArticle extends Struct.CollectionTypeSchema {
         };
       }>;
     Slug: Schema.Attribute.UID<'Title'>;
+    Solutions: Schema.Attribute.Text &
+      Schema.Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     tags: Schema.Attribute.Relation<'oneToMany', 'api::tag.tag'>;
     Title: Schema.Attribute.String &
       Schema.Attribute.SetPluginOptions<{

@@ -31,8 +31,24 @@
         }
       }
     },
+    "Purposes": {
+      "type": "text",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
     "Content": {
       "type": "blocks",
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "Solutions": {
+      "type": "text",
       "pluginOptions": {
         "i18n": {
           "localized": true
