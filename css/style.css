@@ -183,7 +183,7 @@ h1 {
   top: 15px;
   width: 100%;
   /* занимает всю ширину родителя */
-  width: clamp(35px, 8vw, 89px);
+  width: clamp(55px, 55px + 1vw, 89px);
   height: auto;
   /* высота подстраивается под пропорции */
   display: block;
@@ -295,13 +295,15 @@ h1 {
   grid-row: 2;
   display: flex;
   text-align: center;
-  font-size: clamp(14px, 2vw + 14px, 22px);
   font-weight: 900;
   filter: blur(0.45px);
-  line-height: 14px;
   color: var(--white);
   gap: 10px;
 }
+
+#ruen > a.lang-button.active, #ruen > a:nth-child(2){
+  font-size: clamp(14px, 1vw + 14px, 22px);
+ }
 
 #ruen a {
   min-width: 16px;

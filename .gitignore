@@ -5,3 +5,4 @@ node_modules
 .codeassistant/rules/
 .cursor/rules/
 projects_for_strapi.md
+database-schema.md
