@@ -102,7 +102,7 @@ body.layout-article {
     /* header */
     auto
     /* panel */
-    minmax(40px, 100px)
+    minmax(40px, 200px)
     /* h2 / заголовок */
     auto
     /* main — растёт */
@@ -159,6 +159,10 @@ header {
   top: 0;
   /* position: sticky; Убрал */
   z-index: 3;
+}
+
+header * {
+  overflow: hidden;
 }
 
 /* Область панели доступности в общей сетке */
@@ -832,15 +836,7 @@ time.article-date::before {
   transform: translateY(0);
 }
 
-/* Аватар автора — круглый, компактный */
-.author-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 1px solid #eee;
-  background-color: #f8f8f8;
-}
+
 
 /* Аннотация / контент — читаемость */
 .article-abstract,
@@ -864,12 +860,22 @@ time.article-date::before {
 .article-author {
   text-decoration: none;
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 6px;
+  white-space: nowrap; /* Отмена переноса слов */
+}
+
+.article-author .author-label { /* "👥 Авторы: " */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .article-author a {
   text-decoration: none;
+  display: flex;
+  flex-wrap: nowrap;
 }
 
 .article-author .icon-people,
@@ -878,6 +884,33 @@ time.article-date::before {
   width: 1em;
   height: 1em;
   object-fit: contain;
+}
+
+/* Author-chip section */
+/* Рамки для чипов авторов в сетке статей */
+#articles-grid .author-chip {
+  display: flex;
+  align-items: flex-start;
+  border: 1px solid var(--q-focus-color);
+  flex-wrap: nowrap;
+  border-radius: 20px;
+  padding: 6px 14px;
+  width: auto;
+  gap: 5px;
+  background-color: rgba(44, 161, 255, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+#articles-grid .author-chip:hover {
+  border-color: var(--q-focus-color);
+  background-color: rgba(120, 194, 255, 0.2);
+  box-shadow: 0 1px 2px rgba(44, 161, 255, 0.3);
+  transform: translateY(-0.3px);
+}
+
+#articles-grid .author-chip .icon-person {
+  filter: brightness(0.9);
 }
 
 .article-content p,
@@ -908,6 +941,14 @@ time.article-date::before {
 .article-tag-chip:focus {
   background-color: var(--q-alternative);
   color: #fff;
+}
+
+.author-chip-link {
+  display: flex;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  text-decoration: none;
+  color: var(--q-alternative);
 }
 
 .banners {

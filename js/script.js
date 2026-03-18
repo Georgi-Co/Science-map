@@ -123,18 +123,18 @@ function renderPage(page = 1) {
       })
       : 'Дата не указана';
 
-    // Обработка авторов (все)
+    // Обработка авторов (все) — чипы без запятых с иконкой
     const authorsHTML = authors.length
       ? authors.map(author => {
           const authorName = author?.Name || author?.name || 'Автор';
           const authorId = author?.id;
-          const iconPerson = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="icon-person" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>`;
+          const iconPerson = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="icon-person" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/></svg>`;
           const link = authorId
-            ? `<a href="author.html?id=${authorId}">${authorName}</a>`
+            ? `<a href="author.html?id=${authorId}" class="author-chip-link">${authorName}</a>`
             : `<span class="author-name">${authorName}</span>`;
-          return `${iconPerson} ${link}`;
-        }).join(', ')
-      : 'Автор не указан';
+          return `<span class="author-chip">${iconPerson} ${link}</span>`;
+        }).join('')
+      : '<span class="author-chip">Автор не указан</span>';
 
     // Получаем функцию перевода
     const t = (key) => window.localization?.getTranslation?.(key) || key;
@@ -161,7 +161,7 @@ function renderPage(page = 1) {
         <!-- <div class="article-preview"><strong>Цели проекта: </strong>${previewText}</div> -->
         <div class="faculty" aria-label="${t('Факультет:')}"><strong>${t('Факультет:')}</strong> <span class="faculty-name">${facultyDisplay}</span></div>
         <time class="article-date" datetime="${publication || ''}"><strong>Дата публикации: </strong>${date}</time>
-        <div class="article-author"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="icon-people" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg><strong> Авторы: </strong> ${authorsHTML}</div>
+        <div class="article-author"><div class="author-label"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="icon-people" viewBox="0 0 16 16"><path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/></svg><strong> Авторы: </strong></div> ${authorsHTML}</div>
         ${tags.length ? `
         <div class="article-tags-line" aria-label="Теги статьи">
           ${tags.map(tag => `<button type="button" class="article-tag-chip" data-tag="${tag}">${tag}</button>`).join('')}
