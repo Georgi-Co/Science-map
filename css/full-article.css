@@ -126,6 +126,26 @@ body.layout-article {
   text-decoration: underline;
 }
 
+/* Authors block inside full article meta */
+.article-meta .article-author {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.article-meta .author-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.article-meta .author-chip {
+  white-space: nowrap;
+}
+
 /* === 4. Изображение статьи === */
 .article-full-image {
   width: 100%;
@@ -235,6 +255,7 @@ body.layout-article {
 .article-section-title::before {
   content: "🏷️";
 }
+
 /* Иконка тегов через SVG */
 .article-tags .article-section-title::before {
   content: "";
@@ -336,8 +357,7 @@ body.layout-article {
   background-color: var(--q-primary);
 }
 
-.article-footer {
-}
+.article-footer {}
 
 .back-link,
 .download-pdf-btn {
@@ -532,10 +552,12 @@ body.layout-article {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
 }
 
-.article-description strong, .article-content-text strong {
+.article-description strong,
+.article-content-text strong {
   color: #0e1060;
   font-weight: 700;
 }
+
 /* === 12. Блок контентного текста (простой текст) === */
 #article-content-full-text {
   padding-top: 20px;
@@ -589,4 +611,91 @@ body.layout-article {
   margin-bottom: 0.5em;
 }
 
+/* === 15. Мобильные устройства === */
+@media (max-width: 600px) {
+  .article-page {
+    padding: 20px 15px;
+    border-radius: 12px;
+  }
 
+  #full-article h1 {
+    font-size: 22px;
+    text-align: left;
+  }
+
+  .article-meta {
+    flex-direction: column;
+    gap: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    padding: 10px 0;
+  }
+
+  .article-body {
+    font-size: 15px;
+    margin: 10px 0;
+  }
+
+  .article-body p {
+    text-align: left;
+    hyphens: none;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+
+  .article-body h2 {
+    font-size: 20px;
+    margin: 25px 0 15px;
+  }
+
+  .article-body h3 {
+    font-size: 18px;
+    margin: 20px 0 10px;
+  }
+
+  .article-body ul,
+  .article-body ol {
+    padding: 15px 15px 15px 25px;
+    margin: 15px 0;
+  }
+
+  .article-description,
+  .article-solutions,
+  .article-purposes,
+  .article-content-text {
+    font-size: 15px;
+    padding: 15px;
+    text-align: left;
+    word-break: normal;
+    overflow-wrap: break-word;
+    hyphens: none;
+  }
+
+  .article-actions {
+    flex-direction: column;
+    padding: 20px;
+    gap: 15px;
+  }
+
+  .back-link,
+  .download-pdf-btn {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 14px;
+    text-align: center;
+  }
+
+  .article-tags,
+  .article-files {
+    padding: 15px;
+  }
+
+  .article-tags-list {
+    gap: 8px;
+  }
+
+  .article-full-image {
+    border-radius: 10px;
+    margin: 20px 0;
+  }
+}
