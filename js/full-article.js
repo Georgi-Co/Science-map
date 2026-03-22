@@ -44,7 +44,7 @@ async function loadArticle() {
 
   try {
     // Запрос как в script.js: тот же API и populate, фильтр по id (Strapi v5 — плоский ответ)
-    const url = new URL('http://localhost:1337/api/articles');
+    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
     url.searchParams.append('filters[id][$eq]', articleId);
     url.searchParams.append('populate', '*');
     url.searchParams.append('publicationState', 'published');
@@ -102,7 +102,7 @@ async function loadArticle() {
         const url = img.url;
         const name = img.name || img.alternativeText || title;
         carouselHTML = '<div class="article-single-image">' +
-          '<img src="http://localhost:1337' + url + '" alt="' + name + '" class="article-full-image" loading="lazy">' +
+          '<img src="https://special-bear-65dd39b4fc.strapiapp.com' + url + '" alt="' + name + '" class="article-full-image" loading="lazy">' +
           '</div>';
       } else {
         // Несколько изображений - карусель
@@ -113,7 +113,7 @@ async function loadArticle() {
             const url = img.url;
             const name = img.name || img.alternativeText || ('Изображение ' + (index + 1));
             return '<div class="carousel-slide">' +
-              '<img class="carousel-image" src="http://localhost:1337' + url + '" alt="' + name + '" loading="lazy">' +
+              '<img class="carousel-image" src="https://special-bear-65dd39b4fc.strapiapp.com' + url + '" alt="' + name + '" loading="lazy">' +
               '</div>';
           }).join('') +
           '</div>' +
@@ -139,7 +139,7 @@ async function loadArticle() {
         if (mime.startsWith('video/')) {
           return '<figure class="article-media-item video-item">' +
             '<video controls preload="metadata">' +
-            '<source src="http://localhost:1337' + url + '" type="' + mime + '">' +
+            '<source src="https://special-bear-65dd39b4fc.strapiapp.com' + url + '" type="' + mime + '">' +
             'Ваш браузер не поддерживает воспроизведение видео.' +
             '</video>' +
             '<figcaption>' + name + '</figcaption>' +
@@ -147,7 +147,7 @@ async function loadArticle() {
         }
 
         return '<div class="article-media-item">' +
-          '<a href="http://localhost:1337' + url + '" target="_blank" rel="noopener">' + name + '</a>' +
+          '<a href="https://special-bear-65dd39b4fc.strapiapp.com' + url + '" target="_blank" rel="noopener">' + name + '</a>' +
           '</div>';
       }).join('') +
       '</div></section>'
@@ -205,7 +205,7 @@ async function loadArticle() {
         const name = fileItem?.name || 'Файл';
         return url ? `
                 <li>
-                  <a href="http://localhost:1337${url}" target="_blank" class="article-file" download>
+                  <a href="https://special-bear-65dd39b4fc.strapiapp.com${url}" target="_blank" class="article-file" download>
                     <span class="file-icon">📎</span>
                     ${name}
                   </a>
@@ -295,7 +295,7 @@ async function loadArticle() {
     container.innerHTML = `
       <p>Ошибка загрузки статьи. Сообщение: <code>${error.message}</code></p>
       <ul>
-        <li>Работает ли Strapi: <a href="http://localhost:1337">http://localhost:1337</a></li>
+        <li>Работает ли Strapi: <a href="https://special-bear-65dd39b4fc.strapiapp.com">https://special-bear-65dd39b4fc.strapiapp.com</a></li>
         <li>Опубликована ли статья с ID=${articleId}</li>
         <li>Правильно ли указан <code>id="full-article"</code></li>
       </ul>

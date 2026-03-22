@@ -222,7 +222,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log('🔍 Загрузка статей с Strapi...');
 
-    const url = new URL('http://localhost:1337/api/articles');
+    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
     url.searchParams.append('populate', '*');
     url.searchParams.append('publicationState', 'published');
     url.searchParams.append('pagination[pageSize]', '100');
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <p><strong>Ошибка:</strong> ${error.message}</p>
         <p><small>Проверь:</small></p>
         <ul>
-          <li>Strapi запущен: <a href="http://localhost:1337" target="_blank">открыть</a></li>
+          <li>Strapi запущен: <a href="https://special-bear-65dd39b4fc.strapiapp.com" target="_blank">открыть</a></li>
           <li>Статьи опубликованы</li>
           <li>Разрешён доступ в Public Role</li>
           <li>Поле <code>authors</code> разрешено в API</li>
