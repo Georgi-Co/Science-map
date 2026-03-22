@@ -126,8 +126,8 @@ async function loadArticle() {
     }
 
     const mediaHTML = otherMedia.length
-      ? '<section class="article-media" aria-label="Видео и аудио">' +
-      '<h2 class="article-section-title">Видео и аудио</h2>' +
+      ? '<section class="article-media" aria-label="Файлы">' +
+      '<h2 class="article-section-title">Файлы</h2>' +
       '<div class="article-media-grid">' +
       otherMedia.map(media => {
         const url = media.url;

@@ -1019,11 +1019,16 @@
     grid-column: 1;
   }
 
+  #ruen a {
+    font-size: 14px;
+    min-width: 0;
+    min-height: 0;
+  }
   #ruen>a.lang-button.active,
   #ruen>a:nth-child(2) {
     display: flex;
     flex: 1 1 1;
-    font-size: 14px;
+    /* font-size убран, так как уже задан выше */
   }
 
   #acc-span {

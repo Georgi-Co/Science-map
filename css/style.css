@@ -305,11 +305,8 @@ h1 {
   gap: 10px;
 }
 
-#ruen > a.lang-button.active, #ruen > a:nth-child(2){
-  font-size: clamp(14px, 1vw + 14px, 22px);
- }
-
 #ruen a {
+  font-size: clamp(14px, 1vw + 14px, 22px);
   min-width: 16px;
   min-height: 16px;
   cursor: pointer;
