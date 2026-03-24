@@ -98,7 +98,7 @@ async function forceRefreshArticles() {
   grid.innerHTML = '<p class="loading">Загрузка статей...</p>';
 
   try {
-    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
+    const url = new URL('http://localhost:1337/api/articles');
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
@@ -567,7 +567,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <p><strong>Ошибка:</strong> ${error.message}</p>
         <p><small>Проверь:</small></p>
         <ul>
-          <li>Strapi запущен: <a href="https://special-bear-65dd39b4fc.strapiapp.com" target="_blank">открыть</a></li>
+          <li>Strapi запущен: <a href="http://localhost:1337" target="_blank">открыть</a></li>
           <li>Статьи опубликованы</li>
           <li>Разрешён доступ в Public Role</li>
           <li>Поле <code>authors</code> разрешено в API</li>
