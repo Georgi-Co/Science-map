@@ -625,6 +625,7 @@ main.layout-article {
   /* 3 колонки фиксированной ширины */
   grid-template-rows: repeat(4, auto);
   flex-wrap: wrap;
+  padding: 20px 0 20px 0;
   gap: 40px;
 }
 
