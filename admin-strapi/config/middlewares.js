@@ -8,6 +8,7 @@ module.exports = [
     config: {
       origin: [
         'https://science-map.vercel.app',
+        'https://special-bear-65dd39b4fc.strapiapp.com'
       ],
       headers: [
         'Content-Type',
