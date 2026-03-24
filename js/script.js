@@ -1,13 +1,12 @@
 
 
-// script.js — загрузка статей для Strapi v5 с кэшем и адаптивным рендером
-
+// script.js — стабильная загрузка статей для Strapi v5
 let allArticles = [];
 let currentPage = 1;
 let articleSearch = null; // поиск, если подключён search.js
 
 // ===============================
-// 🔹 Функции загрузки
+// 🔥 FETCH С RETRY + CACHE + LOADER
 // ===============================
 async function fetchWithRetry(url, retries = 3, delay = 1000) {
   for (let i = 0; i < retries; i++) {
@@ -28,13 +27,38 @@ function showLoader() {
   if (grid) grid.innerHTML = '<p>Загрузка данных...</p>';
 }
 
-function showError(message) {
+function showError(message = 'Ошибка загрузки данных') {
   const grid = document.querySelector('.articles-grid');
   if (grid) grid.innerHTML = `<p>${message}</p>`;
 }
 
 // ===============================
-// 🔹 Render карточек
+// 📦 PAGINATION / GRID
+// ===============================
+function getGridColumnsCount() {
+  const grid = document.querySelector('.articles-grid');
+  if (!grid) return 1;
+  const style = getComputedStyle(grid);
+  const template = style.gridTemplateColumns;
+  if (template && template !== 'none') return template.trim().split(/\s+/).length;
+  return 1;
+}
+
+function getGridRowsCount() {
+  const grid = document.querySelector('.articles-grid');
+  if (!grid) return 2;
+  const style = getComputedStyle(grid);
+  const template = style.gridTemplateRows;
+  if (template && template !== 'none') return template.trim().split(/\s+/).length;
+  return 2;
+}
+
+function getArticlesPerPage() {
+  return getGridColumnsCount() * getGridRowsCount();
+}
+
+// ===============================
+// 🎨 РЕНДЕР КАРТОЧЕК
 // ===============================
 function renderPage(page = 1) {
   const grid = document.querySelector('.articles-grid');
@@ -44,7 +68,7 @@ function renderPage(page = 1) {
   const articlesPerPage = getArticlesPerPage();
   const start = (page - 1) * articlesPerPage;
   const end = start + articlesPerPage;
-  const articlesToShow = allArticles.slice(start, end);
+  const articlesToShow = Array.isArray(allArticles) ? allArticles.slice(start, end) : [];
 
   grid.innerHTML = '';
 
@@ -64,8 +88,8 @@ function renderPage(page = 1) {
       : 'Дата не указана';
 
     const authorsHTML = (Array.isArray(article.authors) && article.authors.length)
-      ? article.authors.map(a => `<span>${a.Name || 'Автор'}</span>`).join(', ')
-      : 'Автор не указан';
+      ? article.authors.map(a => `<span class="author-chip">${a.Name || 'Автор'}</span>`).join(' ')
+      : '<span class="author-chip">Автор не указан</span>';
 
     const tagsHTML = (Array.isArray(article.tags) && article.tags.length)
       ? article.tags.map(t => `<span class="tag-chip">${t.Name || t.name}</span>`).join(' ')
@@ -74,47 +98,28 @@ function renderPage(page = 1) {
     const card = document.createElement('div');
     card.className = 'article-card';
     card.innerHTML = `
-      <h3>${title}</h3>
-      <p><strong>Описание:</strong> ${description}</p>
-      <p><strong>Факультет:</strong> ${faculty}</p>
-      <p><strong>Область:</strong> ${scienceArea}</p>
-      <p><strong>Направление:</strong> ${scienceDirection}</p>
-      <p><strong>Дата публикации:</strong> ${publication}</p>
-      <p><strong>Авторы:</strong> ${authorsHTML}</p>
-      ${tagsHTML ? `<p><strong>Теги:</strong> ${tagsHTML}</p>` : ''}
+      <div class="article-card-body">
+        <h3 class="article-title">${title}</h3>
+        <p class="article-description"><strong>Описание:</strong> ${description}</p>
+        <p class="article-faculty"><strong>Факультет:</strong> ${faculty}</p>
+        <p class="article-area"><strong>Область:</strong> ${scienceArea}</p>
+        <p class="article-direction"><strong>Направление:</strong> ${scienceDirection}</p>
+        <p class="article-date"><strong>Дата публикации:</strong> ${publication}</p>
+        <div class="article-authors"><strong>Авторы:</strong> ${authorsHTML}</div>
+        ${tagsHTML ? `<div class="article-tags"><strong>Теги:</strong> ${tagsHTML}</div>` : ''}
+      </div>
     `;
+    card.addEventListener('click', e => {
+      if (e.target.closest('a')) return;
+      window.location.href = `full-article.html?id=${article.id}`;
+    });
 
     grid.appendChild(card);
   });
 }
 
 // ===============================
-// 🔹 Грид адаптивный
-// ===============================
-function getGridColumnsCount() {
-  const grid = document.querySelector('.articles-grid');
-  if (!grid) return 1;
-  const style = getComputedStyle(grid);
-  return style.gridTemplateColumns !== 'none'
-    ? style.gridTemplateColumns.trim().split(/\s+/).length
-    : 1;
-}
-
-function getGridRowsCount() {
-  const grid = document.querySelector('.articles-grid');
-  if (!grid) return 2;
-  const style = getComputedStyle(grid);
-  return style.gridTemplateRows !== 'none'
-    ? style.gridTemplateRows.trim().split(/\s+/).length
-    : 2;
-}
-
-function getArticlesPerPage() {
-  return getGridColumnsCount() * getGridRowsCount();
-}
-
-// ===============================
-// 🔹 Загрузка статей
+// 🔍 ЗАГРУЗКА СТАТЕЙ
 // ===============================
 document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.querySelector('.articles-grid');
@@ -124,66 +129,57 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cached = localStorage.getItem(cacheKey);
 
   if (cached) {
-    try {
-      allArticles = JSON.parse(cached);
-      renderPage(1);
-      console.log('📦 Загружено из кэша', allArticles.length, 'статей');
-      return;
-    } catch (err) {
-      console.warn('⚠️ Ошибка парсинга кэша:', err);
-    }
+    allArticles = JSON.parse(cached);
+    renderPage(1);
+    return;
   }
 
-  showLoader();
-
-  const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
-  url.searchParams.set('pagination[pageSize]', '100');
-  url.searchParams.set('sort', 'Publication:desc');
-  url.searchParams.set('publicationState', 'published');
-  url.searchParams.append('populate', 'authors');
-  url.searchParams.append('populate', 'tags');
-
   try {
-    const response = await fetchWithRetry(url);
-    if (!response.data) throw new Error('API вернул неверный формат');
+    showLoader();
+    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
+    url.searchParams.set('pagination[pageSize]', '100');
+    url.searchParams.set('sort', 'Publication:desc');
+    url.searchParams.set('publicationState', 'published');
+    url.searchParams.append('populate', 'authors');
+    url.searchParams.append('populate', 'tags');
 
-    allArticles = response.data.map(a => ({
-      id: a.id,
-      Title: a.Title || '',
-      Description: a.Description || '',
-      Publication: a.Publication || a.publishedAt || null,
-      Faculty: a.Faculty || '',
-      ScienceArea: a.ScienceArea || '',
-      ScienceDirection: a.ScienceDirection || '',
-      authors: Array.isArray(a.authors) ? a.authors : [],
-      tags: Array.isArray(a.tags) ? a.tags : [],
-      Content: a.Content || []
-    }));
+    const data = await fetchWithRetry(url);
+    if (!data || !Array.isArray(data.data)) throw new Error('API вернул неверный формат');
 
-    try { localStorage.setItem(cacheKey, JSON.stringify(allArticles)); } catch(e) {}
+    allArticles = data.data.map(item => {
+      const attrs = item;
+      return {
+        id: attrs.id,
+        Title: attrs.Title || attrs.title || '',
+        Description: attrs.Description || attrs.description || '',
+        Publication: attrs.Publication || attrs.publication || attrs.publishedAt || null,
+        Faculty: attrs.Faculty || '',
+        ScienceArea: attrs.ScienceArea || '',
+        ScienceDirection: attrs.ScienceDirection || '',
+        authors: Array.isArray(attrs.authors) ? attrs.authors.map(a => ({ Name: a.Name || a.name })) : [],
+        tags: Array.isArray(attrs.tags) ? attrs.tags.map(t => ({ Name: t.Name || t.name })) : []
+      };
+    });
 
+    localStorage.setItem(cacheKey, JSON.stringify(allArticles));
     renderPage(1);
-    console.log('✅ Загружено из API', allArticles.length, 'статей');
   } catch (err) {
-    console.error('❌ Ошибка загрузки с API:', err);
-    showError('Не удалось загрузить статьи.');
+    console.error('Ошибка загрузки с API:', err);
+    showError('Не удалось загрузить данные.');
   }
 });
 
 // ===============================
-// 🔹 Обновление при ресайзе
+// 🔄 АДАПТИВНОСТЬ
 // ===============================
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (allArticles.length) renderPage(currentPage);
+    if (Array.isArray(allArticles) && allArticles.length) {
+      renderPage(currentPage);
+    }
   }, 150);
 });
 
-// ===============================
-// 🔹 Обновление при смене языка
-// ===============================
-document.addEventListener('languageChanged', () => {
-  if (allArticles.length) renderPage(currentPage);
-});
+console.log('✅ script.js загружен');
