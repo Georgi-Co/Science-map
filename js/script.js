@@ -7,6 +7,43 @@
 let allArticles = [];
 let currentPage = 1;
 
+
+// ===============================
+// 🔥 RETRY + CACHE + LOADER
+// ===============================
+
+async function fetchWithRetry(url, retries = 3, delay = 1000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url);
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      return await res.json();
+    } catch (err) {
+      console.warn(`Попытка ${i + 1} не удалась`);
+
+      if (i === retries - 1) throw err;
+
+      await new Promise(r => setTimeout(r, delay));
+    }
+  }
+}
+
+function showLoader() {
+  const grid = document.querySelector('.articles-grid');
+  if (grid) {
+    grid.innerHTML = '<p>Загрузка данных...</p>';
+  }
+}
+
+function showError(message = 'Ошибка загрузки данных') {
+  const grid = document.querySelector('.articles-grid');
+  if (grid) {
+    grid.innerHTML = `<p>${message}</p>`;
+  }
+}
+
 // === ФУНКЦИИ ===
 
 // Определяем количество колонок сетки
@@ -228,13 +265,31 @@ document.addEventListener('DOMContentLoaded', async () => {
     url.searchParams.append('pagination[pageSize]', '100');
     url.searchParams.append('sort', 'Publication:desc');
 
-    const response = await fetch(url);
+    // Новый кусочек (Мы заменяем обычный fetch на функцию с retry + кэш)
+    showLoader(); /* Показывает сообщение "Загрузка данных..." вместо пустой сетки */
 
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    let data;
+
+    try {
+      // 🔹 попытка загрузки с retry
+      data = await fetchWithRetry(url); /* Пытается загрузить данные с 3 попытками (retry) */
+
+      // 🔹 сохраняем в localStorage
+      localStorage.setItem('articles_cache', JSON.stringify(data)); /* Если данные загрузились, сохраняем их в браузере для кэширования */
+
+    } catch (error) { /* Если API недоступен: пытаемся взять данные из кэша, если нет — показываем ошибку */
+      console.error('❌ API недоступен, пробуем кэш');
+
+      const cached = localStorage.getItem('articles_cache');
+
+      if (cached) {
+        console.log('📦 Загружаем из кэша');
+        data = JSON.parse(cached);
+      } else {
+        showError('Не удалось загрузить данные (нет кэша)');
+        return;
+      }
     }
-
-    const data = await response.json();
     console.log('📦 Получены данные:', data);
     console.log('📦 Структура первой статьи:', data.data?.[0]);
 
