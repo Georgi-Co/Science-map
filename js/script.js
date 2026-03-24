@@ -1,24 +1,19 @@
 
 
 // ===============================
-// script.js — стабильная загрузка статей для Strapi v5
-// Поддерживает: кэш, retry, адаптивность, авторов, теги, пагинацию
+// script.js — загрузка статей для Strapi v5 (плоские данные)
 // ===============================
 
 // Глобальные переменные
 let allArticles = [];
 let currentPage = 1;
-var articleSearch = null;
-
-// В script.js или search.js (один раз)
-if (typeof articleSearch === 'undefined') {
-  var articleSearch = null;
-}
+let articleSearch = null; // поиск
 
 // ===============================
-// 🔹 RETRY + CACHE + LOADER
+// 🔹 Функции: RETRY + CACHE + LOADER
 // ===============================
 
+// fetch с retry
 async function fetchWithRetry(url, retries = 3, delay = 500) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -26,25 +21,27 @@ async function fetchWithRetry(url, retries = 3, delay = 500) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     } catch (err) {
-      console.warn(`⚠️ Попытка ${i + 1} не удалась:`, err);
+      console.warn(`Попытка ${i + 1} не удалась:`, err);
       if (i < retries - 1) await new Promise(r => setTimeout(r, delay));
     }
   }
   throw new Error('Не удалось получить данные после нескольких попыток');
 }
 
+// Показ загрузки
 function showLoader() {
   const grid = document.querySelector('.articles-grid');
   if (grid) grid.innerHTML = '<p>Загрузка данных...</p>';
 }
 
+// Показ ошибки
 function showError(message = 'Ошибка загрузки данных') {
   const grid = document.querySelector('.articles-grid');
   if (grid) grid.innerHTML = `<p>${message}</p>`;
 }
 
 // ===============================
-// ✅ Рендеринг страниц
+// 🔹 Пагинация и сетка
 // ===============================
 
 function getGridColumnsCount() {
@@ -53,13 +50,6 @@ function getGridColumnsCount() {
   const style = getComputedStyle(grid);
   const template = style.gridTemplateColumns;
   if (template && template !== 'none') return Math.max(1, template.trim().split(/\s+/).length);
-  const firstCard = grid.querySelector('.article-card');
-  if (firstCard) {
-    const gridWidth = grid.clientWidth;
-    const cardWidth = firstCard.offsetWidth;
-    const gap = parseFloat(style.columnGap) || 0;
-    if (cardWidth > 0) return Math.max(1, Math.floor((gridWidth + gap) / (cardWidth + gap)));
-  }
   return 1;
 }
 
@@ -76,6 +66,10 @@ function getArticlesPerPage() {
   return getGridColumnsCount() * getGridRowsCount();
 }
 
+// ===============================
+// 🔹 Рендер страницы
+// ===============================
+
 function renderPage(page = 1) {
   currentPage = page;
   const articlesPerPage = getArticlesPerPage();
@@ -88,49 +82,79 @@ function renderPage(page = 1) {
 
   grid.innerHTML = '';
 
-  if (!articlesToShow.length) {
-    grid.innerHTML = '<p class="no-articles">Нет статей для отображения.</p>';
+  if (articlesToShow.length === 0) {
+    grid.innerHTML = '<p>Нет статей для отображения.</p>';
     return;
   }
 
   articlesToShow.forEach(article => {
     const id = article.id;
     const title = article.Title || 'Без заголовка';
-    const description = article.Description || '';
-    const publication = article.Publication || article.publishedAt;
+    const description = article.Description || 'Описание отсутствует';
+    const publication = article.Publication || null;
+    const faculty = article.Faculty || 'Не указан';
+    const scienceArea = article.ScienceArea || 'Научная область не указана';
+    const scienceDirection = article.ScienceDirection || 'Направление не указано';
     const authors = Array.isArray(article.authors) ? article.authors : [];
     const tags = Array.isArray(article.tags) ? article.tags : [];
 
-    const date = publication
-      ? new Date(publication).toLocaleDateString('ru-RU', {
-          day: 'numeric', month: 'long', year: 'numeric'
-        })
-      : 'Дата не указана';
-
+    // Авторы
     const authorsHTML = authors.length
-      ? authors.map(a => `<span class="author-chip">${a.Name}</span>`).join('')
+      ? authors.map(a => `<span class="author-chip">${a.Name || 'Автор'}</span>`).join('')
       : '<span class="author-chip">Автор не указан</span>';
 
+    // Теги
+    const tagsHTML = tags.length
+      ? tags.map(t => `<button type="button" class="article-tag-chip" data-tag="${t.Name}">${t.Name}</button>`).join('')
+      : '';
+
+    // Дата
+    const date = publication
+      ? new Date(publication).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
+      : 'Дата не указана';
+
+    // Создаем карточку
     const card = document.createElement('div');
     card.className = 'article-card';
     card.innerHTML = `
-      <article>
-        <h3><a href="full-article.html?id=${id}">${title}</a></h3>
-        <p>${description}</p>
-        <p><strong>Дата публикации:</strong> ${date}</p>
-        <p><strong>Авторы:</strong> ${authorsHTML}</p>
-        ${tags.length ? `<p><strong>Теги:</strong> ${tags.map(t => `<span>${t}</span>`).join(', ')}</p>` : ''}
+      <article class="article-card-body">
+        <h3 class="article-title"><a href="full-article.html?id=${id}" class="article-title-link">${title}</a></h3>
+        <div class="article-description"><strong>Описание: </strong>${description}</div>
+        <div class="faculty"><strong>Факультет: </strong>${faculty}</div>
+        <div class="science-area"><strong>Область: </strong>${scienceArea}</div>
+        <div class="science-direction"><strong>Направление: </strong>${scienceDirection}</div>
+        <time class="article-date" datetime="${publication || ''}"><strong>Дата публикации: </strong>${date}</time>
+        <div class="article-authors"><strong>Авторы: </strong>${authorsHTML}</div>
+        ${tagsHTML ? `<div class="article-tags-line">${tagsHTML}</div>` : ''}
       </article>
     `;
 
+    // Клик по карточке — открытие полной статьи
     card.addEventListener('click', e => {
-      const link = e.target.closest('a');
-      if (!link) window.location.href = `full-article.html?id=${id}`;
+      if (!e.target.closest('a')) window.location.href = `full-article.html?id=${id}`;
     });
 
     grid.appendChild(card);
   });
 
+  // Навешиваем обработчики на теги
+  const tagChips = document.querySelectorAll('.article-tag-chip');
+  tagChips.forEach(chip => {
+    const tag = chip.getAttribute('data-tag');
+    if (!tag) return;
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      const url = new URL(window.location.href);
+      url.searchParams.set('tag', tag);
+      window.history.replaceState({}, '', url.toString());
+      if (articleSearch) {
+        articleSearch.activeTag = tag.toLowerCase();
+        articleSearch.performSearch(articleSearch.searchField?.value || '');
+      }
+    });
+  });
+
+  // Пагинация (если есть функция createPagination)
   if (typeof createPagination === 'function') {
     const totalPages = Math.ceil(allArticles.length / articlesPerPage);
     createPagination(currentPage, totalPages, '#articles-container');
@@ -146,24 +170,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!grid) return;
 
   const cacheKey = 'articles_cache';
+  const cached = localStorage.getItem(cacheKey);
 
-  // Проверяем кэш
-  let cached = localStorage.getItem(cacheKey);
   if (cached) {
-    try {
-      cached = JSON.parse(cached);
-      if (Array.isArray(cached)) {
-        allArticles = cached;
-        console.log('📦 Загружаем статьи из кэша');
-        renderPage(1);
-        return;
-      }
-    } catch { /* игнорируем ошибки парсинга */ }
+    allArticles = JSON.parse(cached);
+    if (!Array.isArray(allArticles)) allArticles = [];
+    renderPage(1);
+    return;
   }
 
-  showLoader();
-
   try {
+    showLoader();
+
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
     url.searchParams.set('pagination[pageSize]', '100');
     url.searchParams.set('sort', 'Publication:desc');
@@ -174,39 +192,36 @@ document.addEventListener('DOMContentLoaded', async () => {
     const data = await fetchWithRetry(url);
     if (!data || !Array.isArray(data.data)) throw new Error('API вернул неверный формат');
 
-    allArticles = data.data.map(item => {
-      const attrs = item.attributes || {};
-      const authors = (attrs.authors?.data || []).map(a => {
-        const aAttrs = a.attributes || a;
-        return { id: a.id, Name: aAttrs.name || aAttrs.Name || '' };
-      });
-      const tags = (attrs.tags?.data || []).map(t => {
-        const tAttrs = t.attributes || t;
-        return tAttrs.name || tAttrs.Name || '';
-      });
-      return {
-        id: item.id,
-        Title: attrs.Title || attrs.title || '',
-        Description: attrs.Description || attrs.description || '',
-        Publication: attrs.Publication || attrs.publication || attrs.publishedAt || null,
-        authors,
-        tags
-      };
-    });
+    allArticles = data.data.map(article => ({
+      id: article.id,
+      Title: article.Title || '',
+      Description: article.Description || '',
+      Publication: article.Publication || article.publishedAt || null,
+      Faculty: article.Faculty || '',
+      ScienceArea: article.ScienceArea || '',
+      ScienceDirection: article.ScienceDirection || '',
+      authors: Array.isArray(article.authors) ? article.authors : [],
+      tags: Array.isArray(article.tags) ? article.tags : [],
+      Content: article.Content || []
+    }));
 
-    localStorage.setItem(cacheKey, JSON.stringify(allArticles));
+    // Сохраняем в кэш
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(allArticles));
+    } catch (err) {
+      console.warn('⚠️ Не удалось сохранить кэш:', err);
+    }
+
     renderPage(1);
-
-  } catch (err) {
-    console.error('❌ Ошибка загрузки с API:', err);
+  } catch (error) {
+    console.error('❌ Ошибка загрузки с API:', error);
     showError('Не удалось загрузить данные.');
   }
 });
 
 // ===============================
-// 🔹 Адаптивность
+// 🔹 Адаптивная перестройка сетки
 // ===============================
-
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
@@ -216,9 +231,8 @@ window.addEventListener('resize', () => {
 });
 
 // ===============================
-// 🔹 Обновление при смене языка
+// 🔹 Перерисовка при смене языка
 // ===============================
-
 document.addEventListener('languageChanged', () => {
   if (allArticles.length > 0) renderPage(currentPage);
 });
