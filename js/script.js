@@ -260,157 +260,111 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔍 Загрузка статей с Strapi...');
 
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
-    url.searchParams.append('populate', 'authors', 'tags'); // Исправил параметры получения API ('*')
+    url.searchParams.append('populate', 'authors'); // отдельно каждый populate
+    url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
     url.searchParams.append('pagination[pageSize]', '100');
     url.searchParams.append('sort', 'Publication:desc');
 
-    // Новый кусочек (Мы заменяем обычный fetch на функцию с retry + кэш)
-    showLoader(); /* Показывает сообщение "Загрузка данных..." вместо пустой сетки */
+    showLoader(); // показать "Загрузка данных..." вместо пустой сетки
 
     let data;
 
     try {
-      // 🔹 попытка загрузки с retry
-      data = await fetchWithRetry(url); /* Пытается загрузить данные с 3 попытками (retry) */
+      // Пытаемся загрузить данные с retry
+      data = await fetchWithRetry(url);
 
-      // 🔹 сохраняем в localStorage
-      localStorage.setItem('articles_cache', JSON.stringify(data)); /* Если данные загрузились, сохраняем их в браузере для кэширования */
+      // Сохраняем данные в кэш localStorage
+      localStorage.setItem('articles_cache', JSON.stringify(data));
+      console.log('📦 Данные успешно сохранены в кэш localStorage');
 
-    } catch (error) { /* Если API недоступен: пытаемся взять данные из кэша, если нет — показываем ошибку */
-      console.error('❌ API недоступен, пробуем кэш');
-
+    } catch (error) {
+      console.warn('⚠️ API недоступен, пробуем кэш');
       const cached = localStorage.getItem('articles_cache');
-
       if (cached) {
-        console.log('📦 Загружаем из кэша');
+        console.log('📦 Загружаем данные из кэша localStorage');
         data = JSON.parse(cached);
       } else {
         showError('Не удалось загрузить данные (нет кэша)');
         return;
       }
     }
-    console.log('📦 Получены данные:', data);
-    console.log('📦 Структура первой статьи:', data.data?.[0]);
 
     if (!data || !data.data || !Array.isArray(data.data)) {
       throw new Error('API вернул неверный формат (отсутствует data.data)');
     }
 
     // Обработка и фильтрация статей
-    // Strapi v5 возвращает данные в формате: { data: [{ id, attributes: {...} }] }
-    allArticles = data.data
-      .map(item => {
-        // Поддерживаем оба формата: с attributes и без
-        const attrs = item.attributes || item;
-        const authors = attrs.authors?.data || attrs.authors || [];
+    allArticles = data.data.map(item => {
+      const attrs = item.attributes || item;
 
-        // Теги
-        const tagsRaw = attrs.Tags?.data ?? attrs.tags?.data ?? attrs.Tags ?? attrs.tags;
-        const tagsList = Array.isArray(tagsRaw) ? tagsRaw : tagsRaw ? [tagsRaw] : [];
-        const tags = tagsList
-          .map(tagItem => {
-            const t = tagItem.attributes || tagItem || {};
-            return t.Name || t.name || '';
-          })
-          .filter(Boolean);
-
-          // 🔹 Сохраняем в кэш localStorage
-          try {
-            localStorage.setItem('articles_cache', JSON.stringify(allArticles));
-            console.log('📦 Данные сохранены в кэш localStorage');
-          } catch (err) {
-            console.warn('⚠️ Не удалось сохранить кэш:', err);
-          }
-
-        // Возможные связи для фильтров (факультет, область, направление)
-        // Strapi v5: enum-поля приходят как плоские строки
-        // Strapi v4: relations приходят как { data: { attributes: { Name: ... } } }
-        const facultyName = (typeof attrs.Faculty === 'string' ? attrs.Faculty : null)
-          || attrs.Faculty?.data?.attributes?.Name || '';
-        const scienceAreaName = (typeof attrs.ScienceArea === 'string' ? attrs.ScienceArea : null)
-          || attrs.ScienceArea?.data?.attributes?.Name || '';
-        const scienceDirectionName = (typeof attrs.ScienceDirection === 'string' ? attrs.ScienceDirection : null)
-          || attrs.ScienceDirection?.data?.attributes?.Name || '';
-
-        const article = {
-          id: item.id,
-          Title: attrs.Title || attrs.title || '',
-          Description: attrs.Description || attrs.description || '',
-          Content: attrs.Content || attrs.content || [],
-          Publication: attrs.Publication || attrs.publication || attrs.publishedAt || null,
-          publishedAt: attrs.publishedAt || attrs.Publication || attrs.publication || null,
-          authors: Array.isArray(authors) ? authors.map(author => {
-            // Поддерживаем оба формата автора
-            const authorAttrs = author.attributes || author;
-            return {
-              id: author.id,
-              Name: authorAttrs.Name || authorAttrs.name || '',
-              name: authorAttrs.Name || authorAttrs.name || ''
-            };
-          }) : [],
-          // Поля для работы фильтров на клиенте
-          faculty: facultyName,
-          scienceArea: scienceAreaName,
-          scienceDirection: scienceDirectionName,
-          tags
+      // Авторы
+      const authorsRaw = attrs.authors?.data || attrs.authors || [];
+      const authors = Array.isArray(authorsRaw) ? authorsRaw.map(author => {
+        const authorAttrs = author.attributes || author;
+        return {
+          id: author.id,
+          Name: authorAttrs.Name || authorAttrs.name || '',
+          name: authorAttrs.Name || authorAttrs.name || ''
         };
+      }) : [];
 
-        console.log('📄 Обработанная статья:', {
-          id: article.id,
-          title: article.Title,
-          hasContent: Array.isArray(article.Content) && article.Content.length > 0,
-          hasPublication: !!article.Publication,
-          authorsCount: article.authors.length,
-          faculty: article.faculty,
-          scienceArea: article.scienceArea,
-          scienceDirection: article.scienceDirection
-        });
-        return article;
-      });
-    // Не фильтруем, так как publicationState уже фильтрует на стороне API
-    // Оставляем все статьи, которые были возвращены API
+      // Теги
+      const tagsRaw = attrs.Tags?.data ?? attrs.tags?.data ?? attrs.Tags ?? attrs.tags;
+      const tagsList = Array.isArray(tagsRaw) ? tagsRaw : tagsRaw ? [tagsRaw] : [];
+      const tags = tagsList.map(tagItem => {
+        const t = tagItem.attributes || tagItem || {};
+        return t.Name || t.name || '';
+      }).filter(Boolean);
+
+      // Факультет, область, направление
+      const faculty = (typeof attrs.Faculty === 'string' ? attrs.Faculty : null)
+        || attrs.Faculty?.data?.attributes?.Name || '';
+      const scienceArea = (typeof attrs.ScienceArea === 'string' ? attrs.ScienceArea : null)
+        || attrs.ScienceArea?.data?.attributes?.Name || '';
+      const scienceDirection = (typeof attrs.ScienceDirection === 'string' ? attrs.ScienceDirection : null)
+        || attrs.ScienceDirection?.data?.attributes?.Name || '';
+
+      return {
+        id: item.id,
+        Title: attrs.Title || attrs.title || '',
+        Description: attrs.Description || attrs.description || '',
+        Content: attrs.Content || attrs.content || [],
+        Publication: attrs.Publication || attrs.publication || attrs.publishedAt || null,
+        publishedAt: attrs.publishedAt || attrs.Publication || attrs.publication || null,
+        authors,
+        faculty,
+        scienceArea,
+        scienceDirection,
+        tags
+      };
+    });
 
     console.log('✅ Всего обработано статей:', allArticles.length);
-    console.log('✅ Первая статья:', allArticles[0]);
 
     if (allArticles.length === 0) {
       grid.innerHTML = '<p>Нет опубликованных статей.</p>';
       return;
     }
 
-    // Рендеринг первой страницы ПЕРЕД инициализацией поиска
-    console.log('🎨 Вызываю renderPage(1) с', allArticles.length, 'статьями');
+    // Рендеринг первой страницы
     renderPage(1);
 
-    // Инициализация поиска (если функция setupSearch доступна)
+    // Инициализация поиска
     if (typeof setupSearch === 'function') {
       console.log('🔍 Инициализирую поиск...');
       articleSearch = setupSearch(allArticles, renderPage);
       console.log('✅ Поиск инициализирован');
-    } else {
-      console.warn(
-        '⚠️ Функция setupSearch не найдена. Поиск будет недоступен.\n' +
-        'Проверьте:\n' +
-        '- Подключен ли файл search.js?\n' +
-        '- Нет ли ошибок в консоли при загрузке search.js?'
-      );
     }
 
-    // Новый кусочек (Проверка кэша)
   } catch (error) {
-    console.error('❌ Ошибка загрузки с API:', error);
-
-    const cached = localStorage.getItem('articles_cache');
-
-    if (cached) {
-      console.log('📦 Загружаем данные из кэша localStorage');
-      allArticles = JSON.parse(cached);
-      renderPage(1);
-    } else {
-      console.error('❌ Не удалось загрузить данные и кэш пустой');
-      grid.innerHTML = '<p>Не удалось загрузить данные (нет кэша)</p>';
-    }
+    console.error('❌ Ошибка загрузки данных:', error);
+    grid.innerHTML = `
+      <div class="error-card">
+        <h3>Не удалось загрузить статьи</h3>
+        <p><strong>Ошибка:</strong> ${error.message}</p>
+      </div>
+    `;
   }
 });
 
