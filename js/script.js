@@ -248,125 +248,90 @@ function renderPage(page = 1) {
   }
 }
 
-// === ЗАГРУЗКА СТАТЕЙ ===
+// === ЗАГРУЗКА СТАТЕЙ С МИНИМАЛЬНЫМ POPULATE И КЭШЕМ ===
 document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.querySelector('.articles-grid');
-  if (!grid) {
-    console.error('❌ .articles-grid не найден');
+  if (!grid) return console.error('❌ .articles-grid не найден');
+
+  const cacheKey = 'articles_cache';
+
+  // Попробуем сначала взять из кэша
+  const cached = localStorage.getItem(cacheKey);
+  if (cached) {
+    console.log('📦 Загружаем статьи из кэша');
+    allArticles = JSON.parse(cached);
+    renderPage(1);
     return;
   }
 
+  // Если кэша нет — загружаем с API
   try {
-    console.log('🔍 Загрузка статей с Strapi...');
+    showLoader(); // Показываем "Загрузка данных..."
 
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
-    url.searchParams.append('populate', 'authors'); // отдельно каждый populate
-    url.searchParams.append('populate', 'tags');
-    url.searchParams.append('publicationState', 'published');
-    url.searchParams.append('pagination[pageSize]', '100');
-    url.searchParams.append('sort', 'Publication:desc');
+    url.searchParams.set('pagination[pageSize]', '100');
+    url.searchParams.set('sort', 'Publication:desc');
+    url.searchParams.set('publicationState', 'published');
+    url.searchParams.set('populate[authors]', 'name');
+    url.searchParams.set('populate[tags]', 'name');
 
-    showLoader(); // показать "Загрузка данных..." вместо пустой сетки
+    const data = await fetchWithRetry(url); // функция с 3 попытками
+    if (!data || !data.data) throw new Error('API вернул неверный формат');
 
-    let data;
-
-    try {
-      // Пытаемся загрузить данные с retry
-      data = await fetchWithRetry(url);
-
-      // Сохраняем данные в кэш localStorage
-      localStorage.setItem('articles_cache', JSON.stringify(data));
-      console.log('📦 Данные успешно сохранены в кэш localStorage');
-
-    } catch (error) {
-      console.warn('⚠️ API недоступен, пробуем кэш');
-      const cached = localStorage.getItem('articles_cache');
-      if (cached) {
-        console.log('📦 Загружаем данные из кэша localStorage');
-        data = JSON.parse(cached);
-      } else {
-        showError('Не удалось загрузить данные (нет кэша)');
-        return;
-      }
-    }
-
-    if (!data || !data.data || !Array.isArray(data.data)) {
-      throw new Error('API вернул неверный формат (отсутствует data.data)');
-    }
-
-    // Обработка и фильтрация статей
+    // Преобразуем данные в формат фронтенда
     allArticles = data.data.map(item => {
       const attrs = item.attributes || item;
 
-      // Авторы
-      const authorsRaw = attrs.authors?.data || attrs.authors || [];
-      const authors = Array.isArray(authorsRaw) ? authorsRaw.map(author => {
-        const authorAttrs = author.attributes || author;
-        return {
-          id: author.id,
-          Name: authorAttrs.Name || authorAttrs.name || '',
-          name: authorAttrs.Name || authorAttrs.name || ''
-        };
-      }) : [];
+      const authors = (attrs.authors?.data || []).map(a => {
+        const aAttrs = a.attributes || a;
+        return { id: a.id, Name: aAttrs.name || aAttrs.Name || '' };
+      });
 
-      // Теги
-      const tagsRaw = attrs.Tags?.data ?? attrs.tags?.data ?? attrs.Tags ?? attrs.tags;
-      const tagsList = Array.isArray(tagsRaw) ? tagsRaw : tagsRaw ? [tagsRaw] : [];
-      const tags = tagsList.map(tagItem => {
-        const t = tagItem.attributes || tagItem || {};
-        return t.Name || t.name || '';
-      }).filter(Boolean);
-
-      // Факультет, область, направление
-      const faculty = (typeof attrs.Faculty === 'string' ? attrs.Faculty : null)
-        || attrs.Faculty?.data?.attributes?.Name || '';
-      const scienceArea = (typeof attrs.ScienceArea === 'string' ? attrs.ScienceArea : null)
-        || attrs.ScienceArea?.data?.attributes?.Name || '';
-      const scienceDirection = (typeof attrs.ScienceDirection === 'string' ? attrs.ScienceDirection : null)
-        || attrs.ScienceDirection?.data?.attributes?.Name || '';
+      const tags = (attrs.tags?.data || []).map(t => {
+        const tAttrs = t.attributes || t;
+        return tAttrs.name || tAttrs.Name || '';
+      });
 
       return {
         id: item.id,
         Title: attrs.Title || attrs.title || '',
         Description: attrs.Description || attrs.description || '',
-        Content: attrs.Content || attrs.content || [],
         Publication: attrs.Publication || attrs.publication || attrs.publishedAt || null,
-        publishedAt: attrs.publishedAt || attrs.Publication || attrs.publication || null,
         authors,
-        faculty,
-        scienceArea,
-        scienceDirection,
         tags
       };
     });
 
-    console.log('✅ Всего обработано статей:', allArticles.length);
-
-    if (allArticles.length === 0) {
-      grid.innerHTML = '<p>Нет опубликованных статей.</p>';
-      return;
+    // Сохраняем в localStorage
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(allArticles));
+      console.log('📦 Статьи сохранены в кэш');
+    } catch (err) {
+      console.warn('⚠️ Не удалось сохранить кэш:', err);
     }
 
-    // Рендеринг первой страницы
     renderPage(1);
 
-    // Инициализация поиска
-    if (typeof setupSearch === 'function') {
-      console.log('🔍 Инициализирую поиск...');
-      articleSearch = setupSearch(allArticles, renderPage);
-      console.log('✅ Поиск инициализирован');
-    }
-
   } catch (error) {
-    console.error('❌ Ошибка загрузки данных:', error);
-    grid.innerHTML = `
-      <div class="error-card">
-        <h3>Не удалось загрузить статьи</h3>
-        <p><strong>Ошибка:</strong> ${error.message}</p>
-      </div>
-    `;
+    console.error('❌ Ошибка загрузки с API:', error);
+    grid.innerHTML = '<p>Не удалось загрузить данные.</p>';
   }
 });
+
+// === fetch с retry (3 попытки) ===
+async function fetchWithRetry(url, retries = 3, delay = 500) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.warn(`⚠️ Попытка ${i + 1} не удалась:`, err);
+      if (i < retries - 1) await new Promise(r => setTimeout(r, delay));
+    }
+  }
+  throw new Error('Не удалось получить данные после нескольких попыток');
+}
 
 // === АДАПТИВНОСТЬ ===
 let resizeTimer;
