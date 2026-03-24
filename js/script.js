@@ -7,6 +7,187 @@ let allArticles = [];
 let currentPage = 1;
 let articleSearch = null;
 
+// === КЭШИРОВАНИЕ ===
+const CACHE_VERSION = 'v1';
+const CACHE_KEY = 'articles_cache';
+const CACHE_TIMESTAMP_KEY = 'articles_cache_timestamp';
+const CACHE_VERSION_KEY = 'articles_cache_version';
+const CACHE_TTL = 5 * 60 * 1000; // 5 минут в миллисекундах
+
+/**
+ * Сохраняет статьи в localStorage с временной меткой и версией
+ * @param {Array} articles - массив статей
+ */
+function saveArticlesToCache(articles) {
+  if (!isLocalStorageAvailable()) {
+    console.warn('[Кэш] localStorage недоступен, сохранение пропущено');
+    return;
+  }
+  try {
+    const cacheData = {
+      version: CACHE_VERSION,
+      timestamp: Date.now(),
+      articles: articles
+    };
+    localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    console.log('[Кэш] Статьи сохранены в кэш, количество:', articles.length);
+  } catch (error) {
+    console.error('[Кэш] Ошибка сохранения в localStorage:', error);
+  }
+}
+
+/**
+ * Загружает статьи из кэша, если они есть и не устарели
+ * @returns {Array|null} массив статей или null, если кэш невалиден
+ */
+function loadArticlesFromCache() {
+  if (!isLocalStorageAvailable()) {
+    console.log('[Кэш] localStorage недоступен, кэш игнорируется');
+    return null;
+  }
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (!cached) {
+      console.log('[Кэш] Кэш не найден');
+      return null;
+    }
+
+    const cacheData = JSON.parse(cached);
+    const isVersionValid = cacheData.version === CACHE_VERSION;
+    const isFresh = (Date.now() - cacheData.timestamp) < CACHE_TTL;
+
+    if (!isVersionValid) {
+      console.warn('[Кэш] Версия кэша устарела, требуется обновление');
+      return null;
+    }
+
+    if (!isFresh) {
+      console.warn('[Кэш] Кэш устарел (TTL истёк)');
+      return null;
+    }
+
+    console.log('[Кэш] Загружены статьи из кэша, количество:', cacheData.articles.length);
+    return cacheData.articles;
+  } catch (error) {
+    console.error('[Кэш] Ошибка чтения из localStorage:', error);
+    return null;
+  }
+}
+
+/**
+ * Очищает кэш статей (принудительное обновление)
+ */
+function clearArticlesCache() {
+  localStorage.removeItem(CACHE_KEY);
+  console.log('[Кэш] Кэш очищен');
+}
+
+/**
+ * Принудительно обновляет статьи: очищает кэш и загружает с сервера
+ * @returns {Promise<void>}
+ */
+async function forceRefreshArticles() {
+  console.log('[Кэш] Принудительное обновление статей...');
+  clearArticlesCache();
+  const grid = document.querySelector('.articles-grid');
+  if (!grid) {
+    console.error('[Кэш] Не найден .articles-grid');
+    return;
+  }
+  // Показываем индикатор загрузки
+  grid.innerHTML = '<p class="loading">Загрузка статей...</p>';
+
+  try {
+    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
+    url.searchParams.append('populate', 'authors');
+    url.searchParams.append('populate', 'tags');
+    url.searchParams.append('publicationState', 'published');
+    url.searchParams.append('pagination[pageSize]', '100');
+    url.searchParams.append('sort', 'Publication:desc');
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+
+    const data = await response.json();
+    if (!data || !data.data || !Array.isArray(data.data)) {
+      throw new Error('Неверный формат данных');
+    }
+
+    // Обработка статей (та же логика, что и в основном потоке)
+    allArticles = data.data.map(item => {
+      const attrs = item.attributes || item;
+      const authors = attrs.authors?.data || attrs.authors || [];
+      const tagsRaw = attrs.Tags?.data ?? attrs.tags?.data ?? attrs.Tags ?? attrs.tags;
+      const tagsList = Array.isArray(tagsRaw) ? tagsRaw : tagsRaw ? [tagsRaw] : [];
+      const tags = tagsList
+        .map(tagItem => {
+          const t = tagItem.attributes || tagItem || {};
+          return t.Name || t.name || '';
+        })
+        .filter(Boolean);
+
+      const facultyName = (typeof attrs.Faculty === 'string' ? attrs.Faculty : null)
+        || attrs.Faculty?.data?.attributes?.Name || '';
+      const scienceAreaName = (typeof attrs.ScienceArea === 'string' ? attrs.ScienceArea : null)
+        || attrs.ScienceArea?.data?.attributes?.Name || '';
+      const scienceDirectionName = (typeof attrs.ScienceDirection === 'string' ? attrs.ScienceDirection : null)
+        || attrs.ScienceDirection?.data?.attributes?.Name || '';
+
+      return {
+        id: item.id,
+        Title: attrs.Title || attrs.title || '',
+        Description: attrs.Description || attrs.description || '',
+        Content: attrs.Content || attrs.content || [],
+        Publication: attrs.Publication || attrs.publication || attrs.publishedAt || null,
+        publishedAt: attrs.publishedAt || attrs.Publication || attrs.publication || null,
+        authors: Array.isArray(authors) ? authors.map(author => {
+          const authorAttrs = author.attributes || author;
+          return {
+            id: author.id,
+            Name: authorAttrs.Name || authorAttrs.name || '',
+            name: authorAttrs.Name || authorAttrs.name || ''
+          };
+        }) : [],
+        faculty: facultyName,
+        scienceArea: scienceAreaName,
+        scienceDirection: scienceDirectionName,
+        tags
+      };
+    });
+
+    // Сохраняем в кэш
+    saveArticlesToCache(allArticles);
+    // Перерисовываем
+    renderPage(1);
+    // Обновляем поиск
+    if (typeof setupSearch === 'function') {
+      articleSearch = setupSearch(allArticles, renderPage);
+    }
+    console.log('[Кэш] Статьи успешно обновлены');
+  } catch (error) {
+    console.error('[Кэш] Ошибка при принудительном обновлении:', error);
+    grid.innerHTML = `
+      <div class="error-card">
+        <h3>Не удалось обновить статьи</h3>
+        <p><strong>Ошибка:</strong> ${error.message}</p>
+      </div>
+    `;
+  }
+}
+
+// Проверка доступности localStorage
+function isLocalStorageAvailable() {
+  try {
+    const testKey = '__test__';
+    localStorage.setItem(testKey, testKey);
+    localStorage.removeItem(testKey);
+    return true;
+  } catch (e) {
+    console.warn('[Кэш] localStorage недоступен, кэширование отключено');
+    return false;
+  }
+}
+
 // === ФУНКЦИИ ===
 
 // Определяем количество колонок сетки
@@ -219,11 +400,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
+  // Пытаемся загрузить из кэша
+  const cachedArticles = loadArticlesFromCache();
+  if (cachedArticles) {
+    console.log('✅ Используем статьи из кэша');
+    allArticles = cachedArticles;
+    renderPage(1);
+    if (typeof setupSearch === 'function') {
+      articleSearch = setupSearch(allArticles, renderPage);
+    }
+    return; // Завершаем, так как данные уже есть
+  }
+
+  // Если кэш отсутствует или устарел, загружаем с сервера
   try {
-    console.log('🔍 Загрузка статей с Strapi...');
+    console.log('🔍 Загрузка статей с Strapi (кэш отсутствует или устарел)...');
 
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
-    url.searchParams.append('populate', '*');
+    url.searchParams.append('populate', 'authors');
+    url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
     url.searchParams.append('pagination[pageSize]', '100');
     url.searchParams.append('sort', 'Publication:desc');
@@ -311,6 +506,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('✅ Всего обработано статей:', allArticles.length);
     console.log('✅ Первая статья:', allArticles[0]);
 
+    // Сохраняем в кэш
+    saveArticlesToCache(allArticles);
+
     if (allArticles.length === 0) {
       grid.innerHTML = '<p>Нет опубликованных статей.</p>';
       return;
@@ -336,6 +534,33 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   } catch (error) {
     console.error('❌ Ошибка загрузки:', error);
+    // Пытаемся загрузить устаревший кэш как fallback
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      try {
+        const cacheData = JSON.parse(cached);
+        if (cacheData.articles && Array.isArray(cacheData.articles)) {
+          console.warn('[Кэш] Используем устаревший кэш из-за ошибки сети');
+          allArticles = cacheData.articles;
+          renderPage(1);
+          if (typeof setupSearch === 'function') {
+            articleSearch = setupSearch(allArticles, renderPage);
+          }
+          // Показываем предупреждение пользователю
+          const warning = document.createElement('div');
+          warning.className = 'cache-warning';
+          warning.innerHTML = `
+            <p><strong>Внимание:</strong> Не удалось загрузить свежие статьи. Показаны сохранённые данные (возможно устаревшие).</p>
+            <button onclick="forceRefreshArticles()">Попробовать обновить</button>
+          `;
+          grid.parentNode.insertBefore(warning, grid);
+          return;
+        }
+      } catch (e) {
+        console.error('[Кэш] Ошибка парсинга кэша:', e);
+      }
+    }
+    // Если кэша нет или он битый, показываем ошибку
     grid.innerHTML = `
       <div class="error-card">
         <h3>Не удалось загрузить статьи</h3>
@@ -347,6 +572,8 @@ document.addEventListener('DOMContentLoaded', async () => {
           <li>Разрешён доступ в Public Role</li>
           <li>Поле <code>authors</code> разрешено в API</li>
         </ul>
+        <button onclick="location.reload()">Перезагрузить страницу</button>
+        <button onclick="forceRefreshArticles()">Принудительно обновить</button>
       </div>
     `;
   }
