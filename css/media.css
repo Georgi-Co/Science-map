@@ -1062,6 +1062,33 @@
     justify-content: center;
     align-self: center;
   }
+
+  /* Адаптация блока дополнительной информации о проекте */
+  .article-fields {
+    margin: 20px 0;
+    padding: 16px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .article-field {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #d1d9e6;
+  }
+
+  .article-field strong {
+    min-width: auto;
+    margin-bottom: 4px;
+    font-size: 15px;
+  }
+
+  .article-field span {
+    font-size: 14px;
+    line-height: 1.4;
+  }
 }
 
 

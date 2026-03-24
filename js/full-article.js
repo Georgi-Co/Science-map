@@ -71,6 +71,9 @@ async function loadArticle() {
     const description = attrs.Description || attrs.description || '';
     const solutions = attrs.Solutions || attrs.solutions || '';
     const purposes = attrs.Purposes || attrs.purposes || '';
+    const faculty = attrs.Faculty || attrs.faculty || '';
+    const scienceArea = attrs.ScienceArea || attrs.scienceArea || '';
+    const scienceDirection = attrs.ScienceDirection || attrs.scienceDirection || '';
 
     // Заголовок статьи в верхний h2 (область grid "h2")
     const pageH2 = document.getElementById('h2');
@@ -260,8 +263,14 @@ async function loadArticle() {
         <div class="article-author"><div class="author-label">${iconPeople}<strong> Авторы: </strong></div> ${authorsHTML}</div>
       </div>
 
+      <div class="article-fields" aria-label="Дополнительная информация о проекте">
+        ${faculty ? `<div class="article-field"><strong>Факультет:</strong> <span>${faculty}</span></div>` : ''}
+        ${scienceArea ? `<div class="article-field"><strong>Научная область:</strong> <span>${scienceArea}</span></div>` : ''}
+        ${scienceDirection ? `<div class="article-field"><strong>Научное направление:</strong> <span>${scienceDirection}</span></div>` : ''}
+      </div>
+
       <div class="article-body">
-        ${description ? `<div class="article-description"><strong>Краткое описание:</strong> ${description}</div>` : ''}
+        ${description ? `<div class="article-description"><strong>Краткое описание: </strong> ${description}</div>` : ''}
         ${purposes ? `<div class="article-purposes"><strong>Цели проекта:</strong> ${purposes.replace(/\n/g, '<br>')}</div>` : ''}
         ${contentHTML}
         ${solutions ? `<div class="article-solutions"><strong>Решения:</strong> ${solutions.replace(/\n/g, '<br>')}</div>` : ''}
