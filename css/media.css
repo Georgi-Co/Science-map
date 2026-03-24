@@ -810,9 +810,9 @@
   }
   
   /* Адаптация размера шрифта для слабовидящих на очень маленьких мобильных устройствах */
-  html.font-size-100 { font-size: 100%; }
-  html.font-size-150 { font-size: 110%; }
-  html.font-size-200 { font-size: 120%; }
+  html.font-size-100 { font-size: 80%; }
+  html.font-size-150 { font-size: 90%; }
+  html.font-size-200 { font-size: 105%; }
 }
 
 
@@ -1106,9 +1106,9 @@
   }
   
   /* Адаптация размера шрифта для слабовидящих на всех мобильных устройствах */
-  html.font-size-100 { font-size: 100%; }
-  html.font-size-150 { font-size: 115%; }
-  html.font-size-200 { font-size: 130%; }
+  html.font-size-100 { font-size: 85%; }
+  html.font-size-150 { font-size: 95%; }
+  html.font-size-200 { font-size: 105%; }
 }
 
 
