@@ -315,6 +315,14 @@ document.addEventListener('DOMContentLoaded', async () => {
           })
           .filter(Boolean);
 
+          // 🔹 Сохраняем в кэш localStorage
+          try {
+            localStorage.setItem('articles_cache', JSON.stringify(allArticles));
+            console.log('📦 Данные сохранены в кэш localStorage');
+          } catch (err) {
+            console.warn('⚠️ Не удалось сохранить кэш:', err);
+          }
+
         // Возможные связи для фильтров (факультет, область, направление)
         // Strapi v5: enum-поля приходят как плоские строки
         // Strapi v4: relations приходят как { data: { attributes: { Name: ... } } }
@@ -389,23 +397,21 @@ document.addEventListener('DOMContentLoaded', async () => {
       );
     }
 
-  } catch (error) {
-    console.error('❌ Ошибка загрузки:', error);
-    grid.innerHTML = `
-      <div class="error-card">
-        <h3>Не удалось загрузить статьи</h3>
-        <p><strong>Ошибка:</strong> ${error.message}</p>
-        <p><small>Проверь:</small></p>
-        <ul>
-          <li>Strapi запущен: <a href="https://special-bear-65dd39b4fc.strapiapp.com" target="_blank">открыть</a></li>
-          <li>Статьи опубликованы</li>
-          <li>Разрешён доступ в Public Role</li>
-          <li>Поле <code>authors</code> разрешено в API</li>
-        </ul>
-      </div>
-    `;
-  }
-});
+    // Новый кусочек (Проверка кэша)
+    } catch (error) { 
+    console.error('❌ Ошибка загрузки с API:', error);
+
+    const cached = localStorage.getItem('articles_cache');
+
+    if (cached) {
+      console.log('📦 Загружаем данные из кэша localStorage');
+      allArticles = JSON.parse(cached);
+      renderPage(1);
+    } else {
+      console.error('❌ Не удалось загрузить данные и кэш пустой');
+      grid.innerHTML = '<p>Не удалось загрузить данные (нет кэша)</p>';
+    }
+}
 
 // === АДАПТИВНОСТЬ ===
 let resizeTimer;
