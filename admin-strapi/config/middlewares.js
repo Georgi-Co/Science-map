@@ -9,4 +9,17 @@ module.exports = [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
+,
+
+  {
+    name: 'strapi::compression',
+  },
+  {
+    name: 'strapi::response-time',
+  },
+
+  // ✅ Кастомный middleware
+  {
+    resolve: './src/middlewares/cache-control',
+  }
 ];
