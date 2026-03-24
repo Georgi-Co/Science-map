@@ -65,10 +65,14 @@ function renderPage(page = 1) {
   if (!grid) return;
 
   currentPage = page;
+
   const articlesPerPage = getArticlesPerPage();
   const start = (page - 1) * articlesPerPage;
   const end = start + articlesPerPage;
-  const articlesToShow = Array.isArray(allArticles) ? allArticles.slice(start, end) : [];
+
+  const articlesToShow = Array.isArray(allArticles)
+    ? allArticles.slice(start, end)
+    : [];
 
   grid.innerHTML = '';
 
@@ -78,45 +82,102 @@ function renderPage(page = 1) {
   }
 
   articlesToShow.forEach(article => {
-    const title = article.Title || 'Без заголовка';
-    const description = article.Description || 'Описание отсутствует';
-    const faculty = article.Faculty || 'Не указан';
-    const scienceArea = article.ScienceArea || 'Научная область не указана';
-    const scienceDirection = article.ScienceDirection || 'Направление не указано';
-    const publication = article.Publication
-      ? new Date(article.Publication).toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' })
+    const id = article.id;
+
+    const title = article.Title || article.title || 'Без заголовка';
+    const description = article.Description || article.description || 'Описание отсутствует';
+
+    const publication = article.Publication || article.publishedAt || null;
+
+    const scientificField = article.ScienceArea || article.scienceArea || '';
+    const researchDirection = article.ScienceDirection || article.scienceDirection || '';
+    const faculty = article.Faculty || article.faculty || '';
+
+    const tags = Array.isArray(article.tags)
+      ? article.tags.map(t => t.Name || t.name || t)
+      : [];
+
+    const authors = Array.isArray(article.authors)
+      ? article.authors.map(a => ({
+          id: a.id,
+          Name: a.Name || a.name || 'Автор'
+        }))
+      : [];
+
+    const date = publication
+      ? new Date(publication).toLocaleDateString('ru-RU', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        })
       : 'Дата не указана';
 
-    const authorsHTML = (Array.isArray(article.authors) && article.authors.length)
-      ? article.authors.map(a => `<span class="author-chip">${a.Name || 'Автор'}</span>`).join(' ')
+    const authorsHTML = authors.length
+      ? authors.map(author => {
+          const authorName = author.Name || 'Автор';
+          const authorId = author.id;
+
+          const iconPerson = `
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14">
+            <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6"/>
+          </svg>`;
+
+          const link = authorId
+            ? `<a href="author.html?id=${authorId}">${authorName}</a>`
+            : `<span>${authorName}</span>`;
+
+          return `<span class="author-chip">${iconPerson} ${link}</span>`;
+        }).join('')
       : '<span class="author-chip">Автор не указан</span>';
 
-    const tagsHTML = (Array.isArray(article.tags) && article.tags.length)
-      ? article.tags.map(t => `<span class="tag-chip">${t.Name || t.name}</span>`).join(' ')
-      : '';
+    const fieldDisplay = scientificField || 'Научная область не указана';
+    const directionDisplay = researchDirection || 'Научное направление не указано';
+    const facultyDisplay = faculty || 'Не указан';
 
     const card = document.createElement('div');
     card.className = 'article-card';
+
     card.innerHTML = `
-      <div class="article-card-body">
-        <h3 class="article-title">${title}</h3>
-        <p class="article-description"><strong>Описание:</strong> ${description}</p>
-        <p class="article-faculty"><strong>Факультет:</strong> ${faculty}</p>
-        <p class="article-area"><strong>Область:</strong> ${scienceArea}</p>
-        <p class="article-direction"><strong>Направление:</strong> ${scienceDirection}</p>
-        <p class="article-date"><strong>Дата публикации:</strong> ${publication}</p>
-        <div class="article-authors"><strong>Авторы:</strong> ${authorsHTML}</div>
-        ${tagsHTML ? `<div class="article-tags"><strong>Теги:</strong> ${tagsHTML}</div>` : ''}
-      </div>
+      <article class="article-card-body">
+        <div class="article-badges">
+          <div class="article-badge">${fieldDisplay}</div>
+          <div class="article-badge">${directionDisplay}</div>
+        </div>
+
+        <h3>
+          <a href="full-article.html?id=${id}">${title}</a>
+        </h3>
+
+        <div><strong>Описание:</strong> ${description}</div>
+
+        <div>
+          <strong>Факультет:</strong> ${facultyDisplay}
+        </div>
+
+        <div>
+          <strong>Дата:</strong> ${date}
+        </div>
+
+        <div>
+          <strong>Авторы:</strong> ${authorsHTML}
+        </div>
+
+        ${
+          tags.length
+            ? `<div>${tags.map(t => `<span>${t}</span>`).join(' ')}</div>`
+            : ''
+        }
+      </article>
     `;
-    card.addEventListener('click', e => {
-      if (e.target.closest('a')) return;
-      window.location.href = `full-article.html?id=${article.id}`;
+
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('a') || e.target.closest('button')) return;
+      window.location.href = `full-article.html?id=${id}`;
     });
 
     grid.appendChild(card);
-  });
-}
+  }); // ✅ закрыли forEach
+} // ✅ закрыли renderPage
 
 // ===============================
 // 🔍 ЗАГРУЗКА СТАТЕЙ
