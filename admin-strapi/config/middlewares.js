@@ -7,7 +7,7 @@ module.exports = [
     config: {
       enabled: true,
       origin: [
-        'https://science-map.vercel.app', // твой продакшн фронтенд
+        'https://science-map.vercel.app', // фронтенд продакшн
         'http://localhost:3000',          // локальная разработка
       ],
     },
@@ -18,16 +18,14 @@ module.exports = [
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
-
   {
     name: 'strapi::compression',
   },
   {
     name: 'strapi::response-time',
   },
-
   // ✅ Кастомный middleware
   {
     resolve: './src/middlewares/cache-control',
-  }
+  },
 ];

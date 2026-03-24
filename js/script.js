@@ -8,8 +8,9 @@
 // Глобальные переменные
 let allArticles = [];
 let currentPage = 1;
+var articleSearch = null;
 
-// Используем var для articleSearch, чтобы не было ошибки "already declared"
+// В script.js или search.js (один раз)
 if (typeof articleSearch === 'undefined') {
   var articleSearch = null;
 }

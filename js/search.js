@@ -454,9 +454,6 @@ class ArticleSearch {
   }
 }
 
-// Глобальная переменная для хранения экземпляра ArticleSearch
-let articleSearch = null;
-
 
 // Функция для инициализации поиска (внешняя точка входа)
 function setupSearch(articles, renderPage) {
