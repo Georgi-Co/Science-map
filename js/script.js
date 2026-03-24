@@ -99,6 +99,7 @@ async function forceRefreshArticles() {
 
   try {
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
+    url.searchParams.append('populate', 'articles');
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
@@ -416,7 +417,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log('🔍 Загрузка статей с Strapi (кэш отсутствует или устарел)...');
 
-    const url = new URL('api/articles');
+    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
     url.searchParams.append('populate', 'articles');
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
