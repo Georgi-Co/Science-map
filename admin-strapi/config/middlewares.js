@@ -6,7 +6,12 @@ module.exports = [
   {
     name: 'strapi::cors',
     config: {
-      origin: ['*'], // Разрешить все источники для тестирования
+      origin: [
+        'https://science-map.vercel.app',
+        'https://special-bear-65dd39b4fc.strapiapp.com',
+        'http://localhost:3000',
+        'http://localhost:8080'
+      ],
       headers: [
         'Content-Type',
         'Authorization',
@@ -20,7 +25,7 @@ module.exports = [
         'X-Real-IP'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      credentials: false,
+      credentials: true,
       maxAge: 600 // 10 минут для preflight-запросов
     }
   },
