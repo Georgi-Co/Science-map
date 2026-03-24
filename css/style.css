@@ -1030,6 +1030,7 @@ footer * {
 
 footer a {
   text-decoration: none;
+  color: var(--q-focus-color);
   /* Убираем подчеркивание у всех ссылок в футере */
 }
 

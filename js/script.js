@@ -6,6 +6,7 @@
 let allArticles = [];
 let currentPage = 1;
 let articleSearch = null;
+const PAGE_SIZE_LIMIT = 50; // Максимальный размер страницы, который сервер может обработать
 
 // === КЭШИРОВАНИЕ ===
 const CACHE_VERSION = 'v1';
@@ -102,7 +103,7 @@ async function forceRefreshArticles() {
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
-    url.searchParams.append('pagination[pageSize]', '100');
+    url.searchParams.append('pagination[pageSize]', PAGE_SIZE_LIMIT.toString());
     url.searchParams.append('sort', 'Publication:desc');
 
     const response = await fetch(url);
@@ -420,7 +421,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
-    url.searchParams.append('pagination[pageSize]', '100');
+    url.searchParams.append('pagination[pageSize]', PAGE_SIZE_LIMIT.toString());
     url.searchParams.append('sort', 'Publication:desc');
 
     const response = await fetch(url);
