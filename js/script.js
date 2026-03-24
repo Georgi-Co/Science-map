@@ -9,9 +9,30 @@ let articleSearch = null;
 // 📦 ПАГИНАЦИЯ
 // ===============================
 function getArticlesPerPage() {
-  return 6; // фикс чтобы не ломалась сетка
-}
+  const grid = document.querySelector('.articles-grid');
+  if (!grid) return 6;
 
+  const style = getComputedStyle(grid);
+
+  // Колонки
+  let columns = style.gridTemplateColumns;
+  columns = columns && columns !== 'none'
+    ? columns.split(' ').length
+    : 1;
+
+  // Строки
+  let rows = style.gridTemplateRows;
+  rows = rows && rows !== 'none'
+    ? rows.split(' ').length
+    : 3;
+
+  const result = columns * rows;
+
+  console.log('📐 columns:', columns, 'rows:', rows, 'perPage:', result);
+
+  // защита от 0/NaN
+  return result > 0 ? result : 6;
+}
 // ===============================
 // 🎨 РЕНДЕР
 // ===============================
