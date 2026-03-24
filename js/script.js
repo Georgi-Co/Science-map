@@ -1,20 +1,15 @@
 
 
-// ===============================
-// script.js — загрузка статей для Strapi v5 (плоские данные)
-// ===============================
+// script.js — загрузка статей для Strapi v5 с кэшем и адаптивным рендером
 
-// Глобальные переменные
 let allArticles = [];
 let currentPage = 1;
-let articleSearch = null; // поиск
+let articleSearch = null; // поиск, если подключён search.js
 
 // ===============================
-// 🔹 Функции: RETRY + CACHE + LOADER
+// 🔹 Функции загрузки
 // ===============================
-
-// fetch с retry
-async function fetchWithRetry(url, retries = 3, delay = 500) {
+async function fetchWithRetry(url, retries = 3, delay = 1000) {
   for (let i = 0; i < retries; i++) {
     try {
       const res = await fetch(url);
@@ -28,38 +23,90 @@ async function fetchWithRetry(url, retries = 3, delay = 500) {
   throw new Error('Не удалось получить данные после нескольких попыток');
 }
 
-// Показ загрузки
 function showLoader() {
   const grid = document.querySelector('.articles-grid');
   if (grid) grid.innerHTML = '<p>Загрузка данных...</p>';
 }
 
-// Показ ошибки
-function showError(message = 'Ошибка загрузки данных') {
+function showError(message) {
   const grid = document.querySelector('.articles-grid');
   if (grid) grid.innerHTML = `<p>${message}</p>`;
 }
 
 // ===============================
-// 🔹 Пагинация и сетка
+// 🔹 Render карточек
 // ===============================
+function renderPage(page = 1) {
+  const grid = document.querySelector('.articles-grid');
+  if (!grid) return;
 
+  currentPage = page;
+  const articlesPerPage = getArticlesPerPage();
+  const start = (page - 1) * articlesPerPage;
+  const end = start + articlesPerPage;
+  const articlesToShow = allArticles.slice(start, end);
+
+  grid.innerHTML = '';
+
+  if (!articlesToShow.length) {
+    grid.innerHTML = '<p>Нет опубликованных статей.</p>';
+    return;
+  }
+
+  articlesToShow.forEach(article => {
+    const title = article.Title || 'Без заголовка';
+    const description = article.Description || 'Описание отсутствует';
+    const faculty = article.Faculty || 'Не указан';
+    const scienceArea = article.ScienceArea || 'Научная область не указана';
+    const scienceDirection = article.ScienceDirection || 'Направление не указано';
+    const publication = article.Publication
+      ? new Date(article.Publication).toLocaleDateString('ru-RU', { day:'numeric', month:'long', year:'numeric' })
+      : 'Дата не указана';
+
+    const authorsHTML = (Array.isArray(article.authors) && article.authors.length)
+      ? article.authors.map(a => `<span>${a.Name || 'Автор'}</span>`).join(', ')
+      : 'Автор не указан';
+
+    const tagsHTML = (Array.isArray(article.tags) && article.tags.length)
+      ? article.tags.map(t => `<span class="tag-chip">${t.Name || t.name}</span>`).join(' ')
+      : '';
+
+    const card = document.createElement('div');
+    card.className = 'article-card';
+    card.innerHTML = `
+      <h3>${title}</h3>
+      <p><strong>Описание:</strong> ${description}</p>
+      <p><strong>Факультет:</strong> ${faculty}</p>
+      <p><strong>Область:</strong> ${scienceArea}</p>
+      <p><strong>Направление:</strong> ${scienceDirection}</p>
+      <p><strong>Дата публикации:</strong> ${publication}</p>
+      <p><strong>Авторы:</strong> ${authorsHTML}</p>
+      ${tagsHTML ? `<p><strong>Теги:</strong> ${tagsHTML}</p>` : ''}
+    `;
+
+    grid.appendChild(card);
+  });
+}
+
+// ===============================
+// 🔹 Грид адаптивный
+// ===============================
 function getGridColumnsCount() {
   const grid = document.querySelector('.articles-grid');
   if (!grid) return 1;
   const style = getComputedStyle(grid);
-  const template = style.gridTemplateColumns;
-  if (template && template !== 'none') return Math.max(1, template.trim().split(/\s+/).length);
-  return 1;
+  return style.gridTemplateColumns !== 'none'
+    ? style.gridTemplateColumns.trim().split(/\s+/).length
+    : 1;
 }
 
 function getGridRowsCount() {
   const grid = document.querySelector('.articles-grid');
   if (!grid) return 2;
   const style = getComputedStyle(grid);
-  const template = style.gridTemplateRows;
-  if (template && template !== 'none') return Math.max(1, template.trim().split(/\s+/).length);
-  return 2;
+  return style.gridTemplateRows !== 'none'
+    ? style.gridTemplateRows.trim().split(/\s+/).length
+    : 2;
 }
 
 function getArticlesPerPage() {
@@ -67,104 +114,8 @@ function getArticlesPerPage() {
 }
 
 // ===============================
-// 🔹 Рендер страницы
+// 🔹 Загрузка статей
 // ===============================
-
-function renderPage(page = 1) {
-  currentPage = page;
-  const articlesPerPage = getArticlesPerPage();
-  const start = (page - 1) * articlesPerPage;
-  const end = start + articlesPerPage;
-  const articlesToShow = allArticles.slice(start, end);
-
-  const grid = document.querySelector('.articles-grid');
-  if (!grid) return;
-
-  grid.innerHTML = '';
-
-  if (articlesToShow.length === 0) {
-    grid.innerHTML = '<p>Нет статей для отображения.</p>';
-    return;
-  }
-
-  articlesToShow.forEach(article => {
-    const id = article.id;
-    const title = article.Title || 'Без заголовка';
-    const description = article.Description || 'Описание отсутствует';
-    const publication = article.Publication || null;
-    const faculty = article.Faculty || 'Не указан';
-    const scienceArea = article.ScienceArea || 'Научная область не указана';
-    const scienceDirection = article.ScienceDirection || 'Направление не указано';
-    const authors = Array.isArray(article.authors) ? article.authors : [];
-    const tags = Array.isArray(article.tags) ? article.tags : [];
-
-    // Авторы
-    const authorsHTML = authors.length
-      ? authors.map(a => `<span class="author-chip">${a.Name || 'Автор'}</span>`).join('')
-      : '<span class="author-chip">Автор не указан</span>';
-
-    // Теги
-    const tagsHTML = tags.length
-      ? tags.map(t => `<button type="button" class="article-tag-chip" data-tag="${t.Name}">${t.Name}</button>`).join('')
-      : '';
-
-    // Дата
-    const date = publication
-      ? new Date(publication).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })
-      : 'Дата не указана';
-
-    // Создаем карточку
-    const card = document.createElement('div');
-    card.className = 'article-card';
-    card.innerHTML = `
-      <article class="article-card-body">
-        <h3 class="article-title"><a href="full-article.html?id=${id}" class="article-title-link">${title}</a></h3>
-        <div class="article-description"><strong>Описание: </strong>${description}</div>
-        <div class="faculty"><strong>Факультет: </strong>${faculty}</div>
-        <div class="science-area"><strong>Область: </strong>${scienceArea}</div>
-        <div class="science-direction"><strong>Направление: </strong>${scienceDirection}</div>
-        <time class="article-date" datetime="${publication || ''}"><strong>Дата публикации: </strong>${date}</time>
-        <div class="article-authors"><strong>Авторы: </strong>${authorsHTML}</div>
-        ${tagsHTML ? `<div class="article-tags-line">${tagsHTML}</div>` : ''}
-      </article>
-    `;
-
-    // Клик по карточке — открытие полной статьи
-    card.addEventListener('click', e => {
-      if (!e.target.closest('a')) window.location.href = `full-article.html?id=${id}`;
-    });
-
-    grid.appendChild(card);
-  });
-
-  // Навешиваем обработчики на теги
-  const tagChips = document.querySelectorAll('.article-tag-chip');
-  tagChips.forEach(chip => {
-    const tag = chip.getAttribute('data-tag');
-    if (!tag) return;
-    chip.addEventListener('click', e => {
-      e.stopPropagation();
-      const url = new URL(window.location.href);
-      url.searchParams.set('tag', tag);
-      window.history.replaceState({}, '', url.toString());
-      if (articleSearch) {
-        articleSearch.activeTag = tag.toLowerCase();
-        articleSearch.performSearch(articleSearch.searchField?.value || '');
-      }
-    });
-  });
-
-  // Пагинация (если есть функция createPagination)
-  if (typeof createPagination === 'function') {
-    const totalPages = Math.ceil(allArticles.length / articlesPerPage);
-    createPagination(currentPage, totalPages, '#articles-container');
-  }
-}
-
-// ===============================
-// 🔹 Загрузка статей с кэшем
-// ===============================
-
 document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.querySelector('.articles-grid');
   if (!grid) return;
@@ -173,68 +124,66 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cached = localStorage.getItem(cacheKey);
 
   if (cached) {
-    allArticles = JSON.parse(cached);
-    if (!Array.isArray(allArticles)) allArticles = [];
-    renderPage(1);
-    return;
+    try {
+      allArticles = JSON.parse(cached);
+      renderPage(1);
+      console.log('📦 Загружено из кэша', allArticles.length, 'статей');
+      return;
+    } catch (err) {
+      console.warn('⚠️ Ошибка парсинга кэша:', err);
+    }
   }
 
+  showLoader();
+
+  const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
+  url.searchParams.set('pagination[pageSize]', '100');
+  url.searchParams.set('sort', 'Publication:desc');
+  url.searchParams.set('publicationState', 'published');
+  url.searchParams.append('populate', 'authors');
+  url.searchParams.append('populate', 'tags');
+
   try {
-    showLoader();
+    const response = await fetchWithRetry(url);
+    if (!response.data) throw new Error('API вернул неверный формат');
 
-    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
-    url.searchParams.set('pagination[pageSize]', '100');
-    url.searchParams.set('sort', 'Publication:desc');
-    url.searchParams.set('publicationState', 'published');
-    url.searchParams.append('populate', 'authors');
-    url.searchParams.append('populate', 'tags');
-
-    const data = await fetchWithRetry(url);
-    if (!data || !Array.isArray(data.data)) throw new Error('API вернул неверный формат');
-
-    allArticles = data.data.map(article => ({
-      id: article.id,
-      Title: article.Title || '',
-      Description: article.Description || '',
-      Publication: article.Publication || article.publishedAt || null,
-      Faculty: article.Faculty || '',
-      ScienceArea: article.ScienceArea || '',
-      ScienceDirection: article.ScienceDirection || '',
-      authors: Array.isArray(article.authors) ? article.authors : [],
-      tags: Array.isArray(article.tags) ? article.tags : [],
-      Content: article.Content || []
+    allArticles = response.data.map(a => ({
+      id: a.id,
+      Title: a.Title || '',
+      Description: a.Description || '',
+      Publication: a.Publication || a.publishedAt || null,
+      Faculty: a.Faculty || '',
+      ScienceArea: a.ScienceArea || '',
+      ScienceDirection: a.ScienceDirection || '',
+      authors: Array.isArray(a.authors) ? a.authors : [],
+      tags: Array.isArray(a.tags) ? a.tags : [],
+      Content: a.Content || []
     }));
 
-    // Сохраняем в кэш
-    try {
-      localStorage.setItem(cacheKey, JSON.stringify(allArticles));
-    } catch (err) {
-      console.warn('⚠️ Не удалось сохранить кэш:', err);
-    }
+    try { localStorage.setItem(cacheKey, JSON.stringify(allArticles)); } catch(e) {}
 
     renderPage(1);
-  } catch (error) {
-    console.error('❌ Ошибка загрузки с API:', error);
-    showError('Не удалось загрузить данные.');
+    console.log('✅ Загружено из API', allArticles.length, 'статей');
+  } catch (err) {
+    console.error('❌ Ошибка загрузки с API:', err);
+    showError('Не удалось загрузить статьи.');
   }
 });
 
 // ===============================
-// 🔹 Адаптивная перестройка сетки
+// 🔹 Обновление при ресайзе
 // ===============================
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (allArticles.length > 0) renderPage(currentPage);
+    if (allArticles.length) renderPage(currentPage);
   }, 150);
 });
 
 // ===============================
-// 🔹 Перерисовка при смене языка
+// 🔹 Обновление при смене языка
 // ===============================
 document.addEventListener('languageChanged', () => {
-  if (allArticles.length > 0) renderPage(currentPage);
+  if (allArticles.length) renderPage(currentPage);
 });
-
-console.log('✅ script.js загружен');
