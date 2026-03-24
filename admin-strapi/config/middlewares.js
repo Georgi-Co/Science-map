@@ -22,7 +22,12 @@ module.exports = [
         'X-Requested-With',
         'Origin',
         'Accept',
-        'Acces-Control-Allow-Origin', 'https://science-map.vercel.app'
+        'User-Agent',
+        'DNT',
+        'Cache-Control',
+        'X-Forwarded-For',
+        'X-Real-IP',
+        'Access-Control-Allow-Origin'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       credentials: false, // установите true, если используете куки/авторизацию
