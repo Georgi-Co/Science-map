@@ -8,16 +8,19 @@ module.exports = [
     config: {
       origin: [
         'https://science-map.vercel.app',
-        'https://science-map.vercel.app/',
-        'https://science-map.vercel.app/index.html',
-        'https://science-map.vercel.app/full-article.html',
-        'https://science-map.vercel.app/author.html',
-        'http://localhost:3000',
-        
+        'http://localhost:3000'
       ],
-      headers: '*',
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    },
+      headers: [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'Origin',
+        'Accept'
+      ],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      credentials: false, // установите true, если используете куки/авторизацию
+      maxAge: 300 // 5 минут для preflight-запросов
+    }
   },
 
   'strapi::poweredBy',
@@ -27,10 +30,7 @@ module.exports = [
   'strapi::favicon',
   'strapi::public',
 
-  // ❌ УДАЛИЛИ response-time (его нет в v5)
-  // ❌ УДАЛИЛИ compression (если не установлен)
-
   {
-    resolve: './src/middlewares/cache-control',
+    resolve: './src/middlewares/cache-control'
   }
 ];
