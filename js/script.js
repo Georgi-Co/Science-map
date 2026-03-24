@@ -269,11 +269,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     showLoader(); // Показываем "Загрузка данных..."
 
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
+
+    // Пагинация и сортировка
     url.searchParams.set('pagination[pageSize]', '100');
     url.searchParams.set('sort', 'Publication:desc');
     url.searchParams.set('publicationState', 'published');
-    url.searchParams.set('populate[authors]', 'name');
-    url.searchParams.set('populate[tags]', 'name');
+
+    // Минимальный populate — через массив
+    url.searchParams.append('populate', 'authors'); // отдельно каждый populate
+    url.searchParams.append('populate', 'tags');
 
     const data = await fetchWithRetry(url); // функция с 3 попытками
     if (!data || !data.data) throw new Error('API вернул неверный формат');
