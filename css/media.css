@@ -259,8 +259,8 @@
   
   /* Адаптация размера шрифта для слабовидящих на планшетах */
   html.font-size-100 { font-size: 100%; }
-  html.font-size-150 { font-size: 125%; }
-  html.font-size-200 { font-size: 150%; }
+  html.font-size-125 { font-size: 120%; }
+  html.font-size-150 { font-size: 140%; }
 }
 
 
@@ -529,8 +529,8 @@
   
   /* Адаптация размера шрифта для слабовидящих на мобильных устройствах */
   html.font-size-100 { font-size: 100%; }
-  html.font-size-150 { font-size: 115%; }
-  html.font-size-200 { font-size: 130%; }
+  html.font-size-125 { font-size: 115%; }
+  html.font-size-150 { font-size: 130%; }
 }
 
 /* Очень маленькие мобильные устройства */
@@ -811,8 +811,8 @@
   
   /* Адаптация размера шрифта для слабовидящих на очень маленьких мобильных устройствах */
   html.font-size-100 { font-size: 80%; }
-  html.font-size-150 { font-size: 90%; }
-  html.font-size-200 { font-size: 105%; }
+  html.font-size-125 { font-size: 90%; }
+  html.font-size-150 { font-size: 105%; }
 }
 
 
@@ -1107,8 +1107,8 @@
   
   /* Адаптация размера шрифта для слабовидящих на всех мобильных устройствах */
   html.font-size-100 { font-size: 85%; }
-  html.font-size-150 { font-size: 95%; }
-  html.font-size-200 { font-size: 105%; }
+  html.font-size-125 { font-size: 95%; }
+  html.font-size-150 { font-size: 105%; }
 }
 
 
