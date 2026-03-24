@@ -243,5 +243,9 @@ Deploy:
 
 https://cloud.strapi.io/projects/science-map-d0461e3cec/production/deployments
 https://special-bear-65dd39b4fc.strapiapp.com/admin
+https://special-bear-65dd39b4fc.strapiapp.com
 
 https://science-map.vercel.app
+https://vercel.com/georgico666s-projects/science-map
+
+https://github.com/Georgi-Co/Science-map
