@@ -1,12 +1,9 @@
 
 
-// script.js — стабильная загрузка статей Strapi v5 с retry и кэшем
+// script.js — рабочий вариант для Strapi v5 с минимальным populate и кэшем
 let allArticles = [];
 let currentPage = 1;
 
-// ===============================
-// 🔹 fetch с retry
-// ===============================
 async function fetchWithRetry(url, retries = 3, delay = 500) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -21,9 +18,6 @@ async function fetchWithRetry(url, retries = 3, delay = 500) {
   throw new Error('Не удалось получить данные после нескольких попыток');
 }
 
-// ===============================
-// 🔹 Показываем загрузку / ошибки
-// ===============================
 function showLoader() {
   const grid = document.querySelector('.articles-grid');
   if (grid) grid.innerHTML = '<p>Загрузка данных...</p>';
@@ -34,12 +28,16 @@ function showError(message = 'Ошибка загрузки данных') {
   if (grid) grid.innerHTML = `<p>${message}</p>`;
 }
 
-// ===============================
-// 🔹 Рендер страниц
-// ===============================
 function renderPage(page = 1) {
   currentPage = page;
-  const articlesPerPage = 6; // фиксированное количество для упрощения
+
+  if (!Array.isArray(allArticles)) {
+    console.error('❌ allArticles не массив!', allArticles);
+    showError('Неверный формат данных');
+    return;
+  }
+
+  const articlesPerPage = 6;
   const start = (page - 1) * articlesPerPage;
   const end = start + articlesPerPage;
   const articlesToShow = allArticles.slice(start, end);
@@ -60,8 +58,8 @@ function renderPage(page = 1) {
     card.innerHTML = `
       <h3><a href="full-article.html?id=${article.id}">${article.Title}</a></h3>
       <p>${article.Description || 'Описание отсутствует'}</p>
-      <div>Авторы: ${article.authors.map(a => a.Name).join(', ') || 'Не указаны'}</div>
-      ${article.tags.length ? `<div>Теги: ${article.tags.join(', ')}</div>` : ''}
+      <div>Авторы: ${article.authors?.map(a => a.Name).join(', ') || 'Не указаны'}</div>
+      ${article.tags?.length ? `<div>Теги: ${article.tags.join(', ')}</div>` : ''}
     `;
     card.addEventListener('click', e => {
       if (!e.target.closest('a')) window.location.href = `full-article.html?id=${article.id}`;
@@ -70,9 +68,6 @@ function renderPage(page = 1) {
   });
 }
 
-// ===============================
-// 🔹 Загрузка статей
-// ===============================
 document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.querySelector('.articles-grid');
   if (!grid) return console.error('❌ .articles-grid не найден');
@@ -81,10 +76,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   const cached = localStorage.getItem(cacheKey);
 
   if (cached) {
-    allArticles = JSON.parse(cached);
-    console.log('📦 Загружено из кэша');
-    renderPage(1);
-    return;
+    try {
+      allArticles = JSON.parse(cached);
+      if (!Array.isArray(allArticles)) allArticles = [];
+      console.log('📦 Загружено из кэша');
+      renderPage(1);
+      return;
+    } catch (err) {
+      console.warn('⚠️ Ошибка при чтении кэша:', err);
+    }
   }
 
   showLoader();
