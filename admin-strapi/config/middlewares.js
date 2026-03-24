@@ -2,30 +2,29 @@ module.exports = [
   'strapi::logger',
   'strapi::errors',
   'strapi::security',
+
   {
     name: 'strapi::cors',
     config: {
-      enabled: true,
       origin: [
-        'https://science-map.vercel.app', // фронтенд продакшн
-        'http://localhost:3000',          // локальная разработка
+        'https://science-map.vercel.app',
+        'http://localhost:3000',
       ],
+      headers: '*',
     },
   },
+
   'strapi::poweredBy',
   'strapi::query',
   'strapi::body',
   'strapi::session',
   'strapi::favicon',
   'strapi::public',
-  {
-    name: 'strapi::compression',
-  },
-  {
-    name: 'strapi::response-time',
-  },
-  // ✅ Кастомный middleware
+
+  // ❌ УДАЛИЛИ response-time (его нет в v5)
+  // ❌ УДАЛИЛИ compression (если не установлен)
+
   {
     resolve: './src/middlewares/cache-control',
-  },
+  }
 ];
