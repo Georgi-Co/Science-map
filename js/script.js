@@ -1,17 +1,14 @@
 
 
-// script.js — стабильная загрузка статей для Strapi v5
+// script.js — загрузка статей для Strapi v5 с кэшем и retry
 
-// =====================
-// 🔹 ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ
-// =====================
+// Глобальные переменные
 let allArticles = [];
 let currentPage = 1;
-let articleSearch = null; // Чтобы не было ReferenceError
 
-// =====================
-// 🔹 RETRY + CACHE + LOADER
-// =====================
+// ===============================
+// 🔹 fetch с retry
+// ===============================
 async function fetchWithRetry(url, retries = 3, delay = 500) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -19,26 +16,29 @@ async function fetchWithRetry(url, retries = 3, delay = 500) {
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       return await res.json();
     } catch (err) {
-      console.warn(`⚠️ Попытка ${i + 1} не удалась:`, err);
+      console.warn(`Попытка ${i + 1} не удалась:`, err);
       if (i < retries - 1) await new Promise(r => setTimeout(r, delay));
     }
   }
   throw new Error('Не удалось получить данные после нескольких попыток');
 }
 
+// ===============================
+// 🔹 Показ loader / ошибка
+// ===============================
 function showLoader() {
   const grid = document.querySelector('.articles-grid');
   if (grid) grid.innerHTML = '<p>Загрузка данных...</p>';
 }
 
-function showError(message = 'Ошибка загрузки данных') {
+function showError(msg = 'Ошибка загрузки данных') {
   const grid = document.querySelector('.articles-grid');
-  if (grid) grid.innerHTML = `<p>${message}</p>`;
+  if (grid) grid.innerHTML = `<p>${msg}</p>`;
 }
 
-// =====================
-// 🔹 РЕНДЕРИНГ КАРТОЧЕК
-// =====================
+// ===============================
+// 🔹 Вспомогательные функции для сетки
+// ===============================
 function getGridColumnsCount() {
   const grid = document.querySelector('.articles-grid');
   if (!grid) return 1;
@@ -61,6 +61,9 @@ function getArticlesPerPage() {
   return getGridColumnsCount() * getGridRowsCount();
 }
 
+// ===============================
+// 🔹 renderPage — глобальная функция
+// ===============================
 function renderPage(page = 1) {
   if (!Array.isArray(allArticles)) {
     console.error('❌ allArticles не массив');
@@ -77,23 +80,36 @@ function renderPage(page = 1) {
   if (!grid) return console.error('❌ .articles-grid не найден');
 
   grid.innerHTML = '';
-
   if (!articlesToShow.length) {
     grid.innerHTML = '<p>Нет статей для отображения.</p>';
     return;
   }
 
   articlesToShow.forEach(article => {
-    const authorsHTML = (article.authors || []).map(a => `<span class="author-chip">${a.Name}</span>`).join('');
-    const tagsHTML = (article.tags || []).map(t => `<button class="article-tag-chip" data-tag="${t}">${t}</button>`).join('');
-
     const card = document.createElement('div');
     card.className = 'article-card';
+
+    const authorsHTML = (Array.isArray(article.authors) ? article.authors : []).map(a => {
+      const name = a.Name || a.name || 'Автор';
+      return `<span class="author-chip">${name}</span>`;
+    }).join('');
+
+    const tagsHTML = (Array.isArray(article.tags) ? article.tags : []).map(t => {
+      return `<button type="button" class="article-tag-chip" data-tag="${t}">${t}</button>`;
+    }).join('');
+
+    const pubDate = article.Publication ? new Date(article.Publication).toLocaleDateString('ru-RU', {
+      day: 'numeric', month: 'long', year: 'numeric'
+    }) : 'Дата не указана';
+
     card.innerHTML = `
-      <h3><a href="full-article.html?id=${article.id}">${article.Title}</a></h3>
-      <p>${article.Description || 'Описание отсутствует'}</p>
-      <div class="authors">${authorsHTML}</div>
-      <div class="tags">${tagsHTML}</div>
+      <article>
+        <h3><a href="full-article.html?id=${article.id}">${article.Title}</a></h3>
+        <div>${article.Description || ''}</div>
+        <div><strong>Авторы:</strong> ${authorsHTML}</div>
+        <div><strong>Теги:</strong> ${tagsHTML}</div>
+        <time datetime="${article.Publication || ''}">${pubDate}</time>
+      </article>
     `;
 
     // Клик по карточке
@@ -106,12 +122,13 @@ function renderPage(page = 1) {
     grid.appendChild(card);
   });
 
-  // Навешиваем обработку тегов
-  document.querySelectorAll('.article-tag-chip').forEach(chip => {
+  // Навешиваем обработчики на теги
+  const tagChips = document.querySelectorAll('.article-tag-chip');
+  tagChips.forEach(chip => {
     chip.addEventListener('click', e => {
       e.stopPropagation();
       const tag = chip.getAttribute('data-tag');
-      if (articleSearch && typeof articleSearch.performSearch === 'function') {
+      if (typeof articleSearch === 'object' && articleSearch) {
         articleSearch.activeTag = tag.toLowerCase();
         articleSearch.performSearch(articleSearch.searchField?.value || '');
       }
@@ -125,32 +142,40 @@ function renderPage(page = 1) {
   }
 }
 
-// =====================
-// 🔹 ЗАГРУЗКА СТАТЕЙ С API + КЭШ
-// =====================
+// ===============================
+// 🔹 Загрузка статей
+// ===============================
 document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.querySelector('.articles-grid');
-  if (!grid) return console.error('❌ .articles-grid не найден');
+  if (!grid) return;
 
   const cacheKey = 'articles_cache';
-  const cached = localStorage.getItem(cacheKey);
 
+  // Кэш
+  const cached = localStorage.getItem(cacheKey);
   if (cached) {
-    console.log('📦 Загружаем статьи из кэша');
-    allArticles = JSON.parse(cached);
-    renderPage(1);
-    return;
+    try {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed)) {
+        allArticles = parsed;
+        renderPage(1);
+        return;
+      }
+    } catch (e) {
+      console.warn('⚠️ Кэш не распарсился', e);
+    }
   }
 
-  showLoader();
-
+  // API
   try {
+    showLoader();
+
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
     url.searchParams.set('pagination[pageSize]', '100');
     url.searchParams.set('sort', 'Publication:desc');
     url.searchParams.set('publicationState', 'published');
 
-    // ⚡ Правильный populate: отдельные параметры
+    // Минимальный populate
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
 
@@ -159,13 +184,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     allArticles = data.data.map(item => {
       const attrs = item.attributes || item;
+
       const authors = (attrs.authors?.data || []).map(a => {
         const aAttrs = a.attributes || a;
-        return { id: a.id, Name: aAttrs.Name || aAttrs.name || '' };
+        return { id: a.id, Name: aAttrs.name || aAttrs.Name || '' };
       });
+
       const tags = (attrs.tags?.data || []).map(t => {
         const tAttrs = t.attributes || t;
-        return tAttrs.Name || tAttrs.name || '';
+        return tAttrs.name || tAttrs.Name || '';
       });
 
       return {
@@ -180,31 +207,27 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
       localStorage.setItem(cacheKey, JSON.stringify(allArticles));
-      console.log('📦 Статьи сохранены в кэш');
     } catch (err) {
-      console.warn('⚠️ Не удалось сохранить кэш:', err);
+      console.warn('⚠️ Не удалось сохранить кэш', err);
     }
 
     renderPage(1);
 
   } catch (err) {
     console.error('❌ Ошибка загрузки с API:', err);
-    showError('Не удалось загрузить данные');
+    showError('Не удалось загрузить данные.');
   }
 });
 
-// =====================
-// 🔹 АДАПТИВНОСТЬ
-// =====================
+// ===============================
+// 🔹 Адаптивность
+// ===============================
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    if (allArticles.length > 0) renderPage(currentPage);
+    if (Array.isArray(allArticles) && allArticles.length > 0) renderPage(currentPage);
   }, 150);
 });
 
-// =====================
-// ✅ script.js загружен
-// =====================
 console.log('✅ script.js загружен');
