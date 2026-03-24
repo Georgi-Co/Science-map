@@ -398,7 +398,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     // Новый кусочек (Проверка кэша)
-    } catch (error) { 
+  } catch (error) {
     console.error('❌ Ошибка загрузки с API:', error);
 
     const cached = localStorage.getItem('articles_cache');
@@ -411,7 +411,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.error('❌ Не удалось загрузить данные и кэш пустой');
       grid.innerHTML = '<p>Не удалось загрузить данные (нет кэша)</p>';
     }
-}
+  }
+});
 
 // === АДАПТИВНОСТЬ ===
 let resizeTimer;
