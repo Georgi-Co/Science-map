@@ -224,7 +224,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔍 Загрузка статей с Strapi...');
 
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
-    url.searchParams.append('populate', '*');
+    // ✅ минимальный populate (каждый отдельно)
+    url.searchParams.append('populate', 'authors');
+    url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
     url.searchParams.append('pagination[pageSize]', '100');
     url.searchParams.append('sort', 'Publication:desc');
