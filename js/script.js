@@ -1,13 +1,12 @@
 
 
-// script.js — Загрузка статей Strapi v5 с retry и кэшированием
+// script.js — стабильная загрузка статей Strapi v5 с retry и кэшем
 let allArticles = [];
 let currentPage = 1;
 
 // ===============================
-// 🔹 Функции вспомогательные
+// 🔹 fetch с retry
 // ===============================
-
 async function fetchWithRetry(url, retries = 3, delay = 500) {
   for (let i = 0; i < retries; i++) {
     try {
@@ -22,6 +21,9 @@ async function fetchWithRetry(url, retries = 3, delay = 500) {
   throw new Error('Не удалось получить данные после нескольких попыток');
 }
 
+// ===============================
+// 🔹 Показываем загрузку / ошибки
+// ===============================
 function showLoader() {
   const grid = document.querySelector('.articles-grid');
   if (grid) grid.innerHTML = '<p>Загрузка данных...</p>';
@@ -32,21 +34,12 @@ function showError(message = 'Ошибка загрузки данных') {
   if (grid) grid.innerHTML = `<p>${message}</p>`;
 }
 
-function getArticlesPerPage() {
-  const grid = document.querySelector('.articles-grid');
-  if (!grid) return 6;
-  const style = getComputedStyle(grid);
-  const cols = style.gridTemplateColumns?.split(' ').length || 3;
-  const rows = style.gridTemplateRows?.split(' ').length || 2;
-  return cols * rows;
-}
-
 // ===============================
-// 🔹 renderPage
+// 🔹 Рендер страниц
 // ===============================
 function renderPage(page = 1) {
   currentPage = page;
-  const articlesPerPage = getArticlesPerPage();
+  const articlesPerPage = 6; // фиксированное количество для упрощения
   const start = (page - 1) * articlesPerPage;
   const end = start + articlesPerPage;
   const articlesToShow = allArticles.slice(start, end);
@@ -78,24 +71,22 @@ function renderPage(page = 1) {
 }
 
 // ===============================
-// 🔹 Загрузка статей с кэшем
+// 🔹 Загрузка статей
 // ===============================
 document.addEventListener('DOMContentLoaded', async () => {
   const grid = document.querySelector('.articles-grid');
   if (!grid) return console.error('❌ .articles-grid не найден');
 
   const cacheKey = 'articles_cache';
-
-  // Попытка загрузки из кэша
   const cached = localStorage.getItem(cacheKey);
+
   if (cached) {
     allArticles = JSON.parse(cached);
-    renderPage(1);
     console.log('📦 Загружено из кэша');
+    renderPage(1);
     return;
   }
 
-  // Если кэша нет, запрос к API
   showLoader();
 
   try {
@@ -103,12 +94,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     url.searchParams.set('pagination[pageSize]', '100');
     url.searchParams.set('sort', 'Publication:desc');
     url.searchParams.set('publicationState', 'published');
-
-    // Минимальный populate — каждый отдельно
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
 
     const data = await fetchWithRetry(url);
+
     if (!data || !Array.isArray(data.data)) throw new Error('Неверный формат данных API');
 
     allArticles = data.data.map(item => {
@@ -133,7 +123,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       };
     });
 
-    // Сохраняем кэш
     try {
       localStorage.setItem(cacheKey, JSON.stringify(allArticles));
       console.log('📦 Данные сохранены в кэш');
