@@ -2,7 +2,7 @@
   "name": "admin-strapi",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://https://special-bear-65dd39b4fc.strapiapp.com/",
+  "proxy": "https://special-bear-65dd39b4fc.strapiapp.com/",
   "description": "A Strapi application",
   "scripts": {
     "build": "strapi build",
