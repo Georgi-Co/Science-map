@@ -99,7 +99,6 @@ async function forceRefreshArticles() {
 
   try {
     const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
-    url.searchParams.append('populate', 'articles');
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
