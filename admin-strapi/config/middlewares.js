@@ -23,7 +23,10 @@ module.exports = [
         'Cache-Control',
         'X-Forwarded-For',
         'X-Real-IP',
-        'Access-Control-Allow-Credentials'
+        'Access-Control-Allow-Credentials',
+        'Access-Control-Allow-Origin',
+        'Access-Control-Allow-Methods',
+        'Access-Control-Allow-Headers'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       credentials: true,

@@ -142,8 +142,8 @@
       const size = btn.getAttribute('data-size');
       let key;
       if (size === '100') key = 'Маленький шрифт';
-      else if (size === '150') key = 'Средний шрифт';
-      else if (size === '200') key = 'Крупный шрифт';
+      else if (size === '125') key = 'Средний шрифт';
+      else if (size === '150') key = 'Крупный шрифт';
       else return;
       btn.title = t(key);
     });
