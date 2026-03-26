@@ -148,10 +148,11 @@ header {
   grid-area: header;
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
-  grid-template-rows: 1;
+  grid-template-rows: auto;
   align-items: center;
   background: var(--q-primary);
-  height: 100px;
+  min-height: 100px;
+  height: auto;
   color: var(--white);
   box-shadow: var(--shadow-light-bottom);
   padding: 0 10px;
@@ -199,7 +200,7 @@ h1 {
   display: flex;
   justify-self: center;
   align-self: center;
-  max-height: 100px;
+  max-height: none;
   padding: 10px;
   flex: 1;
   font-family: "LatoWeb";
@@ -216,7 +217,7 @@ h1 {
   display: flex;
   justify-self: center;
   align-self: center;
-  max-height: 100px;
+  max-height: none;
   padding: 10px;
   flex: 1;
   font-family: "LatoWeb";

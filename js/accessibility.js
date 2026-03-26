@@ -230,7 +230,7 @@
       btn.addEventListener('click', function () {
         const size = btn.getAttribute('data-size');
         updateButtonState(panel, '.acc-btn-group--font .acc-btn', btn);
-        html.classList.remove('font-size-100', 'font-size-150', 'font-size-200');
+        html.classList.remove('font-size-100', 'font-size-125', 'font-size-150');
         html.classList.add('font-size-' + size);
         localStorage.setItem('accFontSize', 'font-size-' + size);
       });
@@ -265,7 +265,7 @@
     var resetBtn = panel.querySelector('[data-action="reset"]');
     if (resetBtn) {
       resetBtn.addEventListener('click', function () {
-        html.classList.remove('font-size-100', 'font-size-150', 'font-size-200');
+        html.classList.remove('font-size-100', 'font-size-125', 'font-size-150');
         html.classList.remove('color-1', 'color-2', 'color-beige');
         setAudioState(panel, false);
         stopSpeech();
@@ -321,7 +321,7 @@
     var savedScheme = localStorage.getItem('accColorScheme');
     var savedAudio = localStorage.getItem('accAudioEnabled') === 'true';
 
-    if (savedSize && ['font-size-100', 'font-size-150', 'font-size-200'].indexOf(savedSize) !== -1) {
+    if (savedSize && ['font-size-100', 'font-size-125', 'font-size-150'].indexOf(savedSize) !== -1) {
       html.classList.add(savedSize);
       var fontBtn = panel.querySelector('[data-action="font"][data-size="' + savedSize.replace('font-size-', '') + '"]');
       if (fontBtn) updateButtonState(panel, '.acc-btn-group--font .acc-btn', fontBtn);
