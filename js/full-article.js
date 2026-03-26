@@ -139,8 +139,19 @@ async function loadArticle() {
     }).filter(Boolean);
 
     // Разделяем элементы на изображения и другие медиа
-    const images = mediaItems.filter(media => !media.mime || media.mime.startsWith('image/'));
-    const otherMedia = mediaItems.filter(media => media.mime && !media.mime.startsWith('image/'));
+    const isImageByUrl = (url) => /\.(png|jpe?g|webp|gif|bmp|svg|avif)(\?.*)?$/i.test(url || '');
+    const images = mediaItems.filter((media) => {
+      const mediaUrl = media?.url || '';
+      if (!mediaUrl) return false;
+      const mime = media?.mime || '';
+      return mime.startsWith('image/') || isImageByUrl(mediaUrl);
+    });
+    const otherMedia = mediaItems.filter((media) => {
+      const mediaUrl = media?.url || '';
+      if (!mediaUrl) return false;
+      const mime = media?.mime || '';
+      return !(mime.startsWith('image/') || isImageByUrl(mediaUrl));
+    });
 
     let carouselHTML = '';
     if (images.length > 0) {
@@ -161,7 +172,7 @@ async function loadArticle() {
             const url = img.url;
             const name = img.name || img.alternativeText || ('Изображение ' + (index + 1));
             return '<div class="carousel-slide">' +
-              '<img class="carousel-image" src="' + getMediaUrl(url) + '" alt="' + name + '" loading="lazy">' +
+              '<img class="carousel-image" src="' + getMediaUrl(url) + '" alt="' + name + '" loading="eager">' +
               '</div>';
           }).join('') +
           '</div>' +
