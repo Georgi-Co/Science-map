@@ -10,7 +10,11 @@ module.exports = [
         'https://science-map.vercel.app',
         'https://special-bear-65dd39b4fc.strapiapp.com',
         'http://localhost:3000',
-        'http://localhost:8080'
+        'http://localhost:8080',
+        'http://127.0.0.1:8080',
+        'http://localhost:5500',
+        'http://localhost:63342',
+        'http://0.0.0.0:8080'
       ],
       headers: [
         'Content-Type',
@@ -28,7 +32,7 @@ module.exports = [
         'Access-Control-Allow-Methods',
         'Access-Control-Allow-Headers'
       ],
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
       credentials: true,
       maxAge: 600 // 10 минут для preflight-запросов
     }
