@@ -24,6 +24,19 @@
   .article-card-body {
     padding: 40px;
   }
+
+  html.font-size-100 {
+  font-size: 100%;
+}
+
+  html.font-size-125 {
+    font-size: 125%;
+  }
+
+  html.font-size-150 {
+    font-size: 150%;
+  }
+
 }
 
 /* Десктоп меньший экран*/
@@ -96,6 +109,18 @@
   .contacts span,
   a {
     font-size: 14px;
+  }
+
+    html.font-size-100 {
+    font-size: 100%;
+  }
+
+  html.font-size-125 {
+    font-size: 125%;
+  }
+
+  html.font-size-150 {
+    font-size: 150%;
   }
 }
 
