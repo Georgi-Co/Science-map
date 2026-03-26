@@ -519,6 +519,7 @@
 .article-carousel-wrapper {
   margin: 40px 0;
   border-radius: 16px;
+  min-height: 300px;
   overflow: hidden;
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
   background: #f8f9fc;
@@ -826,5 +827,33 @@
   .article-media-item a {
     font-size: 14px;
     padding: 6px 10px;
+  }
+  /* Адаптив для карусели на мобильных устройствах */
+  .article-carousel-wrapper {
+    margin: 20px 0;
+    border-radius: 12px;
+  }
+  .carousel-image {
+    max-height: 300px;
+  }
+  .carousel-button {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+  .carousel-button.prev {
+    left: 10px;
+  }
+  .carousel-button.next {
+    right: 10px;
+  }
+  .carousel-indicators {
+    bottom: 10px;
+    padding: 4px 8px;
+    border-radius: 12px;
+  }
+  .indicator {
+    width: 8px;
+    height: 8px;
   }
 }
