@@ -7,14 +7,12 @@ module.exports = [
     name: 'strapi::cors',
     config: {
       origin: [
-        '*',
         'https://science-map.vercel.app',
         'https://special-bear-65dd39b4fc.strapiapp.com',
         'http://localhost:3000',
         'http://localhost:8080'
       ],
       headers: [
-        '*',
         'Content-Type',
         'Authorization',
         'X-Requested-With',
@@ -24,7 +22,8 @@ module.exports = [
         'DNT',
         'Cache-Control',
         'X-Forwarded-For',
-        'X-Real-IP'
+        'X-Real-IP',
+        'Access-Control-Allow-Credentials'
       ],
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       credentials: true,
