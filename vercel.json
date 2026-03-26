@@ -1,5 +1,9 @@
 {
   "routes": [
+    {
+      "src": "/strapi/(.*)",
+      "dest": "https://special-bear-65dd39b4fc.strapiapp.com/$1"
+    },
     { "src": "/", "dest": "/html/index.html" },
     { "src": "/(.*)", "dest": "/html/$1" }
   ]

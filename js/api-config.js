@@ -1,11 +1,12 @@
 // Конфигурация API Strapi
 window.API_CONFIG = {
-  // Базовый URL API Strapi (облачный или локальный)
-  BASE_URL: 'https://special-bear-65dd39b4fc.strapiapp.com',
-  // Токен API для аутентификации (замените на свой)
-  API_TOKEN: 'e97d50313a763c7d12ef1ceea5e413a6c8b92acebfd614018f1a4f9f5858ee286b6551b7148c1ace9720e5d548a82d2347cee1c913e5ea472ad9fac25e79d69cc011400257dbe0c20b5b0c7435381032932f2706417188eb283db5a04f63499fec4e8645a809cf38212a264e90d0199888936564bca550b3739da4d134ed10f8',
+  // Базовый URL API Strapi.
+  // На Vercel используем прокси-роут /strapi/* (см. vercel.json), чтобы обойти CORS.
+  BASE_URL: '/strapi',
+  // ВАЖНО: не храните API Token на клиенте (он публичный).
+  API_TOKEN: '',
   // Включить использование токена (true/false)
-  USE_TOKEN: true,
+  USE_TOKEN: false,
   // Дополнительные заголовки
   getHeaders() {
     const headers = {
@@ -17,9 +18,30 @@ window.API_CONFIG = {
     }
     return headers;
   },
+  // Безопасно собираем абсолютный URL (работает и на file://, и на localhost, и на Vercel)
+  getOrigin() {
+    if (typeof window === 'undefined') return '';
+    if (window.location && window.location.origin && window.location.origin !== 'null') {
+      return window.location.origin;
+    }
+    // file:// не имеет origin — используем дефолт под Live Server
+    return 'http://localhost:5500';
+  },
+  // Нормализуем BASE_URL (если относительный — делаем абсолютным)
+  getBaseUrl() {
+    const base = this.BASE_URL || '';
+    if (base.startsWith('http://') || base.startsWith('https://')) return base;
+    if (!base) return this.getOrigin();
+    if (base.startsWith('/')) return `${this.getOrigin()}${base}`;
+    return `${this.getOrigin()}/${base}`;
+  },
   // Формирование полного URL для endpoint
   url(endpoint) {
-    return `${this.BASE_URL}${endpoint}`;
+    const base = this.getBaseUrl();
+    if (!endpoint) return base;
+    if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) return endpoint;
+    if (endpoint.startsWith('/')) return `${base}${endpoint}`;
+    return `${base}/${endpoint}`;
   },
   // Обёртка для fetch с настройками
   async fetch(endpoint, options = {}) {

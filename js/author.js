@@ -41,7 +41,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔍 Загрузка автора с ID:', authorId);
 
     // Коллекционный запрос с глубоким populate
-    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/authors');
+    const apiBase = (window.API_CONFIG && typeof window.API_CONFIG.url === 'function')
+      ? window.API_CONFIG.url('/api/authors')
+      : 'https://special-bear-65dd39b4fc.strapiapp.com/api/authors';
+    const url = new URL(apiBase);
     url.searchParams.append('filters[id][$eq]', authorId);
     url.searchParams.append('populate', '*');
     // publicationState не указываем, чтобы получить автора независимо от статуса публикации
