@@ -99,7 +99,7 @@ async function forceRefreshArticles() {
   grid.innerHTML = '<p class="loading">Загрузка статей...</p>';
 
   try {
-    const url = new URL('/api/proxy/api/articles', window.location.origin);
+    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   try {
     console.log('🔍 Загрузка статей с Strapi (кэш отсутствует или устарел)...');
 
-    const url = new URL('/api/proxy/api/articles', window.location.origin);
+    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/articles');
     url.searchParams.append('populate', 'authors');
     url.searchParams.append('populate', 'tags');
     url.searchParams.append('publicationState', 'published');
@@ -568,7 +568,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <p><strong>Ошибка:</strong> ${error.message}</p>
         <p><small>Проверь:</small></p>
         <ul>
-          <li>Strapi запущен: <a href="/api/proxy" target="_blank">открыть</a></li>
+          <li>Strapi запущен: <a href="https://special-bear-65dd39b4fc.strapiapp.com" target="_blank">открыть</a></li>
           <li>Статьи опубликованы</li>
           <li>Разрешён доступ в Public Role</li>
           <li>Поле <code>authors</code> разрешено в API</li>

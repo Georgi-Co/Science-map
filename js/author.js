@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔍 Загрузка автора с ID:', authorId);
 
     // Коллекционный запрос с глубоким populate
-    const url = new URL('/api/proxy/api/authors', window.location.origin);
+    const url = new URL('https://special-bear-65dd39b4fc.strapiapp.com/api/authors');
     url.searchParams.append('filters[id][$eq]', authorId);
     url.searchParams.append('populate', '*');
     // publicationState не указываем, чтобы получить автора независимо от статуса публикации
@@ -113,11 +113,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     const avatarData = attrs.Avatar?.data?.attributes ?? attrs.Avatar?.attributes ?? attrs.Avatar;
     const avatarImg = document.getElementById('author-avatar');
     if (avatarData && avatarData.url) {
-      avatarImg.src = `/api/proxy${avatarData.url}`;
+      avatarImg.src = `https://special-bear-65dd39b4fc.strapiapp.com${avatarData.url}`;
       avatarImg.alt = `Фото ${authorName}`;
     } else if (avatarData && avatarData.formats?.thumbnail?.url) {
       // Если основного url нет, используем thumbnail
-      avatarImg.src = `/api/proxy${avatarData.formats.thumbnail.url}`;
+      avatarImg.src = `https://special-bear-65dd39b4fc.strapiapp.com${avatarData.formats.thumbnail.url}`;
       avatarImg.alt = `Фото ${authorName}`;
     } else {
       avatarImg.style.display = 'none';
@@ -194,7 +194,7 @@ function renderArticles(articles) {
           <a href="full-article.html?id=${articleId}" class="article-title-link">${titleText}</a>
         </h3>
         ${imageUrl
-        ? `<img src="/api/proxy${imageUrl}" alt="${titleText}" class="article-image">`
+        ? `<img src="https://special-bear-65dd39b4fc.strapiapp.com${imageUrl}" alt="${titleText}" class="article-image">`
         : ''}
         <div class="article-meta">
           ${faculty ? `<span class="tag">${faculty}</span>` : ''}
@@ -226,7 +226,7 @@ function addAuthorStructuredData(authorName, attrs, avatarData, authorId) {
     existingScript.remove();
   }
 
-  const imageUrl = avatarData?.url ? `/api/proxy${avatarData.url}` : '';
+  const imageUrl = avatarData?.url ? `https://special-bear-65dd39b4fc.strapiapp.com${avatarData.url}` : '';
   const jobTitle = getLocalizedValue(attrs.Info || attrs.info) || '';
   const email = attrs.Email || attrs.email || '';
   const slug = attrs.Slug || attrs.slug || '';
