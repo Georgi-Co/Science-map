@@ -36,10 +36,32 @@ async function fetchWithAuth(url, options = {}) {
 
 function getMediaUrl(mediaUrl) {
   if (!mediaUrl) return '';
-  if (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://')) {
-    return mediaUrl;
+  const normalized = String(mediaUrl).trim();
+
+  if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
+    return normalized;
   }
-  return 'https://special-bear-65dd39b4fc.strapiapp.com' + mediaUrl;
+
+  // Иногда из API приходит "https//..." или "http//..." (без двоеточия)
+  if (normalized.startsWith('https//')) {
+    return normalized.replace(/^https\/\//, 'https://');
+  }
+
+  if (normalized.startsWith('http//')) {
+    return normalized.replace(/^http\/\//, 'http://');
+  }
+
+  // Протокол-relative URL вида //cdn.example.com/file.jpg
+  if (normalized.startsWith('//')) {
+    return 'https:' + normalized;
+  }
+
+  const baseUrl = 'https://special-bear-65dd39b4fc.strapiapp.com';
+  if (normalized.startsWith('/')) {
+    return baseUrl + normalized;
+  }
+
+  return baseUrl + '/' + normalized;
 }
 
 // Загружаем и отображаем статью
