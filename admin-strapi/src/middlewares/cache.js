@@ -1,7 +1,7 @@
 // ./src/middlewares/cache.js
 module.exports = () => {
   const NodeCache = require('node-cache');
-  const CACHE_TTL = process.env.CACHE_TTL ? parseInt(process.env.CACHE_TTL) : 9800;
+  const CACHE_TTL = process.env.CACHE_TTL ? parseInt(process.env.CACHE_TTL) : 10800; // 3 часа по умолчанию
   const cache = new NodeCache({ stdTTL: CACHE_TTL });
 
   return async (ctx /** @type {any} */, next /** @type {any} */) => {

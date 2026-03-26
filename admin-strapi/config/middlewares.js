@@ -42,6 +42,9 @@ module.exports = [
   'strapi::public',
 
   {
+    resolve: './src/middlewares/cache'
+  },
+  {
     resolve: './src/middlewares/cache-control'
   }
 ];

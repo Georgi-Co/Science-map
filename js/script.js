@@ -31,7 +31,7 @@ const CACHE_VERSION = 'v1';
 const CACHE_KEY = 'articles_cache';
 const CACHE_TIMESTAMP_KEY = 'articles_cache_timestamp';
 const CACHE_VERSION_KEY = 'articles_cache_version';
-const CACHE_TTL = 5 * 60 * 1000; // 5 минут в миллисекундах
+const CACHE_TTL = 180 * 60 * 1000; // 3 часа в миллисекундах
 
 /**
  * Сохраняет статьи в localStorage с временной меткой и версией
