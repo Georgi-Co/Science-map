@@ -34,6 +34,14 @@ async function fetchWithAuth(url, options = {}) {
   return response.json();
 }
 
+function getMediaUrl(mediaUrl) {
+  if (!mediaUrl) return '';
+  if (mediaUrl.startsWith('http://') || mediaUrl.startsWith('https://')) {
+    return mediaUrl;
+  }
+  return 'https://special-bear-65dd39b4fc.strapiapp.com' + mediaUrl;
+}
+
 // Загружаем и отображаем статью
 async function loadArticle() {
   const articleId = getArticleIdFromUrl();
@@ -120,7 +128,7 @@ async function loadArticle() {
         const url = img.url;
         const name = img.name || img.alternativeText || title;
         carouselHTML = '<div class="article-single-image">' +
-          '<img src="https://special-bear-65dd39b4fc.strapiapp.com' + url + '" alt="' + name + '" class="article-full-image" loading="lazy">' +
+          '<img src="' + getMediaUrl(url) + '" alt="' + name + '" class="article-full-image" loading="lazy">' +
           '</div>';
       } else {
         // Несколько изображений - карусель
@@ -131,7 +139,7 @@ async function loadArticle() {
             const url = img.url;
             const name = img.name || img.alternativeText || ('Изображение ' + (index + 1));
             return '<div class="carousel-slide">' +
-              '<img class="carousel-image" src="https://special-bear-65dd39b4fc.strapiapp.com' + url + '" alt="' + name + '" loading="lazy">' +
+              '<img class="carousel-image" src="' + getMediaUrl(url) + '" alt="' + name + '" loading="lazy">' +
               '</div>';
           }).join('') +
           '</div>' +
@@ -157,7 +165,7 @@ async function loadArticle() {
         if (mime.startsWith('video/')) {
           return '<figure class="article-media-item video-item">' +
             '<video controls preload="metadata">' +
-            '<source src="https://special-bear-65dd39b4fc.strapiapp.com' + url + '" type="' + mime + '">' +
+            '<source src="' + getMediaUrl(url) + '" type="' + mime + '">' +
             'Ваш браузер не поддерживает воспроизведение видео.' +
             '</video>' +
             '<figcaption>' + name + '</figcaption>' +
@@ -165,7 +173,7 @@ async function loadArticle() {
         }
 
         return '<div class="article-media-item">' +
-          '<a href="https://special-bear-65dd39b4fc.strapiapp.com' + url + '" target="_blank" rel="noopener">' + name + '</a>' +
+          '<a href="' + getMediaUrl(url) + '" target="_blank" rel="noopener">' + name + '</a>' +
           '</div>';
       }).join('') +
       '</div></section>'
@@ -223,7 +231,7 @@ async function loadArticle() {
         const name = fileItem?.name || 'Файл';
         return url ? `
                 <li>
-                  <a href="https://special-bear-65dd39b4fc.strapiapp.com${url}" target="_blank" class="article-file" download>
+                  <a href="${getMediaUrl(url)}" target="_blank" class="article-file" download>
                     <span class="file-icon">📎</span>
                     ${name}
                   </a>
