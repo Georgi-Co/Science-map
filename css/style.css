@@ -98,7 +98,7 @@ body.layout-article {
   display: grid;
   grid-template-columns: 1fr 4fr 1fr;
   grid-template-rows:
-    minmax(60px, auto)
+    auto
     /* header */
     auto
     /* panel */
@@ -124,7 +124,7 @@ body.layout-author {
     display: grid;
   grid-template-columns: 1fr 4fr 1fr;
   grid-template-rows:
-    minmax(60px, auto)
+    auto
     /* header */
     auto
     /* panel */
@@ -861,7 +861,8 @@ time.article-date::before {
   display: flex;
   align-items: center;
   gap: 6px;
-  white-space: nowrap; /* Отмена переноса слов */
+  white-space: normal; /* Разрешить перенос слов */
+  flex-wrap: wrap; /* Разрешить перенос чипов на новую строку */
 }
 
 .article-author .author-label { /* "👥 Авторы: " */
@@ -891,7 +892,7 @@ time.article-date::before {
   display: flex;
   align-items: flex-start;
   border: 1px solid var(--q-focus-color);
-  flex-wrap: nowrap;
+  flex-wrap: wrap; /* Разрешить перенос чипов на новую строку */
   border-radius: 20px;
   padding: 6px 14px;
   width: auto;
