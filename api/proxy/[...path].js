@@ -17,6 +17,12 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  // Проверяем наличие path
+  if (!req.query.path || !Array.isArray(req.query.path)) {
+    console.error('Missing or invalid path parameter:', req.query);
+    return res.status(400).json({ error: 'Invalid path' });
+  }
+
   // Целевой URL Strapi
   const baseUrl = 'https://special-bear-65dd39b4fc.strapiapp.com';
   // Путь из параметров запроса
@@ -30,6 +36,8 @@ export default async function handler(req, res) {
   const queryString = query.toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
 
+  console.log('Proxying to:', fullUrl);
+
   try {
     const response = await fetch(fullUrl, {
       headers: {
@@ -38,9 +46,12 @@ export default async function handler(req, res) {
       },
     });
 
+    console.log('Upstream status:', response.status);
+
     if (!response.ok) {
       return res.status(response.status).json({
         error: `Upstream error: ${response.status}`,
+        details: await response.text().catch(() => ''),
       });
     }
 
@@ -50,7 +61,7 @@ export default async function handler(req, res) {
     res.status(200).json(data);
   } catch (error) {
     console.error('Proxy error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', message: error.message });
   }
 }
 
