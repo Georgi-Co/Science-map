@@ -36,7 +36,7 @@ async function fetchWithAuth(url, options = {}) {
 
 function getMediaUrl(mediaUrl) {
   if (!mediaUrl) return '';
-  const normalized = String(mediaUrl).trim();
+  const normalized = String(mediaUrl).trim().replace(/\\\//g, '/');
 
   if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
     return normalized;
@@ -62,6 +62,31 @@ function getMediaUrl(mediaUrl) {
   }
 
   return baseUrl + '/' + normalized;
+}
+
+function getBestImagePath(media) {
+  if (!media) return '';
+  if (media.url) return media.url;
+  const formats = media.formats || {};
+  return formats.large?.url
+    || formats.medium?.url
+    || formats.small?.url
+    || formats.thumbnail?.url
+    || '';
+}
+
+function preloadImage(url) {
+  return new Promise((resolve) => {
+    if (!url) {
+      resolve(false);
+      return;
+    }
+
+    const img = new Image();
+    img.onload = function () { resolve(true); };
+    img.onerror = function () { resolve(false); };
+    img.src = url;
+  });
 }
 
 // Загружаем и отображаем статью
@@ -140,12 +165,23 @@ async function loadArticle() {
 
     // Разделяем элементы на изображения и другие медиа
     const isImageByUrl = (url) => /\.(png|jpe?g|webp|gif|bmp|svg|avif)(\?.*)?$/i.test(url || '');
-    const images = mediaItems.filter((media) => {
-      const mediaUrl = media?.url || '';
+    const imageCandidates = mediaItems.filter((media) => {
+      const mediaUrl = getBestImagePath(media);
       if (!mediaUrl) return false;
       const mime = media?.mime || '';
       return mime.startsWith('image/') || isImageByUrl(mediaUrl);
     });
+    const imagesPrepared = imageCandidates.map((media) => {
+      const rawUrl = getBestImagePath(media);
+      const resolvedUrl = getMediaUrl(rawUrl);
+      return {
+        ...media,
+        resolvedUrl
+      };
+    });
+    const imageChecks = await Promise.all(imagesPrepared.map((media) => preloadImage(media.resolvedUrl)));
+    const images = imagesPrepared.filter((_, index) => imageChecks[index]);
+
     const otherMedia = mediaItems.filter((media) => {
       const mediaUrl = media?.url || '';
       if (!mediaUrl) return false;
@@ -158,10 +194,9 @@ async function loadArticle() {
       if (images.length === 1) {
         // Одно изображение - просто выводим
         const img = images[0];
-        const url = img.url;
         const name = img.name || img.alternativeText || title;
         carouselHTML = '<div class="article-single-image">' +
-          '<img src="' + getMediaUrl(url) + '" alt="' + name + '" class="article-full-image" loading="lazy">' +
+          '<img src="' + img.resolvedUrl + '" alt="' + name + '" class="article-full-image" loading="lazy">' +
           '</div>';
       } else {
         // Несколько изображений - карусель
@@ -169,10 +204,9 @@ async function loadArticle() {
           '<div class="article-carousel">' +
           '<div class="carousel-track" id="carousel-track">' +
           images.map((img, index) => {
-            const url = img.url;
             const name = img.name || img.alternativeText || ('Изображение ' + (index + 1));
             return '<div class="carousel-slide">' +
-              '<img class="carousel-image" src="' + getMediaUrl(url) + '" alt="' + name + '" loading="eager">' +
+              '<img class="carousel-image" src="' + img.resolvedUrl + '" alt="' + name + '" loading="eager">' +
               '</div>';
           }).join('') +
           '</div>' +
