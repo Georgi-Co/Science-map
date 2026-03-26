@@ -44,7 +44,7 @@ async function loadArticle() {
 
   try {
     // Запрос как в script.js: тот же API и populate, фильтр по id (Strapi v5 — плоский ответ)
-    const url = new URL('/api/proxy/api/articles');
+    const url = new URL('/api/proxy/api/articles', window.location.origin);
     url.searchParams.append('filters[id][$eq]', articleId);
     url.searchParams.append('populate', '*');
     url.searchParams.append('publicationState', 'published');

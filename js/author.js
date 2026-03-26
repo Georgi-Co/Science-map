@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('🔍 Загрузка автора с ID:', authorId);
 
     // Коллекционный запрос с глубоким populate
-    const url = new URL('/api/proxy/api/authors');
+    const url = new URL('/api/proxy/api/authors', window.location.origin);
     url.searchParams.append('filters[id][$eq]', authorId);
     url.searchParams.append('populate', '*');
     // publicationState не указываем, чтобы получить автора независимо от статуса публикации
