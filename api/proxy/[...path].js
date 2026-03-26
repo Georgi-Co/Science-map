@@ -17,21 +17,32 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Проверяем наличие path
-  if (!req.query.path || !Array.isArray(req.query.path)) {
-    console.error('Missing or invalid path parameter:', req.query);
-    return res.status(400).json({ error: 'Invalid path' });
+  // Определяем целевой путь
+  let targetPath = '';
+  if (req.query.path && Array.isArray(req.query.path)) {
+    targetPath = req.query.path.join('/');
+  } else {
+    // Fallback: извлекаем из URL
+    const url = new URL(req.url, `http://${req.headers.host}`);
+    const pathname = url.pathname;
+    const prefix = '/api/proxy/';
+    if (!pathname.startsWith(prefix)) {
+      return res.status(400).json({ error: 'Invalid proxy path', details: { pathname } });
+    }
+    targetPath = pathname.slice(prefix.length);
+    if (targetPath.startsWith('/')) targetPath = targetPath.slice(1);
+  }
+
+  if (!targetPath) {
+    return res.status(400).json({ error: 'Missing path' });
   }
 
   // Целевой URL Strapi
   const baseUrl = 'https://special-bear-65dd39b4fc.strapiapp.com';
-  // Путь из параметров запроса
-  const path = req.query.path.join('/');
-  const targetUrl = `${baseUrl}/${path}`;
+  const targetUrl = `${baseUrl}/${targetPath}`;
 
-  // Копируем query-параметры (кроме path)
+  // Копируем query-параметры из оригинального URL
   const query = new URLSearchParams(req.query);
-  // Удаляем параметр path из query
   query.delete('path');
   const queryString = query.toString();
   const fullUrl = queryString ? `${targetUrl}?${queryString}` : targetUrl;
