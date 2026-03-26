@@ -17,6 +17,23 @@ function formatDate(dateString) {
   });
 }
 
+// Вспомогательная функция для запросов с авторизацией
+async function fetchWithAuth(url, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...options.headers,
+  };
+  if (window.API_CONFIG && window.API_CONFIG.USE_TOKEN && window.API_CONFIG.API_TOKEN) {
+    headers['Authorization'] = `Bearer ${window.API_CONFIG.API_TOKEN}`;
+  }
+  const response = await fetch(url, { ...options, headers });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  return response.json();
+}
+
 // Загружаем и отображаем статью
 async function loadArticle() {
   const articleId = getArticleIdFromUrl();
@@ -49,12 +66,7 @@ async function loadArticle() {
     url.searchParams.append('populate', '*');
     url.searchParams.append('publicationState', 'published');
 
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error(`Ошибка: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchWithAuth(url);
     const articles = data.data;
     const article = Array.isArray(articles) ? articles[0] : null;
 

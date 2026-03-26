@@ -11,6 +11,23 @@ function getLocalizedValue(field) {
   return '';
 }
 
+// Вспомогательная функция для запросов с авторизацией
+async function fetchWithAuth(url, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...options.headers,
+  };
+  if (window.API_CONFIG && window.API_CONFIG.USE_TOKEN && window.API_CONFIG.API_TOKEN) {
+    headers['Authorization'] = `Bearer ${window.API_CONFIG.API_TOKEN}`;
+  }
+  const response = await fetch(url, { ...options, headers });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  return response.json();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const authorId = urlParams.get('id');
@@ -29,11 +46,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     url.searchParams.append('populate', '*');
     // publicationState не указываем, чтобы получить автора независимо от статуса публикации
 
-    const response = await fetch(url);
-    console.log('📥 Ответ получен, статус:', response.status);
-    if (!response.ok) throw new Error(`Ошибка: ${response.status}`);
-
-    const data = await response.json();
+    const data = await fetchWithAuth(url);
+    console.log('📥 Ответ получен, данные:', data);
     console.log('📦 Ответ API:', JSON.stringify(data, null, 2));
     const list = data.data;
     const author = Array.isArray(list) ? list[0] : null;

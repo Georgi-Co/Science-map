@@ -8,6 +8,24 @@ let currentPage = 1;
 let articleSearch = null;
 const PAGE_SIZE_LIMIT = 50; // Максимальный размер страницы, который сервер может обработать
 
+// === API HELPER ===
+// Используем конфигурацию из api-config.js, если доступна
+async function fetchWithAuth(url, options = {}) {
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...options.headers,
+  };
+  if (window.API_CONFIG && window.API_CONFIG.USE_TOKEN && window.API_CONFIG.API_TOKEN) {
+    headers['Authorization'] = `Bearer ${window.API_CONFIG.API_TOKEN}`;
+  }
+  const response = await fetch(url, { ...options, headers });
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+  }
+  return response.json();
+}
+
 // === КЭШИРОВАНИЕ ===
 const CACHE_VERSION = 'v1';
 const CACHE_KEY = 'articles_cache';
@@ -106,10 +124,7 @@ async function forceRefreshArticles() {
     url.searchParams.append('pagination[pageSize]', PAGE_SIZE_LIMIT.toString());
     url.searchParams.append('sort', 'Publication:desc');
 
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-
-    const data = await response.json();
+    const data = await fetchWithAuth(url);
     if (!data || !data.data || !Array.isArray(data.data)) {
       throw new Error('Неверный формат данных');
     }
@@ -424,13 +439,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     url.searchParams.append('pagination[pageSize]', PAGE_SIZE_LIMIT.toString());
     url.searchParams.append('sort', 'Publication:desc');
 
-    const response = await fetch(url);
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-
-    const data = await response.json();
+    const data = await fetchWithAuth(url);
     console.log('📦 Получены данные:', data);
     console.log('📦 Структура первой статьи:', data.data?.[0]);
 
