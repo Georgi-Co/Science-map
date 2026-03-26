@@ -67,10 +67,10 @@
             <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="100" aria-pressed="false" title="${t('Маленький шрифт')}">
               <span class="acc-font-preview acc-font-preview--small">А</span>
             </button>
-            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="150" aria-pressed="false" title="${t('Средний шрифт')}">
+            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="125" aria-pressed="false" title="${t('Средний шрифт')}">
               <span class="acc-font-preview acc-font-preview--medium">А</span>
             </button>
-            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="200" aria-pressed="false" title="${t('Крупный шрифт')}">
+            <button type="button" class="acc-btn acc-btn--font" data-action="font" data-size="150" aria-pressed="false" title="${t('Крупный шрифт')}">
               <span class="acc-font-preview acc-font-preview--large">А</span>
             </button>
           </div>
