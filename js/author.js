@@ -28,6 +28,30 @@ async function fetchWithAuth(url, options = {}) {
   return response.json();
 }
 
+function normalizeMediaUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== 'string') return '';
+  if (rawUrl.startsWith('http://') || rawUrl.startsWith('https://')) return rawUrl;
+  if (rawUrl.startsWith('//')) return `https:${rawUrl}`;
+  return `https://special-bear-65dd39b4fc.strapiapp.com${rawUrl}`;
+}
+
+function resolveAuthorAvatarUrl(attrs) {
+  const avatarEntity =
+    attrs.Avatar?.data?.attributes ??
+    attrs.Avatar?.attributes ??
+    attrs.Avatar?.data ??
+    attrs.Avatar ??
+    attrs.avatar?.data?.attributes ??
+    attrs.avatar?.attributes ??
+    attrs.avatar?.data ??
+    attrs.avatar;
+
+  if (!avatarEntity) return '';
+
+  const directUrl = avatarEntity.url || avatarEntity?.formats?.large?.url || avatarEntity?.formats?.medium?.url || avatarEntity?.formats?.small?.url || avatarEntity?.formats?.thumbnail?.url;
+  return normalizeMediaUrl(directUrl);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const urlParams = new URLSearchParams(window.location.search);
   const authorId = urlParams.get('id');
@@ -126,16 +150,16 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log('⚠️ Поле Bio не поддерживается в текущей схеме автора');
     }
 
-    // Фото: поддержка плоского формата (Avatar — объект с url) и вложенного (data.attributes)
-    const avatarData = attrs.Avatar?.data?.attributes ?? attrs.Avatar?.attributes ?? attrs.Avatar;
+    // Фото автора: поддержка разных форматов ответа Strapi
+    const avatarUrl = resolveAuthorAvatarUrl(attrs);
     const avatarImg = document.getElementById('author-avatar');
-    if (avatarData && avatarData.url) {
-      avatarImg.src = `https://special-bear-65dd39b4fc.strapiapp.com${avatarData.url}`;
+    if (avatarUrl) {
+      avatarImg.src = avatarUrl;
       avatarImg.alt = `Фото ${authorName}`;
-    } else if (avatarData && avatarData.formats?.thumbnail?.url) {
-      // Если основного url нет, используем thumbnail
-      avatarImg.src = `https://special-bear-65dd39b4fc.strapiapp.com${avatarData.formats.thumbnail.url}`;
-      avatarImg.alt = `Фото ${authorName}`;
+      avatarImg.style.display = 'block';
+      avatarImg.onerror = () => {
+        avatarImg.style.display = 'none';
+      };
     } else {
       avatarImg.style.display = 'none';
     }
@@ -146,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderArticles(Array.isArray(articles) ? articles : []);
 
     // Добавляем микроразметку Schema.org для автора
-    addAuthorStructuredData(authorName, attrs, avatarData, author.id);
+    addAuthorStructuredData(authorName, attrs, avatarUrl, author.id);
 
   } catch (error) {
     console.error('❌ Ошибка:', error);
@@ -236,14 +260,14 @@ function showError(message) {
 /**
  * Добавляет структурированные данные Schema.org для автора (Person)
  */
-function addAuthorStructuredData(authorName, attrs, avatarData, authorId) {
+function addAuthorStructuredData(authorName, attrs, avatarUrl, authorId) {
   // Удаляем предыдущий скрипт микроразметки, если есть
   const existingScript = document.getElementById('structured-data-author');
   if (existingScript) {
     existingScript.remove();
   }
 
-  const imageUrl = avatarData?.url ? `https://special-bear-65dd39b4fc.strapiapp.com${avatarData.url}` : '';
+  const imageUrl = avatarUrl || '';
   const jobTitle = getLocalizedValue(attrs.Info || attrs.info) || '';
   const email = attrs.Email || attrs.email || '';
   const slug = attrs.Slug || attrs.slug || '';
