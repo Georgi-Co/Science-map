@@ -107,6 +107,48 @@ function preloadImage(url) {
   });
 }
 
+function getMediaUrlCandidates(mediaUrl) {
+  if (!mediaUrl) return [];
+  const normalized = String(mediaUrl).trim().replace(/\\\//g, '/');
+
+  // Already absolute (or protocol-relative / missing-colon variants) -> normalize via getMediaUrl()
+  if (
+    normalized.startsWith('http://')
+    || normalized.startsWith('https://')
+    || normalized.startsWith('https//')
+    || normalized.startsWith('http//')
+    || normalized.startsWith('//')
+  ) {
+    return [getMediaUrl(normalized)];
+  }
+
+  const appBaseUrl = 'https://special-bear-65dd39b4fc.strapiapp.com';
+  const mediaBaseUrl = 'https://special-bear-65dd39b4fc.media.strapiapp.com';
+
+  // Relative paths: пробуем оба домена (на Strapi Cloud файлы могут быть на любом)
+  if (normalized.startsWith('/')) {
+    return [
+      mediaBaseUrl + normalized,
+      appBaseUrl + normalized,
+    ];
+  }
+
+  return [
+    mediaBaseUrl + '/' + normalized,
+    appBaseUrl + '/' + normalized,
+  ];
+}
+
+async function resolveWorkingMediaUrl(mediaUrl) {
+  const candidates = getMediaUrlCandidates(mediaUrl);
+  for (const candidate of candidates) {
+    // eslint-disable-next-line no-await-in-loop
+    const ok = await preloadImage(candidate);
+    if (ok) return candidate;
+  }
+  return '';
+}
+
 // Загружаем и отображаем статью
 async function loadArticle() {
   const articleId = getArticleIdFromUrl();
@@ -189,16 +231,18 @@ async function loadArticle() {
       const mime = media?.mime || '';
       return mime.startsWith('image/') || isImageByUrl(mediaUrl);
     });
-    const imagesPrepared = imageCandidates.map((media) => {
+
+    const imagesWithResolvedUrl = await Promise.all(imageCandidates.map(async (media) => {
       const rawUrl = getBestImagePath(media);
-      const resolvedUrl = getMediaUrl(rawUrl);
+      const resolvedUrl = await resolveWorkingMediaUrl(rawUrl);
       return {
         ...media,
+        rawUrl,
         resolvedUrl
       };
-    });
-    const imageChecks = await Promise.all(imagesPrepared.map((media) => preloadImage(media.resolvedUrl)));
-    const images = imagesPrepared.filter((_, index) => imageChecks[index]);
+    }));
+
+    const images = imagesWithResolvedUrl.filter((img) => Boolean(img.resolvedUrl));
 
     const otherMedia = mediaItems.filter((media) => {
       const mediaUrl = media?.url || '';
