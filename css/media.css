@@ -858,6 +858,31 @@
 
 /* Общие правила для мобильных устройств */
 @media (max-width: 600px) {
+  body.layout-article {
+    grid-template-columns: 1fr 6fr 1fr;
+    grid-template-rows:
+      auto
+      /* header */
+      auto
+      /* panel */
+      auto
+      /* h2 */
+      auto
+      /* main */
+      minmax(80px, auto)
+      /* banners */
+      minmax(60px, auto);
+    /* footer */
+    grid-template-areas:
+      'header header header'
+      'panel panel panel'
+      'h2 h2 h2'
+      'main main main'
+      'banners banners banners'
+      'footer footer footer';
+    row-gap: 10px;
+  }
+
   body.layout-article #h2 {
     grid-area: h2;
     grid-column: 2 / 3;
