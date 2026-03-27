@@ -20,18 +20,29 @@ function formatDate(dateString) {
 // Вспомогательная функция для запросов с авторизацией
 async function fetchWithAuth(url, options = {}) {
   const headers = {
-    'Content-Type': 'application/json',
     'Accept': 'application/json',
     ...options.headers,
   };
+  const hasBody = options && Object.prototype.hasOwnProperty.call(options, 'body') && options.body != null;
+  if (hasBody) {
+    headers['Content-Type'] = 'application/json';
+  }
   if (window.API_CONFIG && window.API_CONFIG.USE_TOKEN && window.API_CONFIG.API_TOKEN) {
     headers['Authorization'] = `Bearer ${window.API_CONFIG.API_TOKEN}`;
   }
-  const response = await fetch(url, { ...options, headers });
+  const response = await fetch(url, { cache: 'no-store', ...options, headers });
+  const contentType = response.headers.get('content-type') || '';
+  const isJson = contentType.includes('application/json');
+  const payload = isJson ? await response.json().catch(() => null) : await response.text().catch(() => '');
+
   if (!response.ok) {
-    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    const details = isJson ? JSON.stringify(payload) : String(payload).slice(0, 500);
+    throw new Error(`HTTP ${response.status}: ${response.statusText}${details ? ` — ${details}` : ''}`);
   }
-  return response.json();
+  if (!isJson) {
+    throw new Error('Ответ API не JSON (возможен кэш/прокси/ошибка сервера).');
+  }
+  return payload;
 }
 
 function getMediaUrl(mediaUrl) {
