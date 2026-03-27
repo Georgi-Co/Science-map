@@ -408,13 +408,19 @@ function initCarousel() {
   const prevBtn = document.getElementById('carousel-prev');
   const nextBtn = document.getElementById('carousel-next');
   const indicators = document.querySelectorAll('.indicator');
-  if (!track || !prevBtn || !nextBtn || indicators.length === 0) return;
+  const slides = track ? track.querySelectorAll('.carousel-slide') : [];
+
+  if (!track || !prevBtn || !nextBtn || indicators.length === 0 || slides.length === 0) return;
 
   let currentIndex = 0;
   const totalSlides = indicators.length;
 
   function updateCarousel() {
-    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    // Показываем только активный слайд
+    slides.forEach((slide, index) => {
+      slide.style.display = index === currentIndex ? 'flex' : 'none';
+    });
+
     indicators.forEach((ind, i) => {
       ind.classList.toggle('active', i === currentIndex);
     });
@@ -436,6 +442,7 @@ function initCarousel() {
       updateCarousel();
     });
   });
+
   updateCarousel();
 }
 
