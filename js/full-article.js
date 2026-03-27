@@ -67,7 +67,14 @@ function getMediaUrl(mediaUrl) {
     return 'https:' + normalized;
   }
 
-  const baseUrl = 'https://special-bear-65dd39b4fc.strapiapp.com';
+  const appBaseUrl = 'https://special-bear-65dd39b4fc.strapiapp.com';
+  const mediaBaseUrl = 'https://special-bear-65dd39b4fc.media.strapiapp.com';
+
+  // Strapi Cloud часто хранит файлы на отдельном media-домене
+  const baseUrl = normalized.startsWith('/uploads/')
+    ? mediaBaseUrl
+    : appBaseUrl;
+
   if (normalized.startsWith('/')) {
     return baseUrl + normalized;
   }
