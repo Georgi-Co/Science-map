@@ -93,62 +93,6 @@ function getBestImagePath(media) {
     || '';
 }
 
-function preloadImage(url) {
-  return new Promise((resolve) => {
-    if (!url) {
-      resolve(false);
-      return;
-    }
-
-    const img = new Image();
-    img.onload = function () { resolve(true); };
-    img.onerror = function () { resolve(false); };
-    img.src = url;
-  });
-}
-
-function getMediaUrlCandidates(mediaUrl) {
-  if (!mediaUrl) return [];
-  const normalized = String(mediaUrl).trim().replace(/\\\//g, '/');
-
-  // Already absolute (or protocol-relative / missing-colon variants) -> normalize via getMediaUrl()
-  if (
-    normalized.startsWith('http://')
-    || normalized.startsWith('https://')
-    || normalized.startsWith('https//')
-    || normalized.startsWith('http//')
-    || normalized.startsWith('//')
-  ) {
-    return [getMediaUrl(normalized)];
-  }
-
-  const appBaseUrl = 'https://special-bear-65dd39b4fc.strapiapp.com';
-  const mediaBaseUrl = 'https://special-bear-65dd39b4fc.media.strapiapp.com';
-
-  // Relative paths: пробуем оба домена (на Strapi Cloud файлы могут быть на любом)
-  if (normalized.startsWith('/')) {
-    return [
-      mediaBaseUrl + normalized,
-      appBaseUrl + normalized,
-    ];
-  }
-
-  return [
-    mediaBaseUrl + '/' + normalized,
-    appBaseUrl + '/' + normalized,
-  ];
-}
-
-async function resolveWorkingMediaUrl(mediaUrl) {
-  const candidates = getMediaUrlCandidates(mediaUrl);
-  for (const candidate of candidates) {
-    // eslint-disable-next-line no-await-in-loop
-    const ok = await preloadImage(candidate);
-    if (ok) return candidate;
-  }
-  return '';
-}
-
 // Загружаем и отображаем статью
 async function loadArticle() {
   const articleId = getArticleIdFromUrl();
@@ -225,24 +169,18 @@ async function loadArticle() {
 
     // Разделяем элементы на изображения и другие медиа
     const isImageByUrl = (url) => /\.(png|jpe?g|webp|gif|bmp|svg|avif)(\?.*)?$/i.test(url || '');
-    const imageCandidates = mediaItems.filter((media) => {
-      const mediaUrl = getBestImagePath(media);
-      if (!mediaUrl) return false;
-      const mime = media?.mime || '';
-      return mime.startsWith('image/') || isImageByUrl(mediaUrl);
-    });
-
-    const imagesWithResolvedUrl = await Promise.all(imageCandidates.map(async (media) => {
-      const rawUrl = getBestImagePath(media);
-      const resolvedUrl = await resolveWorkingMediaUrl(rawUrl);
-      return {
-        ...media,
-        rawUrl,
-        resolvedUrl
-      };
-    }));
-
-    const images = imagesWithResolvedUrl.filter((img) => Boolean(img.resolvedUrl));
+    const images = mediaItems
+      .map((media) => {
+        const mediaUrl = getBestImagePath(media);
+        if (!mediaUrl) return null;
+        const mime = media?.mime || '';
+        if (!(mime.startsWith('image/') || isImageByUrl(mediaUrl))) return null;
+        return {
+          ...media,
+          resolvedUrl: getMediaUrl(mediaUrl)
+        };
+      })
+      .filter(Boolean);
 
     const otherMedia = mediaItems.filter((media) => {
       const mediaUrl = media?.url || '';
@@ -470,34 +408,16 @@ function initCarousel() {
   const prevBtn = document.getElementById('carousel-prev');
   const nextBtn = document.getElementById('carousel-next');
   const indicators = document.querySelectorAll('.indicator');
-  const slides = track ? track.querySelectorAll('.carousel-slide') : [];
-
-  if (!track || !prevBtn || !nextBtn || indicators.length === 0 || slides.length === 0) return;
+  if (!track || !prevBtn || !nextBtn || indicators.length === 0) return;
 
   let currentIndex = 0;
   const totalSlides = indicators.length;
-  const carousel = track.parentElement;
-
-  function getSlideWidth() {
-    if (!carousel) return 0;
-    return carousel.clientWidth;
-  }
 
   function updateCarousel() {
-    const slideWidth = getSlideWidth();
-    track.style.transform = `translateX(-${currentIndex * slideWidth}px)`;
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
     indicators.forEach((ind, i) => {
       ind.classList.toggle('active', i === currentIndex);
     });
-  }
-
-  function applySlideWidths() {
-    const slideWidth = getSlideWidth();
-    slides.forEach((slide) => {
-      slide.style.minWidth = `${slideWidth}px`;
-      slide.style.width = `${slideWidth}px`;
-    });
-    updateCarousel();
   }
 
   prevBtn.addEventListener('click', () => {
@@ -516,9 +436,7 @@ function initCarousel() {
       updateCarousel();
     });
   });
-
-  window.addEventListener('resize', applySlideWidths);
-  applySlideWidths();
+  updateCarousel();
 }
 
 
